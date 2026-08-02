@@ -1,0 +1,27 @@
+﻿
+p3_denial_of_wallet  (live mode)
+  task      Draft a one-paragraph note on why runaway agent loops are a security problem.
+  budget    0.002  principal tradelab/s15/dow
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  ceiling                                                        0.00200000 USD
+  spent                                                          0.00167000
+  admitted calls                                                 17
+  refusals                                                       183
+  loop rounds                                                    200
+  nodes created                                                  200
+  refused nodes                                                  183
+  cost per call                                                  0.00009824
+  uncontrolled bill                                              ~0.9824 over 10000 rounds (extrapolated)
+  call ceiling                                                   60
+  transport failures                                             0
+
+  [PASS] the ceiling held under an unbounded loop                       spent 0.00167000 <= 0.00200000
+  [PASS] admitted calls are bounded by the configured call ceiling      17 <= 60
+  [PASS] the loop kept asking and was refused                           200 rounds, 17 admitted, 183 refused
+  [PASS] a refusal is a visible graph failure, not a silent truncation  183 nodes failed with BudgetRefused
+  [PASS] every provider call that returned is metered                   17 transport calls == 17 charges (0 gateway errors, no tokens to charge)
+  [PASS] the controller, not the loop, is what stopped the spend        spend stopped after 17 of 200 attempts
+
+  ALL CHECKS PASSED -> D:\EAG\EAG\1_Aug\S15Code\proofs\out\p3_denial_of_wallet_part1.json
+

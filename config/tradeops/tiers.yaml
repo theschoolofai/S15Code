@@ -1,0 +1,120 @@
+# The ladder for the trading-operations workload (proofs/tasks/tradeops.jsonl).
+#
+#   rung      provider    model                    $/Mtok in/out   max_tokens
+#   economy   groq        openai/gpt-oss-120b      0.15 / 0.75     512
+#   standard  gemini      gemini-3.1-flash-lite    0.25 / 1.50     768
+#   frontier  openrouter  openai/gpt-4.1           2.00 / 8.00     1024
+#
+# Three rungs, three models, three providers — the rule the shipped ladder set,
+# kept. List spread top to bottom is 13.3x on input and 10.7x on output. What
+# the BILL shows is much narrower, because the cheap rung is more verbose; p8
+# reports the measured spread and derives the break-even resolution rate
+# r* = k/(C/c - 1 + k) from that rather than from this table.
+#
+# Finding the third provider took four attempts on 2026-08-02, and the failures
+# are more useful than the answer:
+#
+#   * github / openai/gpt-4.1 — where the shipped rung lives — answers every
+#     request HTTP 410 github_models_retirement_brownout. Retired, not slow.
+#   * gemini-2.5-pro and gemini-3.1-pro-preview answer HTTP 429
+#     "free_tier_input_token_count quota exceeded". The Pro tier is unavailable
+#     on this key at any volume.
+#   * gemini-3.6-flash works and served a full 18-task pass — then answers 429
+#     "generate_content_free_tier_requests, limit: 20". Twenty requests a DAY
+#     per model. A rung can be perfectly healthy and still be a rung you get to
+#     use once.
+#   * openrouter / openai/gpt-4.1 works, at a ceiling small enough to reserve
+#     against the account's remaining credit — see the note on the rung below.
+#
+# The general lesson, which outlived every one of those attempts: a rung's
+# availability is not a property of the model. It is a property of a quota and a
+# balance, both of which move without telling you.
+#
+# Why the output ceilings move from the shipped 512/1024/4096. Admission prices
+# the worst case, so max_tokens is most of a rung's projected cost: at 4096 the
+# top rung projects around $0.033 and a $0.02 per-task ceiling refuses it
+# outright. This workload's answers are a number with its working, a short JSON
+# object, or 150 words. 512/768/1024 keeps the whole ladder admissible under one
+# realistic ceiling without cutting an answer off — and a truncated answer is a
+# fully billed non-answer, which is the failure this session opens with.
+#
+# The judge panel in evals.yaml sits on cerebras and nvidia, both absent from
+# this ladder, so no model ever grades its own answer.
+#
+# Every model here was called against the live gateway on 2026-08-02 before
+# being written down.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      # Not decoration. Left alone, this model reasons by default and can spend
+      # the entire output allowance in a channel the gateway does not read,
+      # returning "" at full price.
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 400
+    projected_output_tokens: 300
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 768
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 400
+    projected_output_tokens: 400
+
+  frontier:
+    # max_tokens is 1024 rather than something roomier for a specific reason.
+    # openrouter admits a request against the account's remaining credit using
+    # the WORST case — max_tokens times the output rate — and at 4096 it refused
+    # every call:
+    #
+    #   HTTP 402 "This request requires more credits, or fewer max_tokens.
+    #             You requested up to 4096 tokens, but can only afford 3879."
+    #
+    # That is the same admission arithmetic this session's controller performs,
+    # answered with the same status code this session picked for it. Answers on
+    # this rung measure about 60 output tokens, so the 4096 was a reservation
+    # nobody was going to spend — and the reservation, not the spend, is what
+    # made the call unaffordable. 1024 clears the longest answer this workload
+    # produced with room to spare.
+    request:
+      provider: openrouter
+      model: openai/gpt-4.1
+      # gpt-4.1 has no thinking channel to switch off, so the dial is not sent.
+      max_tokens: 1024
+      temperature: 0
+    price_model: openai/gpt-4.1
+    projected_input_tokens: 500
+    projected_output_tokens: 600
+    # Rate confirmed against the gateway's own resolved price table on
+    # 2026-08-02: GET /v1/pricing?provider=openrouter&model=openai/gpt-4.1
+    # returns 2.00 / 8.00 per Mtok, matching pricing.yaml here.
+
+# Which rung a graph ROLE opens on. `answer_with_evidence` is the role every
+# answering call in the proofs declares; `triage` is the classification call this
+# workload's policy buys before it routes. Triage is deliberately pinned to the
+# cheapest rung: a router that needs an expensive model to decide which model to
+# use has already lost the argument.
+role_tiers:
+  default: standard
+  triage: economy
+  summariser: economy
+  formatter: economy
+  memory_recall: economy
+  web_search: economy
+  read_file: economy
+  distiller: standard
+  content: standard
+  coder_validator: standard
+  answer_with_evidence: frontier

@@ -20,3 +20,7 @@ jobs:
       - run: uv run python proofs/p2_budget_holds.py --offline --task "summarise the attached notes" --budget 0.01
       - run: uv run python proofs/p3_denial_of_wallet.py --offline --task "keep refining the draft" --budget 0.01
       - run: uv run python proofs/p4_trace_export.py --offline --task "compare two options" --budget 0.01
+      # The Session 15 assignment additions. Same code path the live runs use;
+      # --limit keeps the CI run short rather than changing what is measured.
+      - run: uv run python proofs/p8_policy_tradeops.py --offline --config-dir config/tradeops --limit 4
+      - run: uv run python proofs/p9_wallet_attack.py --offline --config-dir config/tradeops --budget 0.004 --principal tradelab/tradeops/attacker --task "state the bid-ask spread"

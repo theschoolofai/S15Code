@@ -82,12 +82,44 @@ tiers:
     projected_output_tokens: 800
 
   frontier:
+    # PROVIDER REPOINTED 2026-08-02. The rung shipped as `github`/openai/gpt-4.1.
+    # GitHub Models now answers every request with HTTP 410
+    # `github_models_retirement_brownout`, so that rung is dead, not slow. The
+    # same model is served by openrouter at the same published rate
+    # ($2.00/$8.00 per Mtok), which keeps the ladder's rule intact: three rungs,
+    # three different models, three different providers. Measured on this key
+    # 2026-08-02: 12 in / 2 out, $0.00004, 1487 ms.
+    #
+    # One operational catch that comes with it: the gateway caps openrouter at
+    # 50 requests/day (glc/routing/core.py LIMITS), so this rung and anything
+    # else pointed at openrouter share a small daily allowance. evals.yaml's
+    # judge panel was moved off openrouter for exactly that reason. Note also
+    # that the counter is in-memory, so restarting the gateway resets it —
+    # convenient here, and a real gap in a defence the session leans on.
     request:
-      provider: github
+      provider: openrouter
       model: openai/gpt-4.1
       # gpt-4.1 has no thinking channel to switch off, so the dial is left
       # alone here rather than sent and ignored.
-      max_tokens: 4096
+      #
+      # CEILING LOWERED 4096 -> 1024 on 2026-08-02, and the reason is the best
+      # thing this rung taught. With 4096 every call came back:
+      #
+      #   HTTP 402 "This request requires more credits, or fewer max_tokens.
+      #             You requested up to 4096 tokens, but can only afford 3879."
+      #
+      # The provider admits a call on its WORST CASE — max_tokens times the
+      # output rate against the remaining balance — which is exactly the
+      # arithmetic this session's own controller does, returning exactly the
+      # status code this session chose for it. Actual answers on this rung run
+      # about 60 output tokens, so the 4096 was a reservation nobody was ever
+      # going to use, and it was the reservation that failed, not the spend.
+      #
+      # 1024 is comfortably above the longest answer measured on this task set
+      # and cheap enough to reserve. The lesson generalises past this account:
+      # a top rung is only as real as the balance behind it, and an oversized
+      # max_tokens can make an affordable call unaffordable.
+      max_tokens: 1024
       temperature: 0
     price_model: openai/gpt-4.1
     projected_input_tokens: 6000

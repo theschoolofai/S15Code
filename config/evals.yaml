@@ -113,10 +113,18 @@ judge:
         reasoning: "off"
         max_tokens: 500
         temperature: 0
+    # MOVED OFF OPENROUTER 2026-08-02. This member shipped as
+    # openrouter/nvidia/nemotron-3-super-120b-a12b:free, which works — but the
+    # gateway caps openrouter at 50 requests/day, and the frontier RUNG now
+    # answers on openrouter too since GitHub Models retired. One p1 pass buys
+    # around 50 judge calls, so the panel was eating the whole daily allowance
+    # and the rung it was grading started failing mid-run with 503s. The judges
+    # move; the rung stays. nvidia has thousands of calls a day of headroom and
+    # is absent from every rung of the ladder.
     - name: judge_b
       request:
-        provider: openrouter
-        model: nvidia/nemotron-3-super-120b-a12b:free
+        provider: nvidia
+        model: nvidia/llama-3.3-nemotron-super-49b-v1
         reasoning: "off"
         max_tokens: 700
         temperature: 0

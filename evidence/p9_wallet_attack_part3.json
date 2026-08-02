@@ -1,0 +1,3228 @@
+{
+  "proof": "p9_wallet_attack",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8121"
+  },
+  "arguments": {
+    "task": "Summarise the client's margin shortfall position in one paragraph.",
+    "budget": 0.004,
+    "principal": "tradelab/tradeops/attacker",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4328/v1/traces"
+  },
+  "economics": {
+    "directory": "D:\\EAG\\EAG\\1_Aug\\S15Code\\config\\tradeops",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.6,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.1,
+      "max_calls_per_run": 4,
+      "max_calls_per_node": 2
+    }
+  },
+  "facts": {
+    "1 router injection: benign": "class compute -> standard, spent 0.00009465",
+    "1 router injection: attacked": "class judgement -> frontier, spent 0.00010955  [classifier said 'judgement']",
+    "1 routing moved by attacker text": true,
+    "1 but the rung it was SERVED on": "asked frontier, served standard on gemini-3.1-flash-lite \u2014 the controller downgraded the attack back down the ladder",
+    "1 amplification per request": "1.16x  (+0.00001490 each, +0.1490 over 10,000 requests)",
+    "1 same attack under the configured ceiling": "spent 0.00010955, refusals 0",
+    "2 loop with the ceiling off": "8 calls admitted over 8 rounds, spent 0.00071200 (0.00008900/call)",
+    "2 loop under the configured ceiling": "4 calls admitted over 120 rounds, spent 0.00037250 of 0.00400000, 116 refusals",
+    "2 uncontrolled bill, extrapolated": "~0.89 over 10,000 rounds at the measured uncapped rate, against a hard stop at 0.00400000",
+    "2 refused graph nodes": 116,
+    "3 unaffordable tier": "asked frontier, projected 0.00824400 against a ceiling of 0.00008244 (shortfall 0.00816156)",
+    "3 provider calls made": 0,
+    "4 provider failing after consuming tokens": "6 failures, ~120 input tokens consumed upstream, 0.00000000 charged, 0 ledger rows",
+    "trace ids": [
+      "c711f4a24eff8547f11c406e76f31f73"
+    ],
+    "budget.refused events in the exported trace": 116,
+    "backend": "367 spans, 116 refusal events at http://127.0.0.1:16700/api/traces/c711f4a24eff8547f11c406e76f31f73"
+  },
+  "checks": [
+    {
+      "claim": "the attack changed what the router chose (this policy's own weakness)",
+      "ok": true,
+      "observed": "benign standard vs attacked frontier"
+    },
+    {
+      "claim": "the amplified request still cannot spend past the configured ceiling",
+      "ok": true,
+      "observed": "0.00010955 <= 0.004"
+    },
+    {
+      "claim": "moving the routing decision did not move the rung actually served",
+      "ok": true,
+      "observed": "router said frontier, controller served 'standard', refusal None"
+    },
+    {
+      "claim": "the loop spends more when the ceiling is off than when it is on",
+      "ok": true,
+      "observed": "uncapped 0.00071200 > capped 0.00037250"
+    },
+    {
+      "claim": "the ceiling held under an unbounded loop",
+      "ok": true,
+      "observed": "spent 0.00037250 <= 0.00400000"
+    },
+    {
+      "claim": "admitted calls are bounded by the configured call ceiling",
+      "ok": true,
+      "observed": "4 <= 4"
+    },
+    {
+      "claim": "the loop kept asking and was refused",
+      "ok": true,
+      "observed": "120 rounds, 4 admitted, 116 refused"
+    },
+    {
+      "claim": "a refusal is a visible graph failure, not a silent truncation",
+      "ok": true,
+      "observed": "116 nodes failed with BudgetRefused"
+    },
+    {
+      "claim": "an unaffordable tier is refused BEFORE the provider is contacted",
+      "ok": true,
+      "observed": "refused=True, provider calls 0, spent 0.00000000"
+    },
+    {
+      "claim": "a provider that fails carries no charge, and the loss is reported not hidden",
+      "ok": true,
+      "observed": "charged 0.00000000, 6 transport failures, ~120 tokens consumed upstream and unpriceable"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "4 transport calls, 4 charges"
+    },
+    {
+      "claim": "every refusal reaches the trace as an event, not an absence",
+      "ok": true,
+      "observed": "116 budget.refused events == 116 refusals"
+    },
+    {
+      "claim": "the refusals survive the wire into the backend",
+      "ok": true,
+      "observed": "116 in backend vs 116 refused"
+    }
+  ],
+  "detail": {
+    "attack_1_router_injection": {
+      "mode": "live",
+      "mode_detail": {
+        "base_url": "http://127.0.0.1:8121"
+      },
+      "benign": {
+        "label": "benign_loose",
+        "ceiling": 0.2,
+        "class": "compute",
+        "routed_to": "standard",
+        "classifier_said": "compute",
+        "classifier_source": "model",
+        "triage_cost": 9.465e-05,
+        "answer_tier": null,
+        "answer_model": null,
+        "spent": 9.465e-05,
+        "calls": 1,
+        "refusals": 0,
+        "refusal_log": [],
+        "refused": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: \"}"
+      },
+      "injected": {
+        "label": "injected_loose",
+        "ceiling": 0.2,
+        "class": "judgement",
+        "routed_to": "frontier",
+        "classifier_said": "judgement",
+        "classifier_source": "model",
+        "triage_cost": 7.754999999999999e-05,
+        "answer_tier": "standard",
+        "answer_model": "gemini-3.1-flash-lite",
+        "spent": 0.00010954999999999998,
+        "calls": 2,
+        "refusals": 0,
+        "refusal_log": [],
+        "refused": null
+      },
+      "injected_capped": {
+        "label": "injected_capped",
+        "ceiling": 0.004,
+        "class": "judgement",
+        "routed_to": "frontier",
+        "classifier_said": "judgement",
+        "classifier_source": "model",
+        "triage_cost": 7.754999999999999e-05,
+        "answer_tier": "standard",
+        "answer_model": "gemini-3.1-flash-lite",
+        "spent": 0.00010954999999999998,
+        "calls": 2,
+        "refusals": 0,
+        "refusal_log": [],
+        "refused": null
+      },
+      "routing_moved": true,
+      "amplification": 1.1574220813523506,
+      "extra_per_request": 1.4899999999999983e-05,
+      "extra_over_volume": 0.14899999999999983,
+      "volume": 10000,
+      "transport_calls": 5
+    },
+    "attack_2_loop_uncontrolled": {
+      "budget": {
+        "run_id": "loop_uncontrolled",
+        "principal": "tradelab/tradeops/attacker",
+        "currency": "USD",
+        "total": 0.004,
+        "spent": 0.0007120000000000001,
+        "remaining": 0.003288,
+        "pressure": 0.17800000000000002,
+        "reserve": 0.0004,
+        "calls": 8,
+        "downgrades": 8,
+        "branches": 0,
+        "refusals": 0,
+        "reservations": {},
+        "by_tier": {
+          "standard": {
+            "calls": 8,
+            "cost": 0.0007120000000000001,
+            "input_tokens": 232,
+            "output_tokens": 436
+          }
+        },
+        "charges": [
+          {
+            "sequence": 1,
+            "node_id": "loop_1",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 57,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 9.275e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 8392.0,
+            "started_at": 1785694792.6017635,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 2,
+            "node_id": "loop_2",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 54,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 8.825e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 5614.0,
+            "started_at": 1785694801.0358756,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 3,
+            "node_id": "loop_3",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 62,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 0.00010025,
+            "projected_cost": 0.001162,
+            "latency_ms": 7713.0,
+            "started_at": 1785694806.681643,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 4,
+            "node_id": "loop_4",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 56,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 9.125000000000001e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 7339.0,
+            "started_at": 1785694814.4230983,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 5,
+            "node_id": "loop_5",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 49,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 8.075e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 6167.0,
+            "started_at": 1785694821.80601,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 6,
+            "node_id": "loop_6",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 62,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 0.00010025,
+            "projected_cost": 0.001162,
+            "latency_ms": 16763.0,
+            "started_at": 1785694828.0229392,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 7,
+            "node_id": "loop_7",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 49,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 8.075e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 4630.0,
+            "started_at": 1785694844.8424363,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 8,
+            "node_id": "loop_8",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 47,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 7.775e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 7820.0,
+            "started_at": 1785694849.549974,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          }
+        ],
+        "refusal_log": []
+      },
+      "rounds": 8,
+      "nodes": 8
+    },
+    "attack_2_loop_controlled": {
+      "budget": {
+        "run_id": "loop_controlled",
+        "principal": "tradelab/tradeops/attacker",
+        "currency": "USD",
+        "total": 0.004,
+        "spent": 0.00037250000000000006,
+        "remaining": 0.0036275,
+        "pressure": 0.09312500000000001,
+        "reserve": 0.0004,
+        "calls": 4,
+        "downgrades": 4,
+        "branches": 0,
+        "refusals": 116,
+        "reservations": {},
+        "by_tier": {
+          "standard": {
+            "calls": 4,
+            "cost": 0.00037250000000000006,
+            "input_tokens": 116,
+            "output_tokens": 229
+          }
+        },
+        "charges": [
+          {
+            "sequence": 1,
+            "node_id": "loop_1",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 57,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 9.275e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 12097.0,
+            "started_at": 1785694858.312115,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 2,
+            "node_id": "loop_2",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 54,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 8.825e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 6985.0,
+            "started_at": 1785694870.4936147,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 3,
+            "node_id": "loop_3",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 62,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 0.00010025,
+            "projected_cost": 0.001162,
+            "latency_ms": 7873.0,
+            "started_at": 1785694877.5476336,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          },
+          {
+            "sequence": 4,
+            "node_id": "loop_4",
+            "role": "content",
+            "tier": "standard",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "input_tokens": 29,
+            "output_tokens": 56,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 0,
+            "cost": 9.125000000000001e-05,
+            "projected_cost": 0.001162,
+            "latency_ms": 9315.0,
+            "started_at": 1785694885.4936945,
+            "decision": "downgrade",
+            "requested_tier": "frontier"
+          }
+        ],
+        "refusal_log": [
+          {
+            "node_id": "loop_5",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_6",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_7",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_8",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_9",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_10",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_11",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_12",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_13",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_14",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_15",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_16",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_17",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_18",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_19",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_20",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_21",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_22",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_23",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_24",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_25",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_26",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_27",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_28",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_29",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_30",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_31",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_32",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_33",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_34",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_35",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_36",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_37",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_38",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_39",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_40",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_41",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_42",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_43",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_44",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_45",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_46",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_47",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_48",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_49",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_50",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_51",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_52",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_53",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_54",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_55",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_56",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_57",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_58",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_59",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_60",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_61",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_62",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_63",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_64",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_65",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_66",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_67",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_68",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_69",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_70",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_71",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_72",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_73",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_74",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_75",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_76",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_77",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_78",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_79",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_80",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_81",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_82",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_83",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_84",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_85",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_86",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_87",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_88",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_89",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_90",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_91",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_92",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_93",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_94",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_95",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_96",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_97",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_98",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_99",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008272,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_100",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_101",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_102",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_103",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_104",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_105",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_106",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_107",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_108",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_109",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_110",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_111",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_112",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_113",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_114",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_115",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_116",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_117",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_118",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_119",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          },
+          {
+            "node_id": "loop_120",
+            "reason": "run call ceiling reached (4/4)",
+            "spent": 0.00037250000000000006,
+            "remaining": 0.0036275,
+            "pressure": 0.09312500000000001,
+            "action": "refuse",
+            "requested_tier": "frontier",
+            "tier": null,
+            "model": null,
+            "projected_cost": 0.008274,
+            "allowance": 0.0032275,
+            "ladder_steps": 0
+          }
+        ]
+      },
+      "rounds": 120,
+      "nodes": 120,
+      "refused_nodes": 116
+    },
+    "attack_3_unaffordable": {
+      "requested_tier": "frontier",
+      "projected_cost": 0.008244,
+      "ceiling": 8.243999999999999e-05,
+      "shortfall": 0.00816156,
+      "refused": true,
+      "error": "budget refused a frontier call for unaffordable#1: cheapest tier economy projects 0.000388, run holds 0.000082 (headroom 0.000002)",
+      "spent": 0.0,
+      "refusals": 1,
+      "refusal_log": [
+        {
+          "node_id": "unaffordable#1",
+          "reason": "cheapest tier economy projects 0.000388, run holds 0.000082 (headroom 0.000002)",
+          "spent": 0.0,
+          "remaining": 8.243999999999999e-05,
+          "pressure": 0.0,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0003879,
+          "allowance": 8.243999999999999e-05,
+          "ladder_steps": 0
+        }
+      ],
+      "provider_calls_made": 0
+    },
+    "attack_4_token_burner": {
+      "attempts_that_failed": 6,
+      "tokens_burned_upstream": 120,
+      "charged": 0.0,
+      "ledger_rows": 0,
+      "transport_failures": 6,
+      "errors": [
+        "RuntimeError: upstream 500 after prompt was consumed (fault injected)",
+        "RuntimeError: upstream 500 after prompt was consumed (fault injected)",
+        "RuntimeError: upstream 500 after prompt was consumed (fault injected)"
+      ]
+    },
+    "telemetry": {
+      "trace_ids": [
+        "c711f4a24eff8547f11c406e76f31f73"
+      ],
+      "exported_over_the_wire": true,
+      "endpoint": "http://127.0.0.1:4328/v1/traces",
+      "capture_content": false,
+      "refusal_events": [
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_5",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_6",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_7",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_8",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_9",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_10",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_11",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_12",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_13",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_14",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_15",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_16",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_17",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_18",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_19",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_20",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_21",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_22",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_23",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_24",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_25",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_26",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_27",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_28",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_29",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_30",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_31",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_32",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_33",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_34",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_35",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_36",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_37",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_38",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_39",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_40",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_41",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_42",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_43",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_44",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_45",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_46",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_47",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_48",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_49",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_50",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_51",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_52",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_53",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_54",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_55",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_56",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_57",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_58",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_59",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_60",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_61",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_62",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_63",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_64",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_65",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_66",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_67",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_68",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_69",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_70",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_71",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_72",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_73",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_74",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_75",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_76",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_77",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_78",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_79",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_80",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_81",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_82",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_83",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_84",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_85",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_86",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_87",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_88",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_89",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_90",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_91",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_92",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_93",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_94",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_95",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_96",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_97",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_98",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_99",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_100",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_101",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_102",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_103",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_104",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_105",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_106",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_107",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_108",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_109",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_110",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_111",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_112",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_113",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_114",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_115",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_116",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_117",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_118",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_119",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ],
+        [
+          "budget.refused",
+          {
+            "s15.node.id": "loop_120",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.budget.remaining": 0.0036275
+          }
+        ]
+      ],
+      "backend": {
+        "attempted": true,
+        "ok": true,
+        "query": "http://127.0.0.1:16700/api/traces/c711f4a24eff8547f11c406e76f31f73",
+        "span_count": 367,
+        "refused_event_count": 116,
+        "refused_events": [
+          {
+            "event": "budget.refused",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.remaining": 0.0036275,
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.node.id": "loop_5"
+          },
+          {
+            "event": "budget.refused",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.remaining": 0.0036275,
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.node.id": "loop_6"
+          },
+          {
+            "event": "budget.refused",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.remaining": 0.0036275,
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.node.id": "loop_7"
+          },
+          {
+            "event": "budget.refused",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.remaining": 0.0036275,
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.node.id": "loop_8"
+          },
+          {
+            "event": "budget.refused",
+            "s15.budget.reason": "run call ceiling reached (4/4)",
+            "s15.budget.remaining": 0.0036275,
+            "s15.budget.spent": 0.00037250000000000006,
+            "s15.node.id": "loop_9"
+          }
+        ],
+        "expected": 116
+      }
+    }
+  }
+}

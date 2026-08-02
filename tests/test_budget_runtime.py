@@ -173,9 +173,22 @@ def _tight_ceiling(config: EconomicsConfig, *, fits: str, denies: str) -> float:
 
     Derived from the configured ladder rather than written down, so editing
     tiers.yaml changes the number instead of breaking the test.
+
+    The projections are built with the SAME input estimate admission will use —
+    the prompt this test actually sends. ``project()`` otherwise defaults its
+    input half to the tier's configured ``projected_input_tokens``, and its
+    docstring says to replace that with an estimate of the real prompt whenever
+    one exists. When the two diverge the derived ceiling stops bracketing the two
+    rungs: on a ladder whose top rung declares 6000 projected input tokens
+    against a short prompt, this returned an allowance that comfortably afforded
+    the top rung, and the downgrade the test exists to observe never happened.
     """
     policy = config.policy()
-    allowance = (policy.project(config.ladder.tier(fits)) + policy.project(config.ladder.tier(denies))) / 2
+    estimated_input = policy.estimate_input_tokens(TASK)
+    allowance = (
+        policy.project(config.ladder.tier(fits), input_tokens=estimated_input)
+        + policy.project(config.ladder.tier(denies), input_tokens=estimated_input)
+    ) / 2
     return allowance / max(1.0 - config.thresholds.reserve_fraction, 1e-9)
 
 

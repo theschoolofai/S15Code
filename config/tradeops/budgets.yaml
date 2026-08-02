@@ -1,0 +1,56 @@
+# Budget policy for the trading-operations workload.
+#
+# Every number here is set against the projections this directory's tiers.yaml
+# actually produces. On a typical task in this workload admission prices a
+# worst-case call at roughly $0.00042 (economy), $0.0012 (standard) and $0.0084
+# (frontier). A per-task ceiling has to be read against those three numbers or
+# it is a number with no meaning.
+
+# Per-task allowance for the MEASUREMENT runs. 0.02 comfortably admits a triage
+# call plus two answers anywhere on the ladder, which is deliberate: p8 is
+# measuring what the routing policy chooses, and a ceiling tight enough to
+# start downgrading would be measuring the controller instead. The ceiling is
+# still real — `max_calls_per_run` below binds at 4 whatever the prices do —
+# and the adversarial proof (p9) runs the same policy under a ceiling set
+# tight enough to refuse, via the principal cap at the bottom of this file.
+default_budget: 0.02
+
+# Held back from allocation so the answering node is never starved by upstream
+# work. Lower than the shipped 0.20 because this workload's graph is shallow —
+# one triage call and one answer — so there is little upstream to protect
+# against, and a large reserve would only make the ceiling smaller than it says.
+reserve_fraction: 0.10
+
+# Spend ratio at which a requested rung is downgraded one step. Raised from the
+# shipped 0.50: on a two-call task, 0.50 fires almost immediately after the
+# triage call and downgrades the answer the policy just decided to buy, which
+# would silently undo the routing decision this whole policy exists to make.
+downgrade_at: 0.60
+
+# Spend ratio at which nothing further is admitted at any rung.
+refuse_at: 0.85
+
+# A projected call must leave this fraction of the allowance unspent.
+headroom_fraction: 0.02
+
+# Turning the prompt into a token count for admission. Deliberately pessimistic:
+# four characters per token, then a 25% safety factor, because the provider's
+# tokeniser is not ours and a projection that undershoots is not a ceiling.
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Hard ceilings that do not depend on any price estimate being right. This
+# workload's policy buys at most one triage call plus two answer attempts, so 4
+# is one call of slack and anything beyond it is a loop, not a task.
+max_calls_per_run: 4
+max_calls_per_node: 2
+
+# Per-principal caps. A caller may ask for less than its cap, never for more.
+# The adversarial test in proofs/p9_wallet_attack.py drives this principal.
+# 0.004 is read off the ladder rather than picked: it is above a standard call's
+# $0.0012 projection and below the frontier's $0.0084, so a request that talks
+# the router into the top rung is REFUSED under this cap rather than merely
+# discouraged, while ordinary work still goes through. That is the line an
+# operations desk would actually draw.
+principals:
+  tradelab/tradeops/attacker: 0.004

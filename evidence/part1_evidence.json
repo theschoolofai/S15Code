@@ -1,0 +1,626 @@
+{
+  "config": {
+    "directory": "D:\\EAG\\EAG\\1_Aug\\S15Code\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "runs": [
+    {
+      "name": "plain_answer",
+      "mode": "live",
+      "mode_detail": {
+        "base_url": "http://127.0.0.1:8121"
+      },
+      "prompt": "In exactly two sentences, explain why a spend ceiling must be enforced in code rather than asked for in a prompt.",
+      "run_id": "run-68bef7a9dae1",
+      "tiers_chosen": [
+        "standard"
+      ],
+      "requested_tiers": [
+        "frontier"
+      ],
+      "models_chosen": [
+        "gemini-3.1-flash-lite"
+      ],
+      "providers": [
+        "gemini_1"
+      ],
+      "decisions": [
+        "downgrade"
+      ],
+      "event_trace": [
+        {
+          "sequence": 1,
+          "kind": "run_started",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 2,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 3,
+          "kind": "task_started",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 4,
+          "kind": "task_succeeded",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 5,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 6,
+          "kind": "task_started",
+          "node_id": "answer",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 7,
+          "kind": "task_succeeded",
+          "node_id": "answer",
+          "tier": "standard",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.00014475,
+          "budget_decisions": [
+            "downgrade"
+          ],
+          "error": null
+        },
+        {
+          "sequence": 8,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        }
+      ],
+      "trace_ids": [
+        "31e0fe23e60a4e5adfddc79e2e11f681"
+      ],
+      "trace_backend": {
+        "fetched": true,
+        "query": "http://127.0.0.1:16700/api/traces/31e0fe23e60a4e5adfddc79e2e11f681",
+        "spans": 10,
+        "reason": null,
+        "ui": "http://127.0.0.1:16700/trace/31e0fe23e60a4e5adfddc79e2e11f681"
+      },
+      "ledger_rows": [
+        {
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "requested_tier": "frontier",
+          "tier": "standard",
+          "decision": "downgrade",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 231,
+          "output_tokens": 58,
+          "projected_cost": 0.00162875,
+          "cost": 0.00014475,
+          "latency_ms": 1224.0
+        }
+      ],
+      "ledger_total": 0.00014475,
+      "ceiling": 0.02,
+      "refusals": 0,
+      "downgrades": 1,
+      "final_answer": "Enforcing a spend ceiling in code ensures that programmatic guardrails are applied consistently and automatically, preventing human error or prompt injection from bypassing financial limits. Relying solely on a prompt is insufficient because it lacks the technical authority to terminate processes or block API calls once a predefined budget threshold is reached.",
+      "seconds": 1.2985713481903076,
+      "transport_calls": 1,
+      "transport_failures": 0
+    },
+    {
+      "name": "memory_write",
+      "mode": "live",
+      "mode_detail": {
+        "base_url": "http://127.0.0.1:8121"
+      },
+      "prompt": "Remember that our margin-shortfall penalty review happens on the first Monday of every month, then tell me what you have recorded.",
+      "run_id": "run-c31225a895e0",
+      "tiers_chosen": [
+        "standard"
+      ],
+      "requested_tiers": [
+        "frontier"
+      ],
+      "models_chosen": [
+        "gemini-3.1-flash-lite"
+      ],
+      "providers": [
+        "gemini_2"
+      ],
+      "decisions": [
+        "downgrade"
+      ],
+      "event_trace": [
+        {
+          "sequence": 1,
+          "kind": "run_started",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 2,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 3,
+          "kind": "task_started",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 4,
+          "kind": "task_started",
+          "node_id": "remember",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 5,
+          "kind": "task_succeeded",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 6,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 7,
+          "kind": "task_succeeded",
+          "node_id": "remember",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 8,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 9,
+          "kind": "task_started",
+          "node_id": "answer",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 10,
+          "kind": "task_succeeded",
+          "node_id": "answer",
+          "tier": "standard",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.00010575,
+          "budget_decisions": [
+            "downgrade"
+          ],
+          "error": null
+        },
+        {
+          "sequence": 11,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        }
+      ],
+      "trace_ids": [
+        "380c4d7ac3e2530b1f57de1143fffd68"
+      ],
+      "trace_backend": {
+        "fetched": true,
+        "query": "http://127.0.0.1:16700/api/traces/380c4d7ac3e2530b1f57de1143fffd68",
+        "spans": 13,
+        "reason": null,
+        "ui": "http://127.0.0.1:16700/trace/380c4d7ac3e2530b1f57de1143fffd68"
+      },
+      "ledger_rows": [
+        {
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "requested_tier": "frontier",
+          "tier": "standard",
+          "decision": "downgrade",
+          "provider": "gemini_2",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 261,
+          "output_tokens": 27,
+          "projected_cost": 0.00163675,
+          "cost": 0.00010575,
+          "latency_ms": 982.0
+        }
+      ],
+      "ledger_total": 0.00010575,
+      "ceiling": 0.02,
+      "refusals": 0,
+      "downgrades": 1,
+      "final_answer": "You told me that your margin-shortfall penalty review happens on the first Monday of every month (source: proof://harness).",
+      "seconds": 1.054243564605713,
+      "transport_calls": 1,
+      "transport_failures": 0
+    },
+    {
+      "name": "structured_format",
+      "mode": "live",
+      "mode_detail": {
+        "base_url": "http://127.0.0.1:8121"
+      },
+      "prompt": "Return a single JSON object and nothing else, with exactly two keys: \"tier\" set to the string \"economy\" and \"max_tokens\" set to the number 512.",
+      "run_id": "run-6850171a0605",
+      "tiers_chosen": [
+        "standard"
+      ],
+      "requested_tiers": [
+        "frontier"
+      ],
+      "models_chosen": [
+        "gemini-3.1-flash-lite"
+      ],
+      "providers": [
+        "gemini_1"
+      ],
+      "decisions": [
+        "downgrade"
+      ],
+      "event_trace": [
+        {
+          "sequence": 1,
+          "kind": "run_started",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 2,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 3,
+          "kind": "task_started",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 4,
+          "kind": "task_succeeded",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 5,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 6,
+          "kind": "task_started",
+          "node_id": "answer",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 7,
+          "kind": "task_succeeded",
+          "node_id": "answer",
+          "tier": "standard",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 9.475e-05,
+          "budget_decisions": [
+            "downgrade"
+          ],
+          "error": null
+        },
+        {
+          "sequence": 8,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        }
+      ],
+      "trace_ids": [
+        "fccd74b5339ed13a62a546e9b11aded6"
+      ],
+      "trace_backend": {
+        "fetched": true,
+        "query": "http://127.0.0.1:16700/api/traces/fccd74b5339ed13a62a546e9b11aded6",
+        "spans": 10,
+        "reason": null,
+        "ui": "http://127.0.0.1:16700/trace/fccd74b5339ed13a62a546e9b11aded6"
+      },
+      "ledger_rows": [
+        {
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "requested_tier": "frontier",
+          "tier": "standard",
+          "decision": "downgrade",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 247,
+          "output_tokens": 22,
+          "projected_cost": 0.00163125,
+          "cost": 9.475e-05,
+          "latency_ms": 907.0
+        }
+      ],
+      "ledger_total": 9.475e-05,
+      "ceiling": 0.02,
+      "refusals": 0,
+      "downgrades": 1,
+      "final_answer": "{\n  \"tier\": \"economy\",\n  \"max_tokens\": 512\n}",
+      "seconds": 0.973463773727417,
+      "transport_calls": 1,
+      "transport_failures": 0
+    },
+    {
+      "name": "multi_step",
+      "mode": "live",
+      "mode_detail": {
+        "base_url": "http://127.0.0.1:8121"
+      },
+      "prompt": "A client shorts 300 shares at 1,450 rupees, then covers 200 at 1,410 and 100 at 1,475. Ignoring charges, what is the net realised profit or loss in rupees?",
+      "run_id": "run-6a87b31ebd13",
+      "tiers_chosen": [
+        "standard"
+      ],
+      "requested_tiers": [
+        "frontier"
+      ],
+      "models_chosen": [
+        "gemini-3.1-flash-lite"
+      ],
+      "providers": [
+        "gemini_2"
+      ],
+      "decisions": [
+        "downgrade"
+      ],
+      "event_trace": [
+        {
+          "sequence": 1,
+          "kind": "run_started",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 2,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 3,
+          "kind": "task_started",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 4,
+          "kind": "task_succeeded",
+          "node_id": "recall",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 5,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 6,
+          "kind": "task_started",
+          "node_id": "answer",
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        },
+        {
+          "sequence": 7,
+          "kind": "task_succeeded",
+          "node_id": "answer",
+          "tier": "standard",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.00046075,
+          "budget_decisions": [
+            "downgrade"
+          ],
+          "error": null
+        },
+        {
+          "sequence": 8,
+          "kind": "graph_patched",
+          "node_id": null,
+          "tier": null,
+          "model": null,
+          "cost": null,
+          "budget_decisions": null,
+          "error": null
+        }
+      ],
+      "trace_ids": [
+        "e2028790a5c48f9e6d16f053ac183c4c"
+      ],
+      "trace_backend": {
+        "fetched": true,
+        "query": "http://127.0.0.1:16700/api/traces/e2028790a5c48f9e6d16f053ac183c4c",
+        "spans": 10,
+        "reason": null,
+        "ui": "http://127.0.0.1:16700/trace/e2028790a5c48f9e6d16f053ac183c4c"
+      },
+      "ledger_rows": [
+        {
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "requested_tier": "frontier",
+          "tier": "standard",
+          "decision": "downgrade",
+          "provider": "gemini_2",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 265,
+          "output_tokens": 263,
+          "projected_cost": 0.001632,
+          "cost": 0.00046075,
+          "latency_ms": 1573.0
+        }
+      ],
+      "ledger_total": 0.00046075,
+      "ceiling": 0.02,
+      "refusals": 0,
+      "downgrades": 1,
+      "final_answer": "To calculate the net realised profit or loss, we determine the difference between the total proceeds from the short sale and the total cost of covering the shares.\n\n**1. Short Sale Proceeds:**\n*   300 shares sold at 1,450 rupees = 300 \u00d7 1,450 = **435,000 rupees**\n\n**2. Cost of Covering:**\n*   200 shares covered at 1,410 rupees = 200 \u00d7 1,410 = 282,000 rupees\n*   100 shares covered at 1,475 rupees = 100 \u00d7 1,475 = 147,500 rupees\n*   Total cost = 282,000 + 147,500 = **429,500 rupees**\n\n**3. Net Realised Profit/Loss:**\n*   Profit/Loss = Total Proceeds - Total Cost\n*   435,000 - 429,500 = **5,500 rupees**\n\nThe client has a net realised profit of **5,500 rupees**.",
+      "seconds": 1.6393468379974365,
+      "transport_calls": 1,
+      "transport_failures": 0
+    }
+  ]
+}

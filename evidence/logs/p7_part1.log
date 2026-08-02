@@ -1,0 +1,28 @@
+﻿
+p7_cross_model_ladder  (live mode)
+  task      Explain in three sentences why a price ladder is not a capability ranking.
+  budget    0.05  principal tradelab/s15/sujit
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  ladder                                                                     economy < standard < frontier
+  rung economy                                                               groq / openai/gpt-oss-120b  projected 0.00038940  charged 0.00008430  97in/93out  443 chars
+  rung standard                                                              gemini_1 / gemini-3.1-flash-lite  projected 0.00154500  charged 0.00011050  22in/70out  424 chars
+  rung frontier                                                              openrouter / openai/gpt-4.1  projected 0.00826400  charged 0.00054000  34in/59out  318 chars
+  asked frontier, allowance for economy                                      served economy on groq / openai/gpt-oss-120b  (downgrade, charged 0.00008430)
+  asked frontier, allowance for standard                                     served standard on gemini_1 / gemini-3.1-flash-lite  (downgrade, charged 0.00011050)
+  projected spread                                                           21.2x  (0.00038940 -> 0.00826400)
+  measured spread                                                            6.41x  (0.00008430 -> 0.00054000)
+
+  [PASS] every rung answered                                                        3 rungs
+  [PASS] each rung is served by the model its config names                          {'economy': 'openai/gpt-oss-120b', 'standard': 'gemini-3.1-flash-lite', 'frontier': 'openai/gpt-4.1'}
+  [PASS] no two rungs are the same model                                            ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']
+  [PASS] the rungs are spread across providers, not one provider's menu             {'configured': {'economy': 'groq', 'standard': 'gemini', 'frontier': 'openrouter'}, 'reported': {'economy': 'groq', 'standard': 'gemini_1', 'frontier': 'openrouter'}}
+  [PASS] no rung returns empty text                                                 3 rungs answered
+  [PASS] a node allowance below the requested rung is served lower down the ladder  {'economy': 'economy', 'standard': 'standard'}
+  [PASS] every downgrade is recorded as one                                         {'economy': 'downgrade', 'standard': 'downgrade'}
+  [PASS] a downgrade changes the MODEL, not just the token budget                   {'requested_model': 'openai/gpt-4.1', 'served_models': {'economy': 'openai/gpt-oss-120b', 'standard': 'gemini-3.1-flash-lite'}}
+  [PASS] projected cost rises monotonically along the ladder                        {'economy': 0.0003894, 'standard': 0.001545, 'frontier': 0.008264}
+  [PASS] the top rung measurably costs more than the bottom rung                    0.00054000 > 0.00008430
+
+  ALL CHECKS PASSED -> D:\EAG\EAG\1_Aug\S15Code\proofs\out\p7_cross_model_ladder_part1.json
+
