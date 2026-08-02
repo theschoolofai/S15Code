@@ -528,11 +528,16 @@ def run(args: Args, *, loop_limit: int, projection: int, volume: int) -> Proof:
     # The router is persuadable; the ledger is not. Moving the CLASS is only an
     # attack if it also moves the BILL, and under this ceiling it does not:
     # admission walks the request back down to a rung the budget can pay for.
+    # Only assertable against real models: the offline transport answers every
+    # prompt identically, so the classifier can only ever fall back and the
+    # injection never moves the class in the first place.
     served, asked = injection["injected"]["answer_tier"], injection["injected"]["routed_to"]
+    moved_but_contained = served != asked or injection["injected"]["refused"] is not None
     proof.check("moving the routing decision did not move the rung actually served",
-                served != asked or injection["injected"]["refused"] is not None,
+                moved_but_contained if injection["mode"] == "live" else True,
                 f"router said {asked}, controller served {served!r}, "
-                f"refusal {injection['injected']['refused']!r}")
+                f"refusal {injection['injected']['refused']!r}"
+                + ("" if injection["mode"] == "live" else "  (not asserted offline: simulated)"))
     proof.check("the loop spends more when the ceiling is off than when it is on",
                 loose["budget"]["spent"] > budget["spent"],
                 f"uncapped {loose['budget']['spent']:.8f} > capped {budget['spent']:.8f}")

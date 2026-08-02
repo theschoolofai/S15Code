@@ -134,10 +134,19 @@ async def test_pressure_downgrades_to_a_different_model_at_every_rung(config):
     policy, transport = config.policy(), _RecordingTransport()
     top = config.ladder.most_capable
     served: dict[str, str] = {}
+    # Project with the input estimate admission will use — the prompt sent
+    # below — rather than each tier's configured `projected_input_tokens`. See
+    # `project()`'s docstring: when the two diverge, the midpoint stops sitting
+    # between the rungs and the allowance quietly affords the rung it was meant
+    # to deny.
+    estimated_input = policy.estimate_input_tokens("q", "s")
     for name in config.ladder.names[:-1]:
         target = config.ladder.tier(name)
         above = config.ladder.tier(config.ladder.names[target.rank + 1])
-        allowance = (policy.project(target) + policy.project(above)) / 2
+        allowance = (
+            policy.project(target, input_tokens=estimated_input)
+            + policy.project(above, input_tokens=estimated_input)
+        ) / 2
         budget = RunBudget(total=_generous(config, policy))
         node = f"walk-{name}"
         budget.reservations[node] = allowance
