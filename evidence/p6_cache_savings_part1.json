@@ -1,0 +1,1965 @@
+{
+  "proof": "p6_cache_savings",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8121",
+    "nonce": "p6-1785651608",
+    "answering_model": "groq/openai/gpt-oss-120b"
+  },
+  "arguments": {
+    "task": "26 labelled pairs from proofs/pairs/paraphrases.jsonl",
+    "budget": 0.0,
+    "principal": "tradelab/s15/sujit",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "D:\\EAG\\EAG\\1_Aug\\S15Code\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "pairs": "26 from proofs/pairs/paraphrases.jsonl  families {'paraphrase': 10, 'near_miss': 10, 'unrelated': 6}",
+    "embedder": "ollama / nomic-embed-text  dim 768 (ring declares 768)",
+    "configured threshold": "0.95 (from D:\\EAG\\EAG\\1_Aug\\glc_v4\\glc\\cache\\cache.yaml)",
+    "same01 [same/paraphrase]": "cosine 0.957349  HIT (reported 0.957349, $0.00000000)",
+    "same02 [same/paraphrase]": "cosine 0.955688  HIT (reported 0.955688, $0.00000000)",
+    "same03 [same/paraphrase]": "cosine 0.943658  miss (best 0.943658, paid $0.00005280)",
+    "same04 [same/paraphrase]": "cosine 0.908269  miss (best 0.908269, paid $0.00012330)",
+    "same05 [same/paraphrase]": "cosine 0.959836  HIT (reported 0.959836, $0.00000000)",
+    "same06 [same/paraphrase]": "cosine 0.946564  miss (best 0.946564, paid $0.00003375)",
+    "same07 [same/paraphrase]": "cosine 0.899400  miss (best 0.899400, paid $0.00006750)",
+    "same08 [same/paraphrase]": "cosine 0.879782  miss (best 0.879782, paid $0.00006870)",
+    "same09 [same/paraphrase]": "cosine 0.863918  miss (best 0.863918, paid $0.00011580)",
+    "same10 [same/paraphrase]": "cosine 0.984614  HIT (reported 0.984614, $0.00000000)",
+    "diff01 [different/near_miss]": "cosine 0.777728  miss (best 0.777728, paid $0.00003465)",
+    "diff02 [different/near_miss]": "cosine 0.911284  miss (best 0.911284, paid $0.00004530)",
+    "diff03 [different/near_miss]": "cosine 0.991583  HIT (reported 0.991583, $0.00000000)  <-- WRONG ANSWER SERVED",
+    "diff04 [different/near_miss]": "cosine 0.793742  miss (best 0.793742, paid $0.00003195)",
+    "diff05 [different/near_miss]": "cosine 0.842178  miss (best 0.842178, paid $0.00006690)",
+    "diff06 [different/near_miss]": "cosine 0.996565  HIT (reported 0.996565, $0.00000000)  <-- WRONG ANSWER SERVED",
+    "diff07 [different/near_miss]": "cosine 0.911366  miss (best 0.911366, paid $0.00004800)",
+    "diff08 [different/near_miss]": "cosine 0.921502  miss (best 0.921502, paid $0.00010575)",
+    "diff09 [different/near_miss]": "cosine 0.850143  miss (best 0.850143, paid $0.00009315)",
+    "diff10 [different/near_miss]": "cosine 0.918955  miss (best 0.918955, paid $0.00004860)",
+    "far01 [different/unrelated]": "cosine 0.478388  miss (best 0.478388, paid $0.00003525)",
+    "far02 [different/unrelated]": "cosine 0.450639  miss (best 0.450639, paid $0.00011100)",
+    "far03 [different/unrelated]": "cosine 0.588899  miss (best 0.588899, paid $0.00009870)",
+    "far04 [different/unrelated]": "cosine 0.471523  miss (best 0.471523, paid $0.00010800)",
+    "far05 [different/unrelated]": "cosine 0.366207  miss (best 0.366207, paid $0.00009000)",
+    "far06 [different/unrelated]": "cosine 0.412630  miss (best 0.412630, paid $0.00009675)",
+    "threshold sweep": "\n    threshold  TPR             FPR (all)       FPR near_miss   FPR unrelated   \n    0.85       1.00 (10/10)    0.44 (7/16)     0.70 (7/10)     0.00 (0/6)      \n    0.86       1.00 (10/10)    0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.87       0.90 (9/10)     0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.88       0.80 (8/10)     0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.89       0.80 (8/10)     0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.90       0.70 (7/10)     0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.91       0.60 (6/10)     0.38 (6/16)     0.60 (6/10)     0.00 (0/6)      \n    0.92       0.60 (6/10)     0.19 (3/16)     0.30 (3/10)     0.00 (0/6)      \n    0.93       0.60 (6/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      \n    0.94       0.60 (6/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      \n    0.95       0.40 (4/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      <- configured\n    0.96       0.10 (1/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      \n    0.97       0.10 (1/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      \n    0.98       0.10 (1/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      \n    0.99       0.00 (0/10)     0.12 (2/16)     0.20 (2/10)     0.00 (0/6)      ",
+    "measured danger line": "the sharpest fall in collision rate over 0.85-0.99 is at 0.92: FPR 0.38 -> 0.19 (6 -> 3 of 16 wrong pairs admitted); on near_miss alone the knee is 0.92 (0.60 -> 0.30)",
+    "family paraphrase @ 0.95": "4/10 admitted, 0 of them WRONGLY  ['same01', 'same02', 'same05', 'same10']",
+    "family near_miss @ 0.95": "2/10 admitted, 2 of them WRONGLY  ['diff03', 'diff06']",
+    "family unrelated @ 0.95": "0/6 admitted, 0 of them WRONGLY  ",
+    "FINDING": "the labelled set is NOT separable: the highest-scoring 'different' pair (diff06, 0.9966) outscores the lowest-scoring 'same' pair (0.8639), so NO threshold admits every paraphrase without also admitting at least one wrong answer. At the configured 0.95: TPR 0.40, FPR 0.12 (2/16 wrong-answer collisions). NO threshold in the swept range reaches zero collisions: the least-bad point is 0.86, and it still admits 6 of 16 wrong pairs (TPR 1.00, FPR 0.38).",
+    "hits measured": "4 of 10 'same' pairs served from cache",
+    "gross saving": "$0.00039705 over 4 hits, 863 provider tokens never billed  ($0.00009926/hit)",
+    "embedding cost": "$0.0000/Mtok at provider -> $0.00000000 per lookup; median 552.5 ms, 484.7-692.4 ms over 43 calls",
+    "net saving": "$0.00039705 (the local embedder costs no money, so net == gross); break-even embedding price is $0.00009926/lookup \u2014 a hosted embedder dearer than that erases the saving",
+    "latency": "cold call 1904 ms -> cache hit 487 ms (of which ~552 ms is the embedding a hit cannot avoid)",
+    "namespace isolation": "pair same10 at cosine 0.984614: control HIT; different model miss; different system prompt miss; different tenant miss"
+  },
+  "checks": [
+    {
+      "claim": "the embedding is a real vector of the ring's declared dimension",
+      "ok": true,
+      "observed": "768 floats, gateway reports dim 768, ring declares 768"
+    },
+    {
+      "claim": "the vector came from the configured embedder ring, named",
+      "ok": true,
+      "observed": "ollama / nomic-embed-text (ring order ['ollama'], task_type retrieval_query)"
+    },
+    {
+      "claim": "the embedder is not a constant stub: deterministic on a repeat, different on different text",
+      "ok": true,
+      "observed": "repeat cosine 1.000000000, unrelated cosine 0.646991, 768 distinct components"
+    },
+    {
+      "claim": "every pair round-tripped through the live gateway",
+      "ok": true,
+      "observed": "26 pairs"
+    },
+    {
+      "claim": "the similarity the gateway acted on equals the cosine measured here",
+      "ok": true,
+      "observed": "26 pairs agree to 1e-5"
+    },
+    {
+      "claim": "a pair hits if and only if its cosine reaches the configured 0.95",
+      "ok": true,
+      "observed": "26 verdicts match the threshold exactly"
+    },
+    {
+      "claim": "at least one real paraphrase is served from cache",
+      "ok": true,
+      "observed": "4 of 10 'same' pairs hit: ['same01', 'same02', 'same05', 'same10']"
+    },
+    {
+      "claim": "a cache hit contacts no provider and is billed nothing",
+      "ok": true,
+      "observed": "4 hits, all $0.00000000, price_source semantic-cache-hit"
+    },
+    {
+      "claim": "the saving is a measured provider bill, not a model of one",
+      "ok": true,
+      "observed": "$0.00039705 and 863 tokens, read off the cold calls"
+    },
+    {
+      "claim": "unrelated prompts are not conflated at the configured threshold",
+      "ok": true,
+      "observed": "6 unrelated pairs, max cosine 0.588899 < 0.95"
+    },
+    {
+      "claim": "no embedding failed silently during the run",
+      "ok": true,
+      "observed": {
+        "lookups": 57,
+        "hits": 7,
+        "misses": 50,
+        "stores": 49,
+        "embed_failures": 0
+      }
+    },
+    {
+      "claim": "the control case, identical in every namespace field, hits",
+      "ok": true,
+      "observed": {
+        "hit": true,
+        "similarity": 0.984614,
+        "best_similarity": 0.984614,
+        "skipped_reason": "",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 106,
+        "output_tokens": 122,
+        "usd": 0.0,
+        "price_source": "semantic-cache-hit",
+        "latency_ms": 0,
+        "wall_ms": 473.8,
+        "chars": 576
+      }
+    },
+    {
+      "claim": "a change of model, system prompt or tenant misses despite the same question",
+      "ok": true,
+      "observed": [
+        "different model",
+        "different system prompt",
+        "different tenant"
+      ]
+    },
+    {
+      "claim": "the sweep is monotone: raising the threshold never raises TPR or FPR",
+      "ok": true,
+      "observed": "15 thresholds from 0.85 to 0.99"
+    },
+    {
+      "claim": "every pair is accounted for at every threshold",
+      "ok": true,
+      "observed": "26 pairs, 10 positive"
+    },
+    {
+      "claim": "the report states whether a collision-free threshold exists",
+      "ok": true,
+      "observed": "the labelled set is NOT separable: the highest-scoring 'different' pair (diff06, 0.9966) outscores the lowest-scoring 'same' pair (0.8639), so NO threshold admits every paraphrase without also admitting at least one wrong answer. At the configured 0.95: TPR 0.40, FPR 0.12 (2/16 wrong-answer collisions). NO threshold in the swept range reaches zero collisions: the least-bad point is 0.86, and it still admits 6 of 16 wrong pairs (TPR 1.00, FPR 0.38)."
+    }
+  ],
+  "detail": {
+    "cosines": {
+      "same01": 0.957349,
+      "same02": 0.955688,
+      "same03": 0.943658,
+      "same04": 0.908269,
+      "same05": 0.959836,
+      "same06": 0.946564,
+      "same07": 0.8994,
+      "same08": 0.879782,
+      "same09": 0.863918,
+      "same10": 0.984614,
+      "diff01": 0.777728,
+      "diff02": 0.911284,
+      "diff03": 0.991583,
+      "diff04": 0.793742,
+      "diff05": 0.842178,
+      "diff06": 0.996565,
+      "diff07": 0.911366,
+      "diff08": 0.921502,
+      "diff09": 0.850143,
+      "diff10": 0.918955,
+      "far01": 0.478388,
+      "far02": 0.450639,
+      "far03": 0.588899,
+      "far04": 0.471523,
+      "far05": 0.366207,
+      "far06": 0.41263
+    },
+    "pairs": [
+      {
+        "id": "same01",
+        "a": "Which planet in the solar system is the largest?",
+        "b": "What is the biggest planet in our solar system?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "word-swap paraphrase; the pair from the original ad-hoc curl measurement",
+        "metadata": {}
+      },
+      {
+        "id": "same02",
+        "a": "How do I reset my password?",
+        "b": "What are the steps to reset my password?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "support-desk paraphrase, the canonical semantic-cache use case",
+        "metadata": {}
+      },
+      {
+        "id": "same03",
+        "a": "What is the boiling point of water at sea level?",
+        "b": "At sea level, at what temperature does water boil?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "clause reordering, no shared verb form",
+        "metadata": {}
+      },
+      {
+        "id": "same04",
+        "a": "Summarise the main causes of the First World War.",
+        "b": "Give me a summary of what caused World War I.",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "register change plus an abbreviation the embedder has to resolve",
+        "metadata": {}
+      },
+      {
+        "id": "same05",
+        "a": "Explain how a hash table works.",
+        "b": "Can you explain the workings of a hash table?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "politeness wrapper only; the least demanding paraphrase in the set",
+        "metadata": {}
+      },
+      {
+        "id": "same06",
+        "a": "Who wrote the novel Pride and Prejudice?",
+        "b": "Which author is Pride and Prejudice by?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "active/passive flip",
+        "metadata": {}
+      },
+      {
+        "id": "same07",
+        "a": "How long does light from the Sun take to reach Earth?",
+        "b": "What is the travel time of sunlight from the Sun to the Earth?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "verb phrase replaced by a nominalisation",
+        "metadata": {}
+      },
+      {
+        "id": "same08",
+        "a": "What does HTTP status code 404 mean?",
+        "b": "What is the meaning of a 404 response in HTTP?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "technical lookup, identical intent",
+        "metadata": {}
+      },
+      {
+        "id": "same09",
+        "a": "Give me a recipe for pancakes.",
+        "b": "How do I make pancakes?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "no content word in common except pancakes",
+        "metadata": {}
+      },
+      {
+        "id": "same10",
+        "a": "What is the difference between TCP and UDP?",
+        "b": "How do TCP and UDP differ from each other?",
+        "label": "same",
+        "family": "paraphrase",
+        "note": "noun/verb alternation on the same comparison",
+        "metadata": {}
+      },
+      {
+        "id": "diff01",
+        "a": "What is the largest planet in the solar system?",
+        "b": "What is the smallest planet in the solar system?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "one antonym; every other token is shared",
+        "metadata": {}
+      },
+      {
+        "id": "diff02",
+        "a": "How do I enable two-factor authentication on my account?",
+        "b": "How do I disable two-factor authentication on my account?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "enable/disable \u2014 opposite actions, one-syllable edit",
+        "metadata": {}
+      },
+      {
+        "id": "diff03",
+        "a": "Convert 100 US dollars to euros.",
+        "b": "Convert 100 euros to US dollars.",
+        "label": "different",
+        "family": "near_miss",
+        "note": "argument order carries the whole meaning; the bag of words is identical",
+        "metadata": {}
+      },
+      {
+        "id": "diff04",
+        "a": "What is the capital of Australia?",
+        "b": "What is the capital of Austria?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "near-identical surface form, entirely different fact",
+        "metadata": {}
+      },
+      {
+        "id": "diff05",
+        "a": "List the common side effects of ibuprofen.",
+        "b": "List the common side effects of paracetamol.",
+        "label": "different",
+        "family": "near_miss",
+        "note": "same question, different drug \u2014 the failure mode that is not merely annoying",
+        "metadata": {}
+      },
+      {
+        "id": "diff06",
+        "a": "Show me flights from London to New York.",
+        "b": "Show me flights from New York to London.",
+        "label": "different",
+        "family": "near_miss",
+        "note": "direction reversal; a booking served from the wrong entry is a wrong booking",
+        "metadata": {}
+      },
+      {
+        "id": "diff07",
+        "a": "How do I restore the production database from a backup?",
+        "b": "How do I delete the production database backup?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "restore vs delete on the same object; opposite consequences",
+        "metadata": {}
+      },
+      {
+        "id": "diff08",
+        "a": "What is the refund policy for annual subscriptions?",
+        "b": "What is the refund policy for monthly subscriptions?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "one qualifier changes which policy applies",
+        "metadata": {}
+      },
+      {
+        "id": "diff09",
+        "a": "Is ibuprofen safe to take during pregnancy?",
+        "b": "Is paracetamol safe to take during pregnancy?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "the answers genuinely differ; the wording barely does",
+        "metadata": {}
+      },
+      {
+        "id": "diff10",
+        "a": "What was the revenue in the third quarter of 2024?",
+        "b": "What was the revenue in the third quarter of 2025?",
+        "label": "different",
+        "family": "near_miss",
+        "note": "a single digit; the archetypal reporting-cache collision",
+        "metadata": {}
+      },
+      {
+        "id": "far01",
+        "a": "What is the boiling point of water at sea level?",
+        "b": "Who wrote the novel Pride and Prejudice?",
+        "label": "different",
+        "family": "unrelated",
+        "note": "two of this file's own prompts, drawn from different pairs",
+        "metadata": {}
+      },
+      {
+        "id": "far02",
+        "a": "How do I reset my password?",
+        "b": "What is the difference between TCP and UDP?",
+        "label": "different",
+        "family": "unrelated",
+        "note": "same domain, unrelated questions",
+        "metadata": {}
+      },
+      {
+        "id": "far03",
+        "a": "Give me a recipe for pancakes.",
+        "b": "Summarise the main causes of the First World War.",
+        "label": "different",
+        "family": "unrelated",
+        "note": "no shared vocabulary and no shared intent",
+        "metadata": {}
+      },
+      {
+        "id": "far04",
+        "a": "Explain how a hash table works.",
+        "b": "Show me flights from London to New York.",
+        "label": "different",
+        "family": "unrelated",
+        "note": "an explanation request against an action request",
+        "metadata": {}
+      },
+      {
+        "id": "far05",
+        "a": "What does HTTP status code 404 mean?",
+        "b": "Is ibuprofen safe to take during pregnancy?",
+        "label": "different",
+        "family": "unrelated",
+        "note": "different domains entirely",
+        "metadata": {}
+      },
+      {
+        "id": "far06",
+        "a": "Which planet in the solar system is the largest?",
+        "b": "What is the refund policy for annual subscriptions?",
+        "label": "different",
+        "family": "unrelated",
+        "note": "the easy case: nothing a threshold could confuse",
+        "metadata": {}
+      }
+    ],
+    "sweep": [
+      {
+        "threshold": 0.85,
+        "true_positives": 10,
+        "false_negatives": 0,
+        "false_positives": 7,
+        "true_negatives": 9,
+        "tpr": 1.0,
+        "fpr": 0.4375
+      },
+      {
+        "threshold": 0.86,
+        "true_positives": 10,
+        "false_negatives": 0,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 1.0,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.87,
+        "true_positives": 9,
+        "false_negatives": 1,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 0.9,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.88,
+        "true_positives": 8,
+        "false_negatives": 2,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 0.8,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.89,
+        "true_positives": 8,
+        "false_negatives": 2,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 0.8,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.9,
+        "true_positives": 7,
+        "false_negatives": 3,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 0.7,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.91,
+        "true_positives": 6,
+        "false_negatives": 4,
+        "false_positives": 6,
+        "true_negatives": 10,
+        "tpr": 0.6,
+        "fpr": 0.375
+      },
+      {
+        "threshold": 0.92,
+        "true_positives": 6,
+        "false_negatives": 4,
+        "false_positives": 3,
+        "true_negatives": 13,
+        "tpr": 0.6,
+        "fpr": 0.1875
+      },
+      {
+        "threshold": 0.93,
+        "true_positives": 6,
+        "false_negatives": 4,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.6,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.94,
+        "true_positives": 6,
+        "false_negatives": 4,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.6,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.95,
+        "true_positives": 4,
+        "false_negatives": 6,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.4,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.96,
+        "true_positives": 1,
+        "false_negatives": 9,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.1,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.97,
+        "true_positives": 1,
+        "false_negatives": 9,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.1,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.98,
+        "true_positives": 1,
+        "false_negatives": 9,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.1,
+        "fpr": 0.125
+      },
+      {
+        "threshold": 0.99,
+        "true_positives": 0,
+        "false_negatives": 10,
+        "false_positives": 2,
+        "true_negatives": 14,
+        "tpr": 0.0,
+        "fpr": 0.125
+      }
+    ],
+    "sweep_by_negative_family": {
+      "near_miss": [
+        {
+          "threshold": 0.85,
+          "true_positives": 10,
+          "false_negatives": 0,
+          "false_positives": 7,
+          "true_negatives": 3,
+          "tpr": 1.0,
+          "fpr": 0.7
+        },
+        {
+          "threshold": 0.86,
+          "true_positives": 10,
+          "false_negatives": 0,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 1.0,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.87,
+          "true_positives": 9,
+          "false_negatives": 1,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 0.9,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.88,
+          "true_positives": 8,
+          "false_negatives": 2,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 0.8,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.89,
+          "true_positives": 8,
+          "false_negatives": 2,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 0.8,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.9,
+          "true_positives": 7,
+          "false_negatives": 3,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 0.7,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.91,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 6,
+          "true_negatives": 4,
+          "tpr": 0.6,
+          "fpr": 0.6
+        },
+        {
+          "threshold": 0.92,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 3,
+          "true_negatives": 7,
+          "tpr": 0.6,
+          "fpr": 0.3
+        },
+        {
+          "threshold": 0.93,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.6,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.94,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.6,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.95,
+          "true_positives": 4,
+          "false_negatives": 6,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.4,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.96,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.1,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.97,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.1,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.98,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.1,
+          "fpr": 0.2
+        },
+        {
+          "threshold": 0.99,
+          "true_positives": 0,
+          "false_negatives": 10,
+          "false_positives": 2,
+          "true_negatives": 8,
+          "tpr": 0.0,
+          "fpr": 0.2
+        }
+      ],
+      "unrelated": [
+        {
+          "threshold": 0.85,
+          "true_positives": 10,
+          "false_negatives": 0,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 1.0,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.86,
+          "true_positives": 10,
+          "false_negatives": 0,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 1.0,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.87,
+          "true_positives": 9,
+          "false_negatives": 1,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.9,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.88,
+          "true_positives": 8,
+          "false_negatives": 2,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.8,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.89,
+          "true_positives": 8,
+          "false_negatives": 2,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.8,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.9,
+          "true_positives": 7,
+          "false_negatives": 3,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.7,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.91,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.6,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.92,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.6,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.93,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.6,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.94,
+          "true_positives": 6,
+          "false_negatives": 4,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.6,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.95,
+          "true_positives": 4,
+          "false_negatives": 6,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.4,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.96,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.1,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.97,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.1,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.98,
+          "true_positives": 1,
+          "false_negatives": 9,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.1,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.99,
+          "true_positives": 0,
+          "false_negatives": 10,
+          "false_positives": 0,
+          "true_negatives": 6,
+          "tpr": 0.0,
+          "fpr": 0.0
+        }
+      ]
+    },
+    "measured_danger_line": {
+      "overall": {
+        "measured": true,
+        "knee_at": 0.92,
+        "fpr_below": 0.375,
+        "fpr_at": 0.1875,
+        "drop": 0.1875,
+        "collisions_below": 6,
+        "collisions_at": 3,
+        "negatives": 16,
+        "flat": false
+      },
+      "by_negative_family": {
+        "near_miss": {
+          "measured": true,
+          "knee_at": 0.92,
+          "fpr_below": 0.6,
+          "fpr_at": 0.3,
+          "drop": 0.3,
+          "collisions_below": 6,
+          "collisions_at": 3,
+          "negatives": 10,
+          "flat": false
+        },
+        "unrelated": {
+          "measured": true,
+          "knee_at": 0.86,
+          "fpr_below": 0.0,
+          "fpr_at": 0.0,
+          "drop": 0.0,
+          "collisions_below": 0,
+          "collisions_at": 0,
+          "negatives": 6,
+          "flat": true
+        }
+      }
+    },
+    "separability": {
+      "separable": false,
+      "lowest_positive": 0.863918,
+      "highest_negative": 0.996565,
+      "highest_negative_id": "diff06",
+      "highest_negative_family": "near_miss",
+      "margin": -0.132647
+    },
+    "safest_operating_point": {
+      "threshold": 0.86,
+      "true_positives": 10,
+      "false_negatives": 0,
+      "false_positives": 6,
+      "true_negatives": 10,
+      "tpr": 1.0,
+      "fpr": 0.375
+    },
+    "configured_operating_point": {
+      "threshold": 0.95,
+      "true_positives": 4,
+      "false_negatives": 6,
+      "false_positives": 2,
+      "true_negatives": 14,
+      "tpr": 0.4,
+      "fpr": 0.125
+    },
+    "per_family_at_configured_threshold": {
+      "paraphrase": {
+        "n": 10,
+        "positive": 10,
+        "admitted_at_configured_threshold": [
+          "same01",
+          "same02",
+          "same05",
+          "same10"
+        ],
+        "wrongly_admitted": [],
+        "rate": 0.4
+      },
+      "near_miss": {
+        "n": 10,
+        "positive": 0,
+        "admitted_at_configured_threshold": [
+          "diff03",
+          "diff06"
+        ],
+        "wrongly_admitted": [
+          "diff03",
+          "diff06"
+        ],
+        "rate": 0.2
+      },
+      "unrelated": {
+        "n": 6,
+        "positive": 0,
+        "admitted_at_configured_threshold": [],
+        "wrongly_admitted": [],
+        "rate": 0.0
+      }
+    },
+    "embedder_identity": {
+      "provider": "ollama",
+      "model": "nomic-embed-text",
+      "reported_dim": 768,
+      "vector_length": 768,
+      "ring_order": [
+        "ollama"
+      ],
+      "ring_models": {
+        "ollama": "nomic-embed-text"
+      },
+      "ring_fixed_dim": 768,
+      "task_type": "retrieval_query",
+      "repeat_cosine": 1.0,
+      "unrelated_cosine": 0.6469910363776801,
+      "distinct_values": 768,
+      "gateway_latency_ms": [
+        468,
+        532
+      ]
+    },
+    "embedding_cost": {
+      "calls_for_scoring": 43,
+      "median_wall_ms": 552.47,
+      "mean_wall_ms": 559.2,
+      "min_wall_ms": 484.67,
+      "max_wall_ms": 692.43,
+      "usd_per_mtok": 0.0,
+      "price_source": "provider",
+      "embeds_per_lookup": 1,
+      "embeds_per_miss": 2
+    },
+    "savings": {
+      "hits": [
+        "same01",
+        "same02",
+        "same05",
+        "same10"
+      ],
+      "gross_usd": 0.00039705000000000003,
+      "gross_tokens": 863,
+      "usd_per_hit": 9.926250000000001e-05,
+      "break_even_embedding_usd_per_lookup": 9.926250000000001e-05,
+      "mean_cold_wall_ms": 1904.0,
+      "mean_hit_wall_ms": 486.7,
+      "median_embed_wall_ms": 552.47
+    },
+    "round_trips": {
+      "same01": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same01]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 50,
+          "usd": 5.34e-05,
+          "price_source": "model",
+          "latency_ms": 1009,
+          "wall_ms": 2121.8,
+          "chars": 147
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.957349,
+          "best_similarity": 0.957349,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 50,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 474.8,
+          "chars": 147
+        }
+      },
+      "same02": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same02]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 115,
+          "usd": 0.0001017,
+          "price_source": "model",
+          "latency_ms": 948,
+          "wall_ms": 1899.7,
+          "chars": 464
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.955688,
+          "best_similarity": 0.955688,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 115,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 470.1,
+          "chars": 464
+        }
+      },
+      "same03": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same03]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 48,
+          "usd": 5.205e-05,
+          "price_source": "model",
+          "latency_ms": 797,
+          "wall_ms": 1817.1,
+          "chars": 99
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.943658,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 49,
+          "usd": 5.28e-05,
+          "price_source": "model",
+          "latency_ms": 644,
+          "wall_ms": 1583.5,
+          "chars": 103
+        }
+      },
+      "same04": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same04]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 108,
+          "output_tokens": 111,
+          "usd": 9.945e-05,
+          "price_source": "model",
+          "latency_ms": 834,
+          "wall_ms": 1760.0,
+          "chars": 503
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.908269,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 143,
+          "usd": 0.0001233,
+          "price_source": "model",
+          "latency_ms": 1070,
+          "wall_ms": 2125.1,
+          "chars": 636
+        }
+      },
+      "same05": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same05]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 154,
+          "usd": 0.00013095,
+          "price_source": "model",
+          "latency_ms": 930,
+          "wall_ms": 1915.0,
+          "chars": 645
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.959836,
+          "best_similarity": 0.959836,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 154,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 477.1,
+          "chars": 645
+        }
+      },
+      "same06": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same06]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 26,
+          "usd": 3.525e-05,
+          "price_source": "model",
+          "latency_ms": 785,
+          "wall_ms": 1731.3,
+          "chars": 50
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.946564,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 24,
+          "usd": 3.375e-05,
+          "price_source": "model",
+          "latency_ms": 643,
+          "wall_ms": 1631.3,
+          "chars": 40
+        }
+      },
+      "same07": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same07]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 108,
+          "output_tokens": 64,
+          "usd": 6.42e-05,
+          "price_source": "model",
+          "latency_ms": 870,
+          "wall_ms": 1927.9,
+          "chars": 195
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.8994,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 110,
+          "output_tokens": 68,
+          "usd": 6.75e-05,
+          "price_source": "model",
+          "latency_ms": 825,
+          "wall_ms": 1777.0,
+          "chars": 168
+        }
+      },
+      "same08": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same08]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 73,
+          "usd": 7.05e-05,
+          "price_source": "model",
+          "latency_ms": 841,
+          "wall_ms": 1772.1,
+          "chars": 265
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.879782,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 108,
+          "output_tokens": 70,
+          "usd": 6.87e-05,
+          "price_source": "model",
+          "latency_ms": 905,
+          "wall_ms": 1936.4,
+          "chars": 255
+        }
+      },
+      "same09": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same09]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 172,
+          "usd": 0.00014445,
+          "price_source": "model",
+          "latency_ms": 1048,
+          "wall_ms": 2010.4,
+          "chars": 543
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.863918,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 102,
+          "output_tokens": 134,
+          "usd": 0.0001158,
+          "price_source": "model",
+          "latency_ms": 955,
+          "wall_ms": 1910.3,
+          "chars": 397
+        }
+      },
+      "same10": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/same10]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 127,
+          "usd": 0.000111,
+          "price_source": "model",
+          "latency_ms": 1001,
+          "wall_ms": 2046.3,
+          "chars": 577
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.984614,
+          "best_similarity": 0.984614,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 127,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 524.9,
+          "chars": 577
+        }
+      },
+      "diff01": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff01]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 50,
+          "usd": 5.34e-05,
+          "price_source": "model",
+          "latency_ms": 795,
+          "wall_ms": 1777.8,
+          "chars": 150
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.777728,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 25,
+          "usd": 3.465e-05,
+          "price_source": "model",
+          "latency_ms": 737,
+          "wall_ms": 1684.1,
+          "chars": 51
+        }
+      },
+      "diff02": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff02]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 135,
+          "usd": 0.0001173,
+          "price_source": "model",
+          "latency_ms": 1009,
+          "wall_ms": 2009.3,
+          "chars": 491
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.911284,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 39,
+          "usd": 4.53e-05,
+          "price_source": "model",
+          "latency_ms": 882,
+          "wall_ms": 1972.6,
+          "chars": 38
+        }
+      },
+      "diff03": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff03]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 104,
+          "output_tokens": 88,
+          "usd": 8.16e-05,
+          "price_source": "model",
+          "latency_ms": 906,
+          "wall_ms": 1850.7,
+          "chars": 207
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.991583,
+          "best_similarity": 0.991583,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 104,
+          "output_tokens": 88,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 462.5,
+          "chars": 207
+        }
+      },
+      "diff04": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff04]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 24,
+          "usd": 3.345e-05,
+          "price_source": "model",
+          "latency_ms": 776,
+          "wall_ms": 1743.9,
+          "chars": 42
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.793742,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 22,
+          "usd": 3.195e-05,
+          "price_source": "model",
+          "latency_ms": 761,
+          "wall_ms": 1727.8,
+          "chars": 33
+        }
+      },
+      "diff05": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff05]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 76,
+          "usd": 7.275e-05,
+          "price_source": "model",
+          "latency_ms": 840,
+          "wall_ms": 1777.0,
+          "chars": 315
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.842178,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 68,
+          "usd": 6.69e-05,
+          "price_source": "model",
+          "latency_ms": 878,
+          "wall_ms": 1858.9,
+          "chars": 282
+        }
+      },
+      "diff06": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff06]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 129,
+          "usd": 0.0001125,
+          "price_source": "model",
+          "latency_ms": 925,
+          "wall_ms": 2002.0,
+          "chars": 395
+        },
+        "warm": {
+          "hit": true,
+          "similarity": 0.996565,
+          "best_similarity": 0.996565,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 129,
+          "usd": 0.0,
+          "price_source": "semantic-cache-hit",
+          "latency_ms": 0,
+          "wall_ms": 492.2,
+          "chars": 395
+        }
+      },
+      "diff07": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff07]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 175,
+          "usd": 0.0001473,
+          "price_source": "model",
+          "latency_ms": 1726,
+          "wall_ms": 2658.7,
+          "chars": 658
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.911366,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 43,
+          "usd": 4.8e-05,
+          "price_source": "model",
+          "latency_ms": 851,
+          "wall_ms": 1830.3,
+          "chars": 38
+        }
+      },
+      "diff08": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff08]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 76,
+          "usd": 7.275e-05,
+          "price_source": "model",
+          "latency_ms": 843,
+          "wall_ms": 1903.4,
+          "chars": 293
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.921502,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 120,
+          "usd": 0.00010575,
+          "price_source": "model",
+          "latency_ms": 857,
+          "wall_ms": 1796.8,
+          "chars": 499
+        }
+      },
+      "diff09": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff09]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 99,
+          "usd": 9e-05,
+          "price_source": "model",
+          "latency_ms": 896,
+          "wall_ms": 1860.4,
+          "chars": 447
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.850143,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 103,
+          "usd": 9.315e-05,
+          "price_source": "model",
+          "latency_ms": 871,
+          "wall_ms": 1819.5,
+          "chars": 439
+        }
+      },
+      "diff10": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/diff10]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 109,
+          "output_tokens": 43,
+          "usd": 4.86e-05,
+          "price_source": "model",
+          "latency_ms": 713,
+          "wall_ms": 1742.5,
+          "chars": 100
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.918955,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 109,
+          "output_tokens": 43,
+          "usd": 4.86e-05,
+          "price_source": "model",
+          "latency_ms": 834,
+          "wall_ms": 1793.7,
+          "chars": 100
+        }
+      },
+      "far01": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far01]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 107,
+          "output_tokens": 49,
+          "usd": 5.28e-05,
+          "price_source": "model",
+          "latency_ms": 768,
+          "wall_ms": 1724.5,
+          "chars": 104
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.478388,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 26,
+          "usd": 3.525e-05,
+          "price_source": "model",
+          "latency_ms": 843,
+          "wall_ms": 1805.1,
+          "chars": 50
+        }
+      },
+      "far02": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far02]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 125,
+          "usd": 0.0001092,
+          "price_source": "model",
+          "latency_ms": 985,
+          "wall_ms": 1943.2,
+          "chars": 471
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.450639,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 127,
+          "usd": 0.000111,
+          "price_source": "model",
+          "latency_ms": 874,
+          "wall_ms": 1795.7,
+          "chars": 577
+        }
+      },
+      "far03": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far03]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 174,
+          "usd": 0.00014595,
+          "price_source": "model",
+          "latency_ms": 1029,
+          "wall_ms": 1954.2,
+          "chars": 556
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.588899,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 108,
+          "output_tokens": 110,
+          "usd": 9.87e-05,
+          "price_source": "model",
+          "latency_ms": 1018,
+          "wall_ms": 2010.8,
+          "chars": 493
+        }
+      },
+      "far04": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far04]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 103,
+          "output_tokens": 154,
+          "usd": 0.00013095,
+          "price_source": "model",
+          "latency_ms": 948,
+          "wall_ms": 1909.2,
+          "chars": 645
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.471523,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 123,
+          "usd": 0.000108,
+          "price_source": "model",
+          "latency_ms": 908,
+          "wall_ms": 1879.5,
+          "chars": 389
+        }
+      },
+      "far05": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far05]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 68,
+          "usd": 6.675e-05,
+          "price_source": "model",
+          "latency_ms": 917,
+          "wall_ms": 1934.6,
+          "chars": 253
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.366207,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 99,
+          "usd": 9e-05,
+          "price_source": "model",
+          "latency_ms": 941,
+          "wall_ms": 1908.7,
+          "chars": 447
+        }
+      },
+      "far06": {
+        "system": "Answer the user directly and in one short paragraph. [p6-1785651608/far06]",
+        "cold": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.0,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 106,
+          "output_tokens": 50,
+          "usd": 5.34e-05,
+          "price_source": "model",
+          "latency_ms": 770,
+          "wall_ms": 1710.5,
+          "chars": 150
+        },
+        "warm": {
+          "hit": false,
+          "similarity": 0.0,
+          "best_similarity": 0.41263,
+          "skipped_reason": "",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 105,
+          "output_tokens": 108,
+          "usd": 9.675e-05,
+          "price_source": "model",
+          "latency_ms": 1003,
+          "wall_ms": 2013.8,
+          "chars": 395
+        }
+      }
+    },
+    "namespace_isolation": {
+      "pair": "same10",
+      "system": "Answer the user directly and in one short paragraph. [p6-1785651608/ns/same10]",
+      "store": {
+        "hit": false,
+        "similarity": 0.0,
+        "best_similarity": 0.0,
+        "skipped_reason": "",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 106,
+        "output_tokens": 122,
+        "usd": 0.0001074,
+        "price_source": "model",
+        "latency_ms": 1016,
+        "wall_ms": 1975.8,
+        "chars": 576
+      },
+      "control (same model, system and tenant)": {
+        "hit": true,
+        "similarity": 0.984614,
+        "best_similarity": 0.984614,
+        "skipped_reason": "",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 106,
+        "output_tokens": 122,
+        "usd": 0.0,
+        "price_source": "semantic-cache-hit",
+        "latency_ms": 0,
+        "wall_ms": 473.8,
+        "chars": 576
+      },
+      "different model": {
+        "hit": false,
+        "error": "RuntimeError: /v1/chat -> 502: {\"detail\":\"groq failed: groq HTTP 404: {\\\"error\\\":{\\\"message\\\":\\\"The model `gemini-3.1-flash-lite` does not exist or you do not have access to it.\\\",\\\"type\\\":\\\"invalid_r"
+      },
+      "different system prompt": {
+        "hit": false,
+        "similarity": 0.0,
+        "best_similarity": 0.0,
+        "skipped_reason": "",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 112,
+        "output_tokens": 116,
+        "usd": 0.0001038,
+        "price_source": "model",
+        "latency_ms": 911,
+        "wall_ms": 2133.0,
+        "chars": 488
+      },
+      "different tenant": {
+        "hit": false,
+        "similarity": 0.0,
+        "best_similarity": 0.0,
+        "skipped_reason": "",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 107,
+        "output_tokens": 132,
+        "usd": 0.00011505,
+        "price_source": "model",
+        "latency_ms": 1018,
+        "wall_ms": 2024.6,
+        "chars": 642
+      },
+      "cosine": 0.984613734519105
+    },
+    "cache_config": {
+      "enabled": true,
+      "default_on": false,
+      "threshold": 0.95,
+      "ttl_seconds": 3600,
+      "max_entries": 5000,
+      "namespace_fields": [
+        "model",
+        "system",
+        "tools",
+        "response_format",
+        "temperature"
+      ],
+      "max_temperature": 0.3,
+      "skip_when_tools": true,
+      "skip_when_stream": true,
+      "scope_dimensions": [
+        "tenant"
+      ],
+      "task_type": "retrieval_query",
+      "path": "D:\\EAG\\EAG\\1_Aug\\glc_v4\\glc\\cache\\cache.yaml"
+    },
+    "finding": "the labelled set is NOT separable: the highest-scoring 'different' pair (diff06, 0.9966) outscores the lowest-scoring 'same' pair (0.8639), so NO threshold admits every paraphrase without also admitting at least one wrong answer. At the configured 0.95: TPR 0.40, FPR 0.12 (2/16 wrong-answer collisions). NO threshold in the swept range reaches zero collisions: the least-bad point is 0.86, and it still admits 6 of 16 wrong pairs (TPR 1.00, FPR 0.38)."
+  }
+}

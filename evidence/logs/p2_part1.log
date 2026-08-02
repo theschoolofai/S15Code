@@ -1,0 +1,23 @@
+﻿
+p2_budget_holds  (live mode)
+  task      Summarise in three sentences why a spend ceiling must be enforced in code rather than asked for in a prompt.
+  budget    0.02  principal tradelab/s15/sujit
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  declared                                                  ceiling 0.02000000  spent 0.00109400  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier
+  generous                                                  ceiling 0.12390000  spent 0.00106200  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier
+  tight                                                     ceiling 0.00612781  spent 0.00017600  calls 1  downgrades 1  branches 0  refusals 0  tiers standard
+  impossible                                                ceiling 0.00000039  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -
+  currency                                                  USD
+  ladder                                                    economy < standard < frontier
+  models charged                                            ['gemini-3.1-flash-lite', 'openai/gpt-4.1']
+  transport failures                                        0 (gateway errors; no tokens reported, so not charged)
+
+  [PASS] no run spends past its ceiling                            0 breaches
+  [PASS] a tight allowance downgrades the tier the node asked for  1 downgrades, 0 branches, requested ['frontier'] -> charged ['standard']
+  [PASS] an unaffordable ceiling refuses instead of overspending   0 calls, 1 refusals, spent 0.0
+  [PASS] every provider call that returned is metered              3 calls, all charged
+  [PASS] the declared budget produced a metered run                1 calls, spent 0.00109400
+
+  ALL CHECKS PASSED -> D:\EAG\EAG\1_Aug\S15Code\proofs\out\p2_budget_holds_part1.json
+

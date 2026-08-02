@@ -1,0 +1,97 @@
+﻿
+p8: 18 tasks x 3 strategies, live mode
+  ladder    economy < standard < frontier
+  models    ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']
+  triage    lookup->economy, compute->standard, judgement->frontier (classifier on economy, fallback compute)
+  judges    ['cerebras/zai-glm-4.7', 'nvidia/nvidia/llama-3.3-nemotron-super-49b-v1']
+  ceiling   0.02 per task, principal tradelab/tradeops/sujit
+
+  A to01_spread          resolved     attempts=1 cost=0.00028400 tiers=frontier
+  A to02_lots            resolved     attempts=1 cost=0.00025800 tiers=frontier
+  A to03_settlement      resolved     attempts=1 cost=0.00109400 tiers=frontier
+  A to04_reject_json     resolved     attempts=1 cost=0.00072000 tiers=frontier
+  A to05_brokerage       resolved     attempts=1 cost=0.00259000 tiers=frontier
+  A to06_stt             resolved     attempts=1 cost=0.00151000 tiers=frontier
+  A to07_margin_lots     resolved     attempts=1 cost=0.00271200 tiers=frontier
+  A to08_bonus           resolved     attempts=1 cost=0.00203400 tiers=frontier
+  A to09_avg_price       resolved     attempts=1 cost=0.00209000 tiers=frontier
+  A to10_circuit         resolved     attempts=1 cost=0.00133600 tiers=frontier
+  A to11_short_pnl       resolved     attempts=1 cost=0.00234800 tiers=frontier
+  A to12_expiry_shift    resolved     attempts=1 cost=0.00212000 tiers=frontier
+  A to13_penalty_slab    resolved     attempts=1 cost=0.00328400 tiers=frontier
+  A to14_option_payoff   resolved     attempts=1 cost=0.00200600 tiers=frontier
+  A to15_breakeven       resolved     attempts=1 cost=0.00581600 tiers=frontier
+  A to16_reconciliation  resolved     attempts=1 cost=0.00252000 tiers=frontier
+  A to17_vwap_slippage   resolved     attempts=1 cost=0.00288200 tiers=frontier
+  A to18_route_judgement unresolved   attempts=1 cost=0.00125000 tiers=frontier
+  B to01_spread          resolved     attempts=1 cost=0.00004710 tiers=economy
+  B to02_lots            resolved     attempts=1 cost=0.00004935 tiers=economy
+  B to03_settlement      resolved     attempts=1 cost=0.00007920 tiers=economy
+  B to04_reject_json     resolved     attempts=1 cost=0.00008130 tiers=economy
+  B to05_brokerage       resolved     attempts=1 cost=0.00024765 tiers=economy
+  B to06_stt             resolved     attempts=1 cost=0.00017085 tiers=economy
+  B to07_margin_lots     resolved     attempts=1 cost=0.00028110 tiers=economy
+  B to08_bonus           resolved     attempts=1 cost=0.00021105 tiers=economy
+  B to09_avg_price       resolved     attempts=1 cost=0.00020310 tiers=economy
+  B to10_circuit         resolved     attempts=1 cost=0.00014280 tiers=economy
+  B to11_short_pnl       resolved     attempts=1 cost=0.00022350 tiers=economy
+  B to12_expiry_shift    resolved     attempts=1 cost=0.00008670 tiers=economy
+  B to13_penalty_slab    resolved     attempts=1 cost=0.00034590 tiers=economy
+  B to14_option_payoff   resolved     attempts=1 cost=0.00025965 tiers=economy
+  B to15_breakeven       resolved     attempts=1 cost=0.00039705 tiers=economy
+  B to16_reconciliation  resolved     attempts=1 cost=0.00015480 tiers=economy
+  B to17_vwap_slippage   resolved     attempts=1 cost=0.00020760 tiers=economy
+  B to18_route_judgement unresolved   attempts=3 cost=0.00039060 tiers=economy,economy,economy
+  D to01_spread          resolved     attempts=1 cost=0.00013065 tiers=standard class=compute
+  D to02_lots            resolved     attempts=1 cost=0.00010965 tiers=standard class=compute
+  D to03_settlement      resolved     attempts=1 cost=0.00024509 tiers=standard class=compute*
+  D to04_reject_json     resolved     attempts=1 cost=0.00016590 tiers=economy class=lookup
+  D to05_brokerage       resolved     attempts=1 cost=0.00056520 tiers=standard class=compute
+  D to06_stt             resolved     attempts=1 cost=0.00035940 tiers=standard class=compute
+  D to07_margin_lots     resolved     attempts=1 cost=0.00051290 tiers=standard class=compute
+  D to08_bonus           resolved     attempts=1 cost=0.00044644 tiers=standard class=compute
+  D to09_avg_price       resolved     attempts=1 cost=0.00049740 tiers=standard class=compute
+  D to10_circuit         resolved     attempts=1 cost=0.00032410 tiers=standard class=compute
+  D to11_short_pnl       resolved     attempts=1 cost=0.00048180 tiers=standard class=compute
+  D to12_expiry_shift    resolved     attempts=1 cost=0.00014350 tiers=standard class=compute
+  D to13_penalty_slab    resolved     attempts=1 cost=0.00058704 tiers=standard class=compute
+  D to14_option_payoff   resolved     attempts=2 cost=0.00206945 tiers=frontier class=compute
+  D to15_breakeven       resolved     attempts=1 cost=0.00091310 tiers=standard class=compute
+  D to16_reconciliation  resolved     attempts=1 cost=0.00021910 tiers=standard class=compute
+  D to17_vwap_slippage   resolved     attempts=1 cost=0.00070165 tiers=standard class=compute
+  D to18_route_judgement unresolved   attempts=1 cost=0.00134975 tiers=frontier class=judgement
+
+p8_policy_tradeops  (live mode)
+  task      18 tasks from proofs/tasks/tradeops.jsonl
+  budget    0.02  principal tradelab/tradeops/sujit
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  A always_frontier                                                             spend 0.03685400  calls 18  cost/call 0.00204744  resolved 17/18  cost/resolved 0.00216788
+  B always_cheapest                                                             spend 0.00357930  calls 20  cost/call 0.00017897  resolved 17/18  cost/resolved 0.00021055
+  D class_triage                                                                spend 0.00982212  calls 36  cost/call 0.00027284  resolved 17/18  cost/resolved 0.00057777
+  B vs A cost/resolved                                                          -90.29%
+  D vs A cost/resolved                                                          -73.35%
+  measured ladder spread                                                        11.51x  economy 0.00017431/call  frontier 0.00200670/call  standard 0.00033528/call
+  break-even resolution rate                                                    r* = 22.2% from the measured 11.51x spread with k=3 (cheap rung measured at 94.4%)
+  break-even vs frontier cost/resolved                                          r* = 21.3%
+  triage overhead                                                               18 calls, 0.00143157 = 14.6% of D's spend
+  classes chosen                                                                {"compute": 16, "judgement": 1, "lookup": 1}
+  routed too high                                                               17 tasks, overpaid 0.00528367
+  routed too low                                                                0 tasks, spent 0.00000000 without resolving
+  classifier fell back                                                          1 tasks
+  judging meta-cost                                                             96 calls, 0.09123040 — 1.82x the 0.05025542 of work it graded
+  judge reuses                                                                  8 verdicts reused rather than re-bought
+  transport failures                                                            1 (no tokens reported, so not charged)
+
+  [PASS] every task was attempted under every strategy                                 {'A': 18, 'B': 18, 'D': 18}
+  [PASS] no run spent past its per-task ceiling                                        max task spend 0.00581600 <= 0.02
+  [PASS] no judge graded its own model's answer                                        self_judged on 0 rows
+  [PASS] cost per resolved task is reported for every strategy that resolved anything  {'A': 0.002167882352941176, 'B': 0.0002105470588235294, 'D': 0.0005777717647058823}
+  [PASS] the triage call is metered, not free                                          18 triage calls over 18 tasks, charged 0.00143157
+  [PASS] triage routed to more than one rung                                           ['economy', 'frontier', 'standard']
+  [PASS] the break-even rate is derived from the MEASURED spread, not the price list   spread 11.511965251598097, r* 0.2220254377611859
+  [PASS] every wrong choice the evidence supports is reported with its cost            {'routed_too_high': 17, 'overpaid_total': 0.00528367, 'routed_too_low': 0, 'unresolved_cost': 0, 'wasted_escalation': 0, 'escalation_waste_total': 0, 'fallback': 1}
+  [PASS] judge verdicts were parsed, not guessed                                       0 judge failures
+
+  ALL CHECKS PASSED -> D:\EAG\EAG\1_Aug\S15Code\proofs\out\p8_policy_tradeops_part2.json
+

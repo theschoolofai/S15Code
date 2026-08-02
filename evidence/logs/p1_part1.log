@@ -1,0 +1,83 @@
+﻿
+p1: 12 tasks x 3 strategies, live mode
+  ladder   economy < standard < frontier
+  models   ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']
+  judges   ['cerebras/zai-glm-4.7', 'nvidia/nvidia/llama-3.3-nemotron-super-49b-v1']
+  bar      overall >= 0.75, no criterion below 0.5 (normalised)
+
+  A t01_capital        resolved     attempts=1 cost=0.00022000 tiers=frontier
+  A t02_convert        resolved     attempts=1 cost=0.00030200 tiers=frontier
+  A t03_alphabetise    resolved     attempts=1 cost=0.00029800 tiers=frontier
+  A t04_dates          resolved     attempts=1 cost=0.00293800 tiers=frontier
+  A t05_strict_json    resolved     attempts=1 cost=0.00055400 tiers=frontier
+  A t06_primes         resolved     attempts=1 cost=0.00033800 tiers=frontier
+  A t07_dilution       resolved     attempts=1 cost=0.00371200 tiers=frontier
+  A t08_seating        resolved     attempts=1 cost=0.00496800 tiers=frontier
+  A t09_avg_speed      resolved     attempts=1 cost=0.00178400 tiers=frontier
+  A t10_probability    resolved     attempts=1 cost=0.00258800 tiers=frontier
+  A t11_billing        resolved     attempts=1 cost=0.00291800 tiers=frontier
+  A t12_tradeoff       resolved     attempts=1 cost=0.00143200 tiers=frontier
+  B t01_capital        resolved     attempts=1 cost=0.00004365 tiers=economy
+  B t02_convert        resolved     attempts=1 cost=0.00005505 tiers=economy
+  B t03_alphabetise    resolved     attempts=1 cost=0.00005655 tiers=economy
+  B t04_dates          resolved     attempts=1 cost=0.00033120 tiers=economy
+  B t05_strict_json    resolved     attempts=1 cost=0.00006735 tiers=economy
+  B t06_primes         resolved     attempts=1 cost=0.00005835 tiers=economy
+  B t07_dilution       resolved     attempts=1 cost=0.00039075 tiers=economy
+  B t08_seating        resolved     attempts=1 cost=0.00034290 tiers=economy
+  B t09_avg_speed      resolved     attempts=1 cost=0.00008115 tiers=economy
+  B t10_probability    resolved     attempts=1 cost=0.00020595 tiers=economy
+  B t11_billing        resolved     attempts=1 cost=0.00041340 tiers=economy
+  B t12_tradeoff       resolved     attempts=1 cost=0.00028770 tiers=economy
+  C t01_capital        resolved     attempts=1 cost=0.00004365 tiers=economy
+  C t02_convert        resolved     attempts=1 cost=0.00005430 tiers=economy
+  C t03_alphabetise    resolved     attempts=1 cost=0.00005655 tiers=economy
+  C t04_dates          resolved     attempts=1 cost=0.00033045 tiers=economy
+  C t05_strict_json    resolved     attempts=1 cost=0.00006735 tiers=economy
+  C t06_primes         resolved     attempts=1 cost=0.00005835 tiers=economy
+  C t07_dilution       resolved     attempts=1 cost=0.00037050 tiers=economy
+  C t08_seating        resolved     attempts=1 cost=0.00026190 tiers=economy
+  C t09_avg_speed      resolved     attempts=1 cost=0.00022290 tiers=economy
+  C t10_probability    resolved     attempts=1 cost=0.00018420 tiers=economy
+  C t11_billing        resolved     attempts=1 cost=0.00041340 tiers=economy
+  C t12_tradeoff       resolved     attempts=1 cost=0.00029295 tiers=economy
+
+  FINDING  signature failure mode NOT OBSERVED
+    B_vs_A: cost/call -89.4%, cost/resolved -89.4%
+      B resolved 100% of tasks; the trap begins below 26.2% (derived from the measured price spread and 3 attempts)
+    B_vs_C: cost/call -1.0%, cost/resolved -1.0%
+      B resolved 100% of tasks; the trap begins below 99.7% (derived from the measured price spread and 3 attempts)
+
+p1_cost_per_task  (live mode)
+  task      12 tasks from proofs/tasks/mixed.jsonl
+  budget    0.05  principal tradelab/s15/sujit
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  A always_frontier                                                              spend 0.02205200 USD  calls 12  cost/call 0.00183767  resolved 12/12  cost/resolved 0.00183767  tiers frontier
+  B always_cheapest                                                              spend 0.00233400 USD  calls 12  cost/call 0.00019450  resolved 12/12  cost/resolved 0.00019450  tiers economy
+  C budget_aware                                                                 spend 0.00235650 USD  calls 12  cost/call 0.00019638  resolved 12/12  cost/resolved 0.00019638  tiers economy
+  A resolved by difficulty                                                       {"hard": 6, "moderate": 3, "trivial": 3}  of {"trivial": 3, "moderate": 3, "hard": 6}
+  B resolved by difficulty                                                       {"hard": 6, "moderate": 3, "trivial": 3}  of {"trivial": 3, "moderate": 3, "hard": 6}
+  C resolved by difficulty                                                       {"hard": 6, "moderate": 3, "trivial": 3}  of {"trivial": 3, "moderate": 3, "hard": 6}
+  ladder                                                                         economy < standard < frontier
+  tasks                                                                          12 from proofs/tasks/mixed.jsonl  {'trivial': ['t01_capital', 't02_convert', 't03_alphabetise'], 'moderate': ['t04_dates', 't05_strict_json', 't06_primes'], 'hard': ['t07_dilution', 't08_seating', 't09_avg_speed', 't10_probability', 't11_billing', 't12_tradeoff']}
+  per-task ceiling                                                               0.05 USD (principal tradelab/s15/sujit)
+  judge panel                                                                    cerebras/zai-glm-4.7, nvidia/nvidia/llama-3.3-nemotron-super-49b-v1
+  judge bar                                                                      overall >= 0.75, min criterion 0.5, tie_break score
+  judge meta-cost                                                                56 calls, 0.05100130 USD, 0 unusable, 24 transport retries, 8 verdicts reused
+  signature failure mode                                                         NOT OBSERVED — {"B_vs_A": {"cost_per_call_delta_pct": -89.41592599310721, "cost_per_resolved_task_delta_pct": -89.41592599310721, "resolution_rate": {"B": 1.0, "A": 1.0}, "cheaper_per_call": true, "dearer_per_resolved_task": false, "signature_failure_mode": false, "worse_than_dearer": false, "break_even_resolution_rate": 0.26205089820359284, "headroom_above_break_even": 0.7379491017964072, "note": ""}, "B_vs_C": {"cost_per_call_delta_pct": -0.9548058561425867, "cost_per_resolved_task_delta_pct": -0.9548058561425867, "resolution_rate": {"B": 1.0, "C": 1.0}, "cheaper_per_call": true, "dearer_per_resolved_task"
+  wall clock                                                                     1141.8s
+  where the strategies disagreed                                                 no task split the strategies
+
+  [PASS] every strategy attempted every task in the file                                3 strategies x 12 tasks
+  [PASS] every answering provider call that returned is metered                         36 transport calls, 36 ledger charges, 0 transport failures (no tokens reported, so not charged)
+  [PASS] no verdict was unparseable (an unparseable judge is a JUDGE failure)           0 tasks ended with status=judge_failed, 0 unusable judge samples
+  [PASS] an empty or errored answer never counted as resolved                           0 such rows
+  [PASS] no answer was graded by its own model                                          judges ['nvidia/llama-3.3-nemotron-super-49b-v1', 'zai-glm-4.7'] vs ladder ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']
+  [PASS] at least one strategy resolved at least one task, so cost/resolved is defined  36 resolved rows across 3 strategies
+  [PASS] the configured ladder separates cost per call at all                           projected top 0.02019200 > bottom 0.00056400
+  [PASS] every model that answered has its own row in pricing.yaml                      all priced
+  [PASS] no semantic-cache hit served one strategy another's answer                     {'before': {'hits': 7, 'stores': 49, 'lookups': 57}, 'after': {'hits': 7, 'stores': 49, 'lookups': 57}}
+
+  ALL CHECKS PASSED -> D:\EAG\EAG\1_Aug\S15Code\proofs\out\p1_cost_per_task_part1.json
+

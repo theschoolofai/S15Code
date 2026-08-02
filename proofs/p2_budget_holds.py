@@ -62,13 +62,27 @@ def run(args: Args) -> Proof:
 
     # An allowance between two rungs forces a downgrade; an allowance below the
     # cheapest rung forces a refusal. Both come from the config, not from here.
+    #
+    # The projections MUST be built from the prompt this proof is about to send.
+    # `project()` defaults its input half to the tier's configured
+    # `projected_input_tokens`, and its docstring says to replace that with an
+    # estimate of the real prompt whenever one exists — which here it does.
+    # Skipping that made the derived ceilings track a number admission never
+    # uses: on a ladder whose top rung declares 6000 projected input tokens
+    # against a 250-token prompt, the "tight" ceiling came out roughly 2.3x
+    # above the cost admission actually projected, so it comfortably afforded
+    # the top rung and the downgrade this scenario exists to force never
+    # happened. The check failed, correctly, and the proof was what was wrong.
+    estimated_input = policy.estimate_input_tokens(args.task)
+    project = lambda tier: policy.project(tier, input_tokens=estimated_input)  # noqa: E731
+
     below_top = ladder.downgrade(top) or cheapest
-    between = (policy.project(below_top) + policy.project(top)) / 2
+    between = (project(below_top) + project(top)) / 2
     scenarios = [
         ("declared", args.budget),
-        ("generous", policy.project(top) * len(ladder.names) * 4 / reserve),
+        ("generous", project(top) * len(ladder.names) * 4 / reserve),
         ("tight", between / reserve),
-        ("impossible", policy.project(cheapest) / 1000.0),
+        ("impossible", project(cheapest) / 1000.0),
     ]
 
     transport, mode, detail = transport_for(args)
