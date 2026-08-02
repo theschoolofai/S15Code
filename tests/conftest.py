@@ -9,6 +9,10 @@ def _isolated_state(monkeypatch, tmp_path):
     monkeypatch.setenv("S15_A2A_GRPC_ENABLED", "0")
     monkeypatch.setenv("S15_SANDBOX_ROOT", str(tmp_path / "sandbox"))
     (tmp_path / "sandbox").mkdir()
+    # A developer's own .env may point this at a real, running collector (ours
+    # does, at a live Jaeger). Tests assert the no-collector-configured default,
+    # so they must not inherit whatever the local environment happens to export.
+    monkeypatch.delenv("S15_OTEL_EXPORTER_ENDPOINT", raising=False)
 
 
 @pytest.fixture
