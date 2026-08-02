@@ -36,6 +36,16 @@ models:
   # meta/llama-3.1-8b-instruct on the same key answers in 1.37 s.
   deepseek-ai/deepseek-v4-pro: {input: 0.14, output: 0.28}
   meta/llama-3.1-8b-instruct: {input: 0.0, output: 0.0}
+  # TEMPORARY FRONTIER SUBSTITUTE, 2026-08-02 (see config/tiers.yaml for why:
+  # GitHub Models is down service-wide). NVIDIA's own API reports this call as
+  # $0.00 -- a free-tier/preview NIM endpoint, which is glc_v4's accounting,
+  # not ours. No independent public price list exists for this exact model
+  # name, so this row is an ASSUMED placeholder, not a measured commercial
+  # rate: picked to sit above the standard rung on both axes (matching this
+  # file's own `default` row) so the ladder's monotonic-pricing invariant
+  # holds honestly rather than by an implicit, unmeasured fallback. Remove
+  # once github/openai/gpt-4.1 is restored as the real frontier rung.
+  deepseek-ai/deepseek-v4-flash: {input: 1.00, output: 5.00}
   # LADDER rung 1 (economy). MEASURED: 101 in / 117 out, $0.0001029, 744 ms —
   # and only with reasoning off. Left to itself it spends the whole output
   # budget thinking and returns an empty string at full price.

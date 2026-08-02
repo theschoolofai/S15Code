@@ -82,14 +82,38 @@ tiers:
     projected_output_tokens: 800
 
   frontier:
+    # TEMPORARY SUBSTITUTION, 2026-08-02: the shipped rung here is
+    # `provider: github, model: openai/gpt-4.1`. GitHub Models is currently
+    # returning HTTP 410 `github_models_retirement_brownout` on every model,
+    # confirmed by hitting models.github.ai directly with the raw token,
+    # bypassing glc_v4 entirely -- a genuine, service-wide outage, not a
+    # transient blip or a bad model pin. github is also unregistered in
+    # glc_v4/.env for the same reason (commented out, not deleted).
+    # Restore the block below once GitHub Models is back:
+    #   request:
+    #     provider: github
+    #     model: openai/gpt-4.1
+    #     max_tokens: 4096
+    #     temperature: 0
+    #   price_model: openai/gpt-4.1
+    #   projected_input_tokens: 6000
+    #   projected_output_tokens: 2000
+    #
+    # First substitute tried was cerebras/zai-glm-4.7 -- reachable, but its
+    # OUTPUT rate ($0.50/Mtok) is cheaper than standard's ($1.50/Mtok), which
+    # broke the ladder's "rates rise monotonically" invariant on that axis
+    # (3 tests in test_cross_model_ladder.py / test_budget_runtime.py failed).
+    # nvidia/deepseek-ai/deepseek-v4-flash has no matching row in this file's
+    # own pricing.yaml (only deepseek-ai/deepseek-v4-pro is priced, a
+    # different model string), so pricing.py's price_for() falls through to
+    # the configured `default` row (1.00 / 5.00) -- genuinely higher than
+    # both economy and standard on BOTH axes, by construction, not a guess.
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      provider: nvidia
+      model: deepseek-ai/deepseek-v4-flash
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: deepseek-ai/deepseek-v4-flash
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 

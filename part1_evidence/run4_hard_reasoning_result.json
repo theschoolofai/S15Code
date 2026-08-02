@@ -1,0 +1,483 @@
+﻿{
+    "run_id":  "run-5d64151d752a",
+    "status":  "completed",
+    "answer":  "The trains are moving toward each other, so their combined speed is 60 mph + 90 mph = 150 mph. The distance between them is 300 miles. The time until they meet is distance divided by combined speed: 300 miles / 150 mph = 2 hours.\n\nIn 2 hours, the train from station A travels 60 mph Ã 2 hours = 120 miles. Therefore, the meeting point is 120 miles from station A.",
+    "provider":  "nvidia",
+    "model":  "deepseek-ai/deepseek-v4-flash",
+    "graph":  {
+                  "finished":  true,
+                  "nodes":  {
+                                "answer":  {
+                                               "id":  "answer",
+                                               "skill":  "answer_with_evidence",
+                                               "input":  {
+                                                             "query":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?"
+                                                         },
+                                               "metadata":  {
+                                                                "tier":  "frontier"
+                                                            },
+                                               "state":  "succeeded",
+                                               "result":  {
+                                                              "answer":  "The trains are moving toward each other, so their combined speed is 60 mph + 90 mph = 150 mph. The distance between them is 300 miles. The time until they meet is distance divided by combined speed: 300 miles / 150 mph = 2 hours.\n\nIn 2 hours, the train from station A travels 60 mph Ã 2 hours = 120 miles. Therefore, the meeting point is 120 miles from station A.",
+                                                              "provider":  "nvidia",
+                                                              "model":  "deepseek-ai/deepseek-v4-flash",
+                                                              "evidence_count":  5,
+                                                              "metered_calls":  [
+                                                                                    {
+                                                                                        "sequence":  1,
+                                                                                        "node_id":  "answer",
+                                                                                        "role":  "answer_with_evidence",
+                                                                                        "tier":  "frontier",
+                                                                                        "provider":  "nvidia",
+                                                                                        "model":  "deepseek-ai/deepseek-v4-flash",
+                                                                                        "input_tokens":  628,
+                                                                                        "output_tokens":  95,
+                                                                                        "cache_read_tokens":  0,
+                                                                                        "cache_write_tokens":  0,
+                                                                                        "cost":  0.001103,
+                                                                                        "projected_cost":  0.021381,
+                                                                                        "latency_ms":  5675.0,
+                                                                                        "started_at":  1785687702.6292422,
+                                                                                        "decision":  "proceed",
+                                                                                        "requested_tier":  "frontier",
+                                                                                        "requested_model":  "deepseek-ai/deepseek-v4-flash",
+                                                                                        "reasoning":  null,
+                                                                                        "budget_remaining":  0.048897,
+                                                                                        "budget_pressure":  0.02206
+                                                                                    }
+                                                                                ],
+                                                              "budget_decisions":  [
+                                                                                       {
+                                                                                           "action":  "proceed",
+                                                                                           "node_id":  "answer",
+                                                                                           "requested_tier":  "frontier",
+                                                                                           "tier":  "frontier",
+                                                                                           "model":  "deepseek-ai/deepseek-v4-flash",
+                                                                                           "projected_cost":  0.021381,
+                                                                                           "allowance":  0.04,
+                                                                                           "remaining":  0.05,
+                                                                                           "pressure":  0.0,
+                                                                                           "ladder_steps":  0,
+                                                                                           "reason":  "requested tier fits the node allowance"
+                                                                                       }
+                                                                                   ]
+                                                          }
+                                           },
+                                "recall":  {
+                                               "id":  "recall",
+                                               "skill":  "memory_recall",
+                                               "input":  {
+                                                             "query":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?"
+                                                         },
+                                               "metadata":  {
+                                                                "tier":  "economy"
+                                                            },
+                                               "state":  "succeeded",
+                                               "result":  {
+                                                              "hits":  [
+                                                                           {
+                                                                               "id":  "mem_b251d53f009946d1b007c14cf33de228",
+                                                                               "kind":  "episode",
+                                                                               "text":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?",
+                                                                               "sources":  [
+                                                                                               "api://agent/runs"
+                                                                                           ]
+                                                                           },
+                                                                           {
+                                                                               "id":  "mem_11f87f7c8c34436fa794af3fbd29804d",
+                                                                               "kind":  "episode",
+                                                                               "text":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?",
+                                                                               "sources":  [
+                                                                                               "api://agent/runs"
+                                                                                           ]
+                                                                           },
+                                                                           {
+                                                                               "id":  "mem_a3b17615c5154f78bfdd6cca6ec4c0ad",
+                                                                               "kind":  "episode",
+                                                                               "text":  "Based on the provided evidence, I cannot answer this question. The authorized memory evidence contains a record of your request and a previous response stating that the evidence does not contain the answer or access to external sources. Therefore, the evidence is insufficient to calculate the time until the trains meet or the distance from station A.",
+                                                                               "sources":  [
+                                                                                               "run://run-012e39f7ca76/answer"
+                                                                                           ]
+                                                                           },
+                                                                           {
+                                                                               "id":  "mem_f563f1dc21e44d058be91df3c73812ed",
+                                                                               "kind":  "episode",
+                                                                               "text":  "Based on the available evidence, I cannot compare the latest stable versions of Python and Node.js or determine which was released more recently. The provided search results did not return specific data regarding the latest stable versions or their release dates [source: graph://run-b6f0a8c49b78/distill].",
+                                                                               "sources":  [
+                                                                                               "run://run-b6f0a8c49b78/answer"
+                                                                                           ]
+                                                                           },
+                                                                           {
+                                                                               "id":  "mem_825964258f7a4c3f9b2016f5f1c369ab",
+                                                                               "kind":  "episode",
+                                                                               "text":  "I do not have access to external web sources or current data in the provided evidence to answer this question. The authorized memory evidence only contains a record of your previous request but does not contain the answer itself.",
+                                                                               "sources":  [
+                                                                                               "run://run-8713c177b7a7/answer"
+                                                                                           ]
+                                                                           }
+                                                                       ],
+                                                              "metered_calls":  [
+
+                                                                                ],
+                                                              "budget_decisions":  [
+
+                                                                                   ]
+                                                          }
+                                           }
+                            },
+                  "edges":  [
+                                [
+                                    "recall",
+                                    "answer"
+                                ]
+                            ]
+              },
+    "trace":  {
+                  "planner":  {
+                                  "mode":  "deterministic"
+                              },
+                  "agents":  {
+                                 "answer":  {
+                                                "agent":  "answer_with_evidence",
+                                                "skill":  "answer_with_evidence",
+                                                "state":  "succeeded",
+                                                "provider":  "nvidia",
+                                                "model":  "deepseek-ai/deepseek-v4-flash",
+                                                "tier":  "frontier"
+                                            },
+                                 "recall":  {
+                                                "agent":  "memory_recall",
+                                                "skill":  "memory_recall",
+                                                "state":  "succeeded",
+                                                "provider":  null,
+                                                "model":  null,
+                                                "tier":  "economy"
+                                            }
+                             }
+              },
+    "events":  [
+                   {
+                       "sequence":  129,
+                       "kind":  "run_started",
+                       "node_id":  null,
+                       "payload":  {
+
+                                   }
+                   },
+                   {
+                       "sequence":  130,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  129,
+                                       "reason":  "first frontier selected for memory",
+                                       "add":  [
+                                                   "recall"
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  131,
+                       "kind":  "task_started",
+                       "node_id":  "recall",
+                       "payload":  {
+                                       "skill":  "memory_recall",
+                                       "agent":  "memory_recall"
+                                   }
+                   },
+                   {
+                       "sequence":  132,
+                       "kind":  "task_succeeded",
+                       "node_id":  "recall",
+                       "payload":  {
+                                       "hits":  [
+                                                    {
+                                                        "id":  "mem_b251d53f009946d1b007c14cf33de228",
+                                                        "kind":  "episode",
+                                                        "text":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?",
+                                                        "sources":  [
+                                                                        "api://agent/runs"
+                                                                    ]
+                                                    },
+                                                    {
+                                                        "id":  "mem_11f87f7c8c34436fa794af3fbd29804d",
+                                                        "kind":  "episode",
+                                                        "text":  "A train leaves station A at 60 mph heading toward station B, 300 miles away. Another train leaves station B at 90 mph heading toward station A at the same time. How long until they meet, and how far from station A is the meeting point?",
+                                                        "sources":  [
+                                                                        "api://agent/runs"
+                                                                    ]
+                                                    },
+                                                    {
+                                                        "id":  "mem_a3b17615c5154f78bfdd6cca6ec4c0ad",
+                                                        "kind":  "episode",
+                                                        "text":  "Based on the provided evidence, I cannot answer this question. The authorized memory evidence contains a record of your request and a previous response stating that the evidence does not contain the answer or access to external sources. Therefore, the evidence is insufficient to calculate the time until the trains meet or the distance from station A.",
+                                                        "sources":  [
+                                                                        "run://run-012e39f7ca76/answer"
+                                                                    ]
+                                                    },
+                                                    {
+                                                        "id":  "mem_f563f1dc21e44d058be91df3c73812ed",
+                                                        "kind":  "episode",
+                                                        "text":  "Based on the available evidence, I cannot compare the latest stable versions of Python and Node.js or determine which was released more recently. The provided search results did not return specific data regarding the latest stable versions or their release dates [source: graph://run-b6f0a8c49b78/distill].",
+                                                        "sources":  [
+                                                                        "run://run-b6f0a8c49b78/answer"
+                                                                    ]
+                                                    },
+                                                    {
+                                                        "id":  "mem_825964258f7a4c3f9b2016f5f1c369ab",
+                                                        "kind":  "episode",
+                                                        "text":  "I do not have access to external web sources or current data in the provided evidence to answer this question. The authorized memory evidence only contains a record of your previous request but does not contain the answer itself.",
+                                                        "sources":  [
+                                                                        "run://run-8713c177b7a7/answer"
+                                                                    ]
+                                                    }
+                                                ],
+                                       "metered_calls":  [
+
+                                                         ],
+                                       "budget_decisions":  [
+
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  133,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  132,
+                                       "reason":  "authorized retrieval completed",
+                                       "add":  [
+                                                   "answer"
+                                               ],
+                                       "connect":  [
+                                                       [
+                                                           "recall",
+                                                           "answer"
+                                                       ]
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  134,
+                       "kind":  "task_started",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "skill":  "answer_with_evidence",
+                                       "agent":  "answer_with_evidence"
+                                   }
+                   },
+                   {
+                       "sequence":  135,
+                       "kind":  "task_succeeded",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "answer":  "The trains are moving toward each other, so their combined speed is 60 mph + 90 mph = 150 mph. The distance between them is 300 miles. The time until they meet is distance divided by combined speed: 300 miles / 150 mph = 2 hours.\n\nIn 2 hours, the train from station A travels 60 mph Ã 2 hours = 120 miles. Therefore, the meeting point is 120 miles from station A.",
+                                       "provider":  "nvidia",
+                                       "model":  "deepseek-ai/deepseek-v4-flash",
+                                       "evidence_count":  5,
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  1,
+                                                                 "node_id":  "answer",
+                                                                 "role":  "answer_with_evidence",
+                                                                 "tier":  "frontier",
+                                                                 "provider":  "nvidia",
+                                                                 "model":  "deepseek-ai/deepseek-v4-flash",
+                                                                 "input_tokens":  628,
+                                                                 "output_tokens":  95,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.001103,
+                                                                 "projected_cost":  0.021381,
+                                                                 "latency_ms":  5675.0,
+                                                                 "started_at":  1785687702.6292422,
+                                                                 "decision":  "proceed",
+                                                                 "requested_tier":  "frontier",
+                                                                 "requested_model":  "deepseek-ai/deepseek-v4-flash",
+                                                                 "reasoning":  null,
+                                                                 "budget_remaining":  0.048897,
+                                                                 "budget_pressure":  0.02206
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "proceed",
+                                                                    "node_id":  "answer",
+                                                                    "requested_tier":  "frontier",
+                                                                    "tier":  "frontier",
+                                                                    "model":  "deepseek-ai/deepseek-v4-flash",
+                                                                    "projected_cost":  0.021381,
+                                                                    "allowance":  0.04,
+                                                                    "remaining":  0.05,
+                                                                    "pressure":  0.0,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "requested tier fits the node allowance"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  136,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  135,
+                                       "reason":  "grounded answer produced",
+                                       "add":  [
+
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  true
+                                   }
+                   }
+               ],
+    "principal":  "acme/s15-part1/rraghu214",
+    "budget":  {
+                   "run_id":  "run-5d64151d752a",
+                   "principal":  "acme/s15-part1/rraghu214",
+                   "currency":  "USD",
+                   "total":  0.05,
+                   "spent":  0.001103,
+                   "remaining":  0.048897,
+                   "pressure":  0.02206,
+                   "reserve":  0.010000000000000002,
+                   "calls":  1,
+                   "downgrades":  0,
+                   "branches":  0,
+                   "refusals":  0,
+                   "reservations":  {
+
+                                    },
+                   "by_tier":  {
+                                   "frontier":  {
+                                                    "calls":  1,
+                                                    "cost":  0.001103,
+                                                    "input_tokens":  628,
+                                                    "output_tokens":  95
+                                                }
+                               },
+                   "charges":  [
+                                   {
+                                       "sequence":  1,
+                                       "node_id":  "answer",
+                                       "role":  "answer_with_evidence",
+                                       "tier":  "frontier",
+                                       "provider":  "nvidia",
+                                       "model":  "deepseek-ai/deepseek-v4-flash",
+                                       "input_tokens":  628,
+                                       "output_tokens":  95,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.001103,
+                                       "projected_cost":  0.021381,
+                                       "latency_ms":  5675.0,
+                                       "started_at":  1785687702.6292422,
+                                       "decision":  "proceed",
+                                       "requested_tier":  "frontier"
+                                   }
+                               ],
+                   "refusal_log":  [
+
+                                   ]
+               },
+    "economics":  {
+                      "directory":  "C:\\Raghu\\MyLearnings\\EAG_V3\\S15-01082026\\assignment\\S15Code\\config",
+                      "currency":  "USD",
+                      "tier_order":  [
+                                         "economy",
+                                         "standard",
+                                         "frontier"
+                                     ],
+                      "default_tier":  "standard",
+                      "tier_models":  {
+                                          "economy":  "openai/gpt-oss-120b",
+                                          "standard":  "gemini-3.1-flash-lite",
+                                          "frontier":  "deepseek-ai/deepseek-v4-flash"
+                                      },
+                      "default_budget":  0.05,
+                      "thresholds":  {
+                                         "downgrade_at":  0.5,
+                                         "refuse_at":  0.9,
+                                         "headroom_fraction":  0.02,
+                                         "reserve_fraction":  0.2,
+                                         "max_calls_per_run":  60,
+                                         "max_calls_per_node":  6
+                                     }
+                  },
+    "allocations":  [
+                        {
+                            "trigger_event":  129,
+                            "frontier":  [
+                                             "recall"
+                                         ],
+                            "per_node":  {
+                                             "recall":  0.04
+                                         },
+                            "remaining":  0.05,
+                            "tiers":  {
+                                          "recall":  "economy"
+                                      }
+                        },
+                        {
+                            "trigger_event":  132,
+                            "frontier":  [
+                                             "answer"
+                                         ],
+                            "per_node":  {
+                                             "answer":  0.04
+                                         },
+                            "remaining":  0.05,
+                            "tiers":  {
+                                          "answer":  "frontier"
+                                      }
+                        },
+                        {
+                            "trigger_event":  135,
+                            "frontier":  [
+
+                                         ],
+                            "per_node":  {
+
+                                         },
+                            "remaining":  0.048897,
+                            "tiers":  {
+
+                                      }
+                        }
+                    ]
+}
