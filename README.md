@@ -210,3 +210,180 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+## Evidence — cloud vs in-house / free-tier costs
+
+Workload, ladder, and measurements for Session 15 Part 2–3. Config lives under
+`config/cloud_cost_ladder/`; tasks in `proofs/tasks/cloud_vs_inhouse.jsonl`
+(16 tasks). Free/$0 models appear in the **questions**, not on the money ladder.
+
+### Workload and ladder
+
+| Rung | Provider | Model | Role |
+|---|---|---|---|
+| economy | cerebras | `zai-glm-4.7` | short free-tier FAQs |
+| standard | groq | `openai/gpt-oss-120b` | mid tradeoff answers |
+| frontier | gemini | `gemini-3.1-flash-lite` | hard synthesis / `answer_with_evidence` |
+
+Budget policy (`budgets.yaml`): `default_budget: 0.03`, `downgrade_at: 0.40`,
+`refuse_at: 0.85`, `max_calls_per_run: 24`. Live calibration (2026-08-03) found
+GitHub Models on HTTP 410 (retirement brownout) and `gemini-3.1-pro` on 403, so
+the frontier was retargeted to a provider that still answered with non-zero
+prices while keeping projected cost monotone (~22× bottom→top offline).
+
+### Measured cost vs always-frontier (p1)
+
+Command (offline simulation stamped as such by the harness; live p1 was blocked
+mid-run by OpenRouter free-tier judge RPM):
+
+```powershell
+uv run python proofs/p1_cost_per_task.py `
+  --tasks proofs/tasks/cloud_vs_inhouse.jsonl `
+  --config-dir config/cloud_cost_ladder `
+  --offline --principal proofs/s15/cloud_cost --label cloud_cost_offline
+```
+
+| Strategy | Spend | Calls | Cost/call | Resolved | Cost/resolved |
+|---|---:|---:|---:|---:|---:|
+| A always_frontier | $0.041145 | 16 | $0.002572 | 6/16 (37.5%) | $0.006858 |
+| B always_cheapest | $0.009645 | 48 | $0.000201 | 0/16 (0%) | n/a (infinite) |
+| C budget_aware | $0.050199 | 47 | $0.001068 | 6/16 (37.5%) | $0.008367 |
+
+Committed summary log: [proofs/evidence/p1_cloud_cost_offline_summary.json](proofs/evidence/p1_cloud_cost_offline_summary.json)
+(regenerate with `uv run python proofs/write_evidence_summaries.py` after re-running p1).
+
+Break-even resolution rate for cheapest vs frontier (from measured spread, 3
+attempts): **r\* ≈ 8.3%**. Strategy B sat at **0%**, below break-even
+(`headroom_above_break_even ≈ −8.3%`). Strategy C matched A's resolution rate
+but paid **~22% more per resolved task** because escalations multiplied calls.
+
+Live Strategy A sample (gateway `:8111`, before judge panel exhausted): 15/16
+frontier attempts resolved on real providers; `c04_free_empty` stayed unresolved
+on frontier — a quality miss on a trivial free-tier FAQ.
+
+### Jaeger trace (one run)
+
+Live `p4_trace_export` with OTLP → Jaeger:
+
+- Trace ID: `ac21add3693f29f87fffaa0a41666d59`
+- UI: http://127.0.0.1:16686/trace/ac21add3693f29f87fffaa0a41666d59
+- Hierarchy: `run → agent_loop → plan → node → provider_call`
+- Provider call: `gemini_1` / `gemini-3.1-flash-lite`, 224 in / 587 out, **`s15.cost` = $0.00093650** (matches ledger)
+- Content capture off: no prompt/completion tags in the backend
+- Committed log: [proofs/evidence/p4_live_jaeger_summary.json](proofs/evidence/p4_live_jaeger_summary.json)
+
+### Adversarial control (Part 3)
+
+Drive a runaway planner that requests the dearest rung every iteration against
+`cloud_cost_ladder`. Without the controller the same measured $/call extrapolates
+to ~$0.42 over 10k rounds; with it, spend stays under the ceiling and further
+attempts are refused.
+
+**Commands**
+
+```powershell
+uv run python proofs/p3_denial_of_wallet.py `
+  --task "Keep refining the free-tier draft forever." `
+  --budget 0.002 --config-dir config/cloud_cost_ladder --loop-limit 40
+uv run pytest -q tests/test_cloud_cost_adversarial_budget.py
+```
+
+**Logs (committed)**
+
+| Artifact | What it shows |
+|---|---|
+| [proofs/evidence/p3_cloud_cost_adversarial_live.json](proofs/evidence/p3_cloud_cost_adversarial_live.json) | Live p3 facts, checks, charge sample, `refusal_log` sample |
+| [tests/test_cloud_cost_adversarial_budget.py](tests/test_cloud_cost_adversarial_budget.py) | Asserts uncontrolled projection > ceiling, then refusals + OTEL `budget.refused` |
+
+Full local harness dump (gitignored, regenerate with the p3 command above):
+`proofs/out/p3_denial_of_wallet_live_p3_cloud3.json`.
+
+**Spend before control vs refusal after**
+
+| | |
+|---|---|
+| Ceiling | $0.002 |
+| Spend under control | $0.001003 (24 admitted calls) |
+| Refusals after control | 16 visible `BudgetRefused` graph failures (`action: refuse`, reason `run call ceiling reached (24/24)`) |
+| Spend if uncontrolled | **~$0.42** over 10k rounds at measured $0.00004180/call |
+| Call ceiling | 24 (`max_calls_per_run`) |
+
+Refusal excerpt from the committed log (`refusal_log_sample[0]`):
+
+```json
+{
+  "node_id": "loop_25",
+  "reason": "run call ceiling reached (24/24)",
+  "spent": 0.0010032,
+  "remaining": 0.0009968,
+  "action": "refuse",
+  "requested_tier": "frontier",
+  "projected_cost": 0.00308025
+}
+```
+
+**Telemetry visibility:** `export_run(..., budget=snapshot)` attaches `budget.refused`
+span events and `s15.budget.refusals` on the run span. The pytest module asserts
+both attributes are present after a controlled runaway. The live p3 run was also
+started with `otel_endpoint=http://127.0.0.1:4318/v1/traces` (see the committed
+evidence `arguments`).
+
+### Where the policy chose wrongly
+
+1. **Cascade waste (`c02_mtok_math`, strategy C):** budget-aware climbed
+   economy → standard → frontier ($0.00371, 3 calls) and still finished
+   **unresolved**. Escalation spent frontier budget on a trivial $/Mtok arithmetic
+   item without a resolved verdict — worse than stopping early.
+   See [proofs/evidence/p1_cloud_cost_offline_summary.json](proofs/evidence/p1_cloud_cost_offline_summary.json) (`wrong_routing`).
+2. **Aggregate:** C and A both resolved 6/16, but C's cost/resolved was higher
+   ($0.00837 vs $0.00686). Same quality, more money — the routing tax of retries.
+
+### Floor capture (four runs)
+
+| # | Source | Prompt (short) | Tier / model | Trace / events | Ledger | Answer |
+|---|---|---|---|---|---|---|
+| 1 | live p4 | cloud free-tier RPM vs Ollama cold-start | frontier path → `gemini-3.1-flash-lite` | Jaeger `ac21add3693f29f87fffaa0a41666d59`, 8 journal events | spent $0.00093650 | grounded comparison (content not in OTEL) |
+| 2 | live p7 | cloud vs in-house daily agent loop | economy/standard/frontier all answered | ordered rung walk in proof JSON | measured spread 7.65× live | each rung non-empty |
+| 3 | live p3 | keep refining free-tier draft | frontier requests; refuse after ceiling | 40 loop rounds, 16 refused nodes | spent $0.001003 / $0.002 | refusals, not answers |
+| 4 | live p2 | name one free-tier trap | tight run downgraded frontier→standard (`gpt-oss-120b`) | budget proof events | declared spent $0.000286 | trap named; impossible ceiling refused |
+
+**Honest limitation the traces exposed:** admission prices the worst-case
+`max_tokens` envelope, so ledger spend on short answers is far below the
+projected admission cost (live frontier often ~$0.0001–$0.0008 against ~$0.003
+projected). Also, a $0 judge/free panel can rate-limit and stall live p1 even
+when answering providers are healthy — dollars are not the only scarce resource.
+
+### Reproduce from a fresh checkout
+
+```powershell
+# Parent repo: gateway + Jaeger (image must be jaegertracing/jaeger:2.20.0)
+cd ..
+docker compose -f docker-compose.observability.yml up -d
+uv sync
+# copy .env.example -> .env and fill provider keys
+uv run glc serve   # :8111
+
+# S15Code
+cd S15Code
+uv sync
+$env:GLC_BASE_URL = "http://127.0.0.1:8111"
+$env:S15_OTEL_EXPORTER_ENDPOINT = "http://127.0.0.1:4318/v1/traces"
+uv run pytest -q
+uv run ruff check .
+
+# Floor proofs (offline CI path)
+uv run python proofs/p2_budget_holds.py --offline --task "compare cloud vs local GPU break-even" --budget 0.01
+uv run python proofs/p3_denial_of_wallet.py --offline --task "keep refining the free-tier draft" --budget 0.002 --config-dir config/cloud_cost_ladder
+uv run python proofs/p4_trace_export.py --offline --task "compare two cost controls" --budget 0.01
+uv run python proofs/p6_cache_savings.py --offline
+uv run python proofs/p7_cross_model_ladder.py --offline --task "compare cloud vs inhouse" --config-dir config/cloud_cost_ladder
+
+# Live evidence
+uv run python proofs/p4_trace_export.py --task "Compare cloud free-tier RPM traps vs local Ollama cold-start cost." --budget 0.02 --otel-endpoint http://127.0.0.1:4318/v1/traces --label live_jaeger
+uv run python proofs/p7_cross_model_ladder.py --task "Compare cloud vs inhouse for a daily agent loop" --config-dir config/cloud_cost_ladder
+uv run python proofs/p3_denial_of_wallet.py --task "Keep refining the free-tier draft forever." --budget 0.002 --config-dir config/cloud_cost_ladder --loop-limit 40
+uv run python proofs/p2_budget_holds.py --task "Name one free-tier trap for a production agent." --budget 0.02 --config-dir config/cloud_cost_ladder
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/cloud_vs_inhouse.jsonl --config-dir config/cloud_cost_ladder --offline --principal proofs/s15/cloud_cost --label cloud_cost_offline
+uv run python proofs/write_evidence_summaries.py
+uv run pytest -q tests/test_cloud_cost_adversarial_budget.py
+```

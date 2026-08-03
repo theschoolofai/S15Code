@@ -1,0 +1,74 @@
+# Cloud-vs-inhouse cost ladder for the Session 15 evidence workload.
+#
+# Free / $0 models (Ollama, OpenRouter :free) appear in the TASKS, not on this
+# ladder: a free rung cannot be exhausted by a dollar ceiling.
+#
+# Live calibration on this host (2026-08-03): GitHub Models returned HTTP 410
+# (retirement brownout) and gemini-3.1-pro returned 403, so the frontier cannot
+# be github/gpt-4.1. The three providers that still answer with non-zero prices
+# are ordered cheapest-first by projected worst-case admission cost:
+#
+#   rung      provider    model                     $/Mtok in/out
+#   economy   cerebras    zai-glm-4.7               0.50 / 0.50
+#   standard  groq        openai/gpt-oss-120b       0.15 / 0.75
+#   frontier  gemini      gemini-3.1-flash-lite     0.25 / 1.50
+#
+# Output rate (and max_tokens) rises along the ladder so projected cost is
+# monotone even though Cerebras's input rate is higher than Groq's.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: cerebras
+      model: zai-glm-4.7
+      reasoning: "off"
+      max_tokens: 256
+      temperature: 0
+    price_model: zai-glm-4.7
+    projected_input_tokens: 400
+    projected_output_tokens: 200
+
+  standard:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 900
+    projected_output_tokens: 400
+
+  frontier:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 2048
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 2500
+    projected_output_tokens: 1500
+
+role_tiers:
+  default: standard
+  memory_recall: economy
+  remember_explicit_fact: economy
+  web_search: economy
+  fetch_url: economy
+  index_file: economy
+  list_directory: economy
+  read_file: economy
+  create_reminder: economy
+  researcher: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  distiller: standard
+  content: standard
+  coder_validator: standard
+  compose_surface: standard
+  answer_with_evidence: frontier

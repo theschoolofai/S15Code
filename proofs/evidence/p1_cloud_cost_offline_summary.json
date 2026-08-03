@@ -1,0 +1,66 @@
+{
+  "proof": "p1_cost_per_task",
+  "ok": true,
+  "mode": "offline",
+  "facts": {
+    "A always_frontier": "spend 0.04114500 USD  calls 16  cost/call 0.00257156  resolved 6/16  cost/resolved 0.00685750  tiers frontier",
+    "B always_cheapest": "spend 0.00964500 USD  calls 48  cost/call 0.00020094  resolved 0/16  cost/resolved n/a (0 resolved)  tiers economy",
+    "C budget_aware": "spend 0.05019935 USD  calls 47  cost/call 0.00106807  resolved 6/16  cost/resolved 0.00836656  tiers economy,frontier,standard",
+    "ladder": "economy < standard < frontier",
+    "tasks": "16 from proofs/tasks/cloud_vs_inhouse.jsonl  {'trivial': ['c01_rpm_trap', 'c02_mtok_math', 'c03_latency_sla', 'c04_free_empty', 'c05_cache_extends'], 'moderate': ['c06_daily_loop', 'c07_gpu_breakeven', 'c08_egress', 'c09_multi_key', 'c10_cold_start'], 'hard': ['c11_always_cheap', 'c12_refuse_before_empty', 'c13_principal_split', 'c14_cascade', 'c15_hybrid', 'c16_zero_ceiling']}",
+    "judge panel": "openrouter/nvidia/nemotron-3-super-120b-a12b:free, openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+    "judge bar": "overall >= 0.75, min criterion 0.5, tie_break score",
+    "signature failure mode": "NOT OBSERVED \u2014 {\"B_vs_A\": {\"cost_per_call_delta_pct\": -92.18617085915663, \"cost_per_resolved_task_delta_pct\": null, \"resolution_rate\": {\"B\": 0.0, \"A\": 0.375}, \"cheaper_per_call\": true, \"dearer_per_resolved_task\": false, \"signature_failure_mode\": false, \"worse_than_dearer\": true, \"break_even_resolution_rate\": 0.08303917348256563, \"headroom_above_break_even\": -0.08303917348256563, \"note\": \"B resolved nothing, so its cost per resolved task is infinite rather than merely higher \\u2014 the same failure, off the scale\"}, \"B_vs_C\": {\"cost_per_call_delta_pct\": -81.18688289788614, \"cost_per_resolved_task_delta_pct\": "
+  },
+  "finding": {
+    "observed": false,
+    "observed_unbounded": true,
+    "comparisons": {
+      "B_vs_A": {
+        "cost_per_call_delta_pct": -92.18617085915663,
+        "cost_per_resolved_task_delta_pct": null,
+        "resolution_rate": {
+          "B": 0.0,
+          "A": 0.375
+        },
+        "cheaper_per_call": true,
+        "dearer_per_resolved_task": false,
+        "signature_failure_mode": false,
+        "worse_than_dearer": true,
+        "break_even_resolution_rate": 0.08303917348256563,
+        "headroom_above_break_even": -0.08303917348256563,
+        "note": "B resolved nothing, so its cost per resolved task is infinite rather than merely higher \u2014 the same failure, off the scale"
+      },
+      "B_vs_C": {
+        "cost_per_call_delta_pct": -81.18688289788614,
+        "cost_per_resolved_task_delta_pct": null,
+        "resolution_rate": {
+          "B": 0.0,
+          "C": 0.375
+        },
+        "cheaper_per_call": true,
+        "dearer_per_resolved_task": false,
+        "signature_failure_mode": false,
+        "worse_than_dearer": true,
+        "break_even_resolution_rate": 0.06874802796394641,
+        "headroom_above_break_even": -0.06874802796394641,
+        "note": "B resolved nothing, so its cost per resolved task is infinite rather than merely higher \u2014 the same failure, off the scale"
+      }
+    },
+    "claim": "cheapest rung: lower cost per call, higher cost per RESOLVED task"
+  },
+  "wrong_routing": {
+    "task": "c02_mtok_math",
+    "strategy": "C budget_aware",
+    "note": "climbed economy->standard->frontier and stayed unresolved",
+    "cost_usd": 0.0037082,
+    "tiers_charged": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "status": "unresolved",
+    "attempt_count": 3
+  },
+  "source_full_local": "proofs/out/p1_cost_per_task_cloud_cost_offline.json (gitignored)"
+}
