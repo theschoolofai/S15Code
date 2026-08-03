@@ -1,0 +1,22 @@
+# Tighter ceilings so pressure walks the cloud-cost ladder on medium tasks
+# without refusing trivial free-tier FAQs on the first call.
+
+default_budget: 0.03
+
+reserve_fraction: 0.20
+
+# Start downgrading earlier than the stock 0.50 so budget-aware routing is visible.
+downgrade_at: 0.40
+
+refuse_at: 0.85
+
+headroom_fraction: 0.02
+
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Bound runaway "keep refining on free tier" loops even if projections are wrong.
+max_calls_per_run: 24
+max_calls_per_node: 4
+
+principals: {}
