@@ -1,0 +1,46 @@
+{
+  "proof": "p4_trace_export",
+  "ok": true,
+  "arguments": {
+    "task": "Compare cloud free-tier RPM traps vs local Ollama cold-start cost.",
+    "budget": 0.02,
+    "principal": "proofs/s15/reviewer",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4318/v1/traces"
+  },
+  "facts": {
+    "journal events": 8,
+    "spans": 10,
+    "span kinds": {
+      "plan": 3,
+      "node": 2,
+      "agent_loop": 3,
+      "provider_call": 1,
+      "run": 1
+    },
+    "provider calls": 1,
+    "input tokens": 224,
+    "output tokens": 587,
+    "span cost total": "0.00093650",
+    "ledger spent": "0.00093650",
+    "trace ids": [
+      "ac21add3693f29f87fffaa0a41666d59"
+    ],
+    "otlp endpoint": "http://127.0.0.1:4318/v1/traces",
+    "trace query url": "http://127.0.0.1:16686",
+    "backend query": "http://127.0.0.1:16686/api/traces/ac21add3693f29f87fffaa0a41666d59",
+    "backend spans": 10,
+    "backend span kinds": {
+      "plan": 3,
+      "node": 2,
+      "agent_loop": 3,
+      "provider_call": 1,
+      "run": 1
+    },
+    "backend service": [
+      "s15code"
+    ]
+  },
+  "jaeger_ui": "http://127.0.0.1:16686/trace/ac21add3693f29f87fffaa0a41666d59",
+  "source_full_local": "proofs/out/p4_trace_export_live_jaeger.json (gitignored)"
+}

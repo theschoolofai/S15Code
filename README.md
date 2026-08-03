@@ -249,6 +249,9 @@ uv run python proofs/p1_cost_per_task.py `
 | B always_cheapest | $0.009645 | 48 | $0.000201 | 0/16 (0%) | n/a (infinite) |
 | C budget_aware | $0.050199 | 47 | $0.001068 | 6/16 (37.5%) | $0.008367 |
 
+Committed summary log: [proofs/evidence/p1_cloud_cost_offline_summary.json](proofs/evidence/p1_cloud_cost_offline_summary.json)
+(regenerate with `uv run python proofs/write_evidence_summaries.py` after re-running p1).
+
 Break-even resolution rate for cheapest vs frontier (from measured spread, 3
 attempts): **r\* ≈ 8.3%**. Strategy B sat at **0%**, below break-even
 (`headroom_above_break_even ≈ −8.3%`). Strategy C matched A's resolution rate
@@ -267,10 +270,16 @@ Live `p4_trace_export` with OTLP → Jaeger:
 - Hierarchy: `run → agent_loop → plan → node → provider_call`
 - Provider call: `gemini_1` / `gemini-3.1-flash-lite`, 224 in / 587 out, **`s15.cost` = $0.00093650** (matches ledger)
 - Content capture off: no prompt/completion tags in the backend
+- Committed log: [proofs/evidence/p4_live_jaeger_summary.json](proofs/evidence/p4_live_jaeger_summary.json)
 
 ### Adversarial control (Part 3)
 
-Uncontrolled extrapolation vs controlled refusal on `cloud_cost_ladder`:
+Drive a runaway planner that requests the dearest rung every iteration against
+`cloud_cost_ladder`. Without the controller the same measured $/call extrapolates
+to ~$0.42 over 10k rounds; with it, spend stays under the ceiling and further
+attempts are refused.
+
+**Commands**
 
 ```powershell
 uv run python proofs/p3_denial_of_wallet.py `
@@ -279,19 +288,45 @@ uv run python proofs/p3_denial_of_wallet.py `
 uv run pytest -q tests/test_cloud_cost_adversarial_budget.py
 ```
 
-Live result (`proofs/out/p3_denial_of_wallet_live_p3_cloud3.json`):
+**Logs (committed)**
+
+| Artifact | What it shows |
+|---|---|
+| [proofs/evidence/p3_cloud_cost_adversarial_live.json](proofs/evidence/p3_cloud_cost_adversarial_live.json) | Live p3 facts, checks, charge sample, `refusal_log` sample |
+| [tests/test_cloud_cost_adversarial_budget.py](tests/test_cloud_cost_adversarial_budget.py) | Asserts uncontrolled projection > ceiling, then refusals + OTEL `budget.refused` |
+
+Full local harness dump (gitignored, regenerate with the p3 command above):
+`proofs/out/p3_denial_of_wallet_live_p3_cloud3.json`.
+
+**Spend before control vs refusal after**
 
 | | |
 |---|---|
 | Ceiling | $0.002 |
-| Spent under control | $0.001003 (24 admitted calls) |
-| Refusals | 16 visible `BudgetRefused` graph failures |
-| Uncontrolled bill (10k rounds @ measured $/call) | **~$0.42** |
+| Spend under control | $0.001003 (24 admitted calls) |
+| Refusals after control | 16 visible `BudgetRefused` graph failures (`action: refuse`, reason `run call ceiling reached (24/24)`) |
+| Spend if uncontrolled | **~$0.42** over 10k rounds at measured $0.00004180/call |
 | Call ceiling | 24 (`max_calls_per_run`) |
 
-Telemetry: `export_run(..., budget=snapshot)` attaches `budget.refused` events and
-`s15.budget.refusals` on the run span (asserted in
-`tests/test_cloud_cost_adversarial_budget.py`).
+Refusal excerpt from the committed log (`refusal_log_sample[0]`):
+
+```json
+{
+  "node_id": "loop_25",
+  "reason": "run call ceiling reached (24/24)",
+  "spent": 0.0010032,
+  "remaining": 0.0009968,
+  "action": "refuse",
+  "requested_tier": "frontier",
+  "projected_cost": 0.00308025
+}
+```
+
+**Telemetry visibility:** `export_run(..., budget=snapshot)` attaches `budget.refused`
+span events and `s15.budget.refusals` on the run span. The pytest module asserts
+both attributes are present after a controlled runaway. The live p3 run was also
+started with `otel_endpoint=http://127.0.0.1:4318/v1/traces` (see the committed
+evidence `arguments`).
 
 ### Where the policy chose wrongly
 
@@ -299,6 +334,7 @@ Telemetry: `export_run(..., budget=snapshot)` attaches `budget.refused` events a
    economy → standard → frontier ($0.00371, 3 calls) and still finished
    **unresolved**. Escalation spent frontier budget on a trivial $/Mtok arithmetic
    item without a resolved verdict — worse than stopping early.
+   See [proofs/evidence/p1_cloud_cost_offline_summary.json](proofs/evidence/p1_cloud_cost_offline_summary.json) (`wrong_routing`).
 2. **Aggregate:** C and A both resolved 6/16, but C's cost/resolved was higher
    ($0.00837 vs $0.00686). Same quality, more money — the routing tax of retries.
 
@@ -348,5 +384,6 @@ uv run python proofs/p7_cross_model_ladder.py --task "Compare cloud vs inhouse f
 uv run python proofs/p3_denial_of_wallet.py --task "Keep refining the free-tier draft forever." --budget 0.002 --config-dir config/cloud_cost_ladder --loop-limit 40
 uv run python proofs/p2_budget_holds.py --task "Name one free-tier trap for a production agent." --budget 0.02 --config-dir config/cloud_cost_ladder
 uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/cloud_vs_inhouse.jsonl --config-dir config/cloud_cost_ladder --offline --principal proofs/s15/cloud_cost --label cloud_cost_offline
+uv run python proofs/write_evidence_summaries.py
 uv run pytest -q tests/test_cloud_cost_adversarial_budget.py
 ```
