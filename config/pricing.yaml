@@ -53,6 +53,13 @@ models:
   zai-glm-4.7: {input: 0.50, output: 0.50}
   # Free tier. MEASURED 47 in / 108 out at 1849 ms with reasoning off.
   nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
+  # Same weights served from NVIDIA's own endpoint rather than openrouter, which
+  # is where the judge panel calls it (openrouter's 50/day is spent on the
+  # frontier rung). Also $0.00 on the free developer tier. MEASURED 2026-08-02:
+  # 579 ms, returned well-formed judge JSON. Without this row the name misses the
+  # `:free` entry above and falls through to `default`, pricing a free call at
+  # $1.00/$5.00 and inflating p1's reported judge meta-cost.
+  nvidia/nemotron-3-super-120b-a12b: {input: 0.0, output: 0.0}
   # LADDER rung 3 (frontier), and the most expensive model this gateway reaches.
   # MEASURED: 37 in / 76 out, $0.000682, 2883 ms. Context caps at 8k here.
   openai/gpt-4.1:

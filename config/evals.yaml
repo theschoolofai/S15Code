@@ -115,8 +115,13 @@ judge:
         temperature: 0
     - name: judge_b
       request:
-        provider: openrouter
-        model: nvidia/nemotron-3-super-120b-a12b:free
+        # Moved off openrouter. The frontier rung now answers there (github
+        # having been retired), and openrouter's free tier allows 50 requests a
+        # DAY — so panel and ladder were competing for one small allowance and a
+        # full p1 could not finish. NVIDIA serves the same model at 9999/day.
+        # Model identity is unchanged, so panel/ladder disjointness still holds.
+        provider: nvidia
+        model: nvidia/nemotron-3-super-120b-a12b
         reasoning: "off"
         max_tokens: 700
         temperature: 0

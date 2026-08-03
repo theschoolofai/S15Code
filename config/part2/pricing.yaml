@@ -1,0 +1,49 @@
+# Part 2 pricing. Only models this gateway can actually reach appear here.
+#
+# The shipped pricing.yaml lists models the account cannot call (gemini-3.1-pro
+# 404s, claude-* and gpt-5.6-* have no configured provider). That is harmless
+# there, but for a measurement it invites quoting a price for a rung that was
+# never exercised. Every row below was called on 2026-08-02 and answered.
+
+currency: USD
+unit_tokens: 1000000
+
+# An unpriced model must never look free. Set above the dearest real rung so a
+# missing row is loud in the results rather than silently flattering.
+default:
+  input: 10.00
+  output: 40.00
+
+models:
+  # ── the ladder ────────────────────────────────────────────────────────────
+  # LADDER rung 1 (economy). MEASURED 2026-08-02: 500 ms, answered, reasoning
+  # off. With the dial left alone it returns "" at full price.
+  openai/gpt-oss-120b:
+    input: 0.15
+    output: 0.75
+    measured_latency_ms: 500
+    measured_needs_reasoning_off: true
+
+  # LADDER rung 2 (standard). MEASURED 2026-08-02: 895 ms, answered.
+  gemini-3.1-flash-lite:
+    input: 0.25
+    output: 1.50
+    measured_latency_ms: 895
+
+  # LADDER rung 3 (frontier). MEASURED 2026-08-02: 1026 ms via openrouter,
+  # price_source=model. Same published rate as the retired github route, so the
+  # provider move did not change the economics.
+  openai/gpt-4.1:
+    input: 2.00
+    output: 8.00
+    measured_latency_ms: 1026
+
+  # ── the judge panel (disjoint from every rung above) ──────────────────────
+  # MEASURED 2026-08-02: 757 ms, returned well-formed JSON.
+  zai-glm-4.7: {input: 0.50, output: 0.50, measured_latency_ms: 757}
+  # MEASURED 2026-08-02: 579 ms, returned well-formed judge JSON. Free on
+  # NVIDIA's developer tier, hence 0.00 rather than an invented rate.
+  nvidia/nemotron-3-super-120b-a12b: {input: 0.0, output: 0.0, measured_latency_ms: 579}
+
+cache_read_multiplier: 0.1
+cache_write_multiplier: 1.25
