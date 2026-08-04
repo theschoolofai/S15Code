@@ -4,40 +4,85 @@
 # agent — whatever string the caller attributes spend to). The controller is
 # deterministic code, not a prompt: token elasticity means a model asked nicely
 # to stay under a ceiling will sail straight through it.
+#
+# ── PART 2's OWN POLICY — not a copy of the shipped numbers ─────────────────
+# The shipped policy (default_budget 0.05, reserve 0.20, downgrade 0.50,
+# refuse 0.90, 60 calls/run, 6 calls/node) was tuned for the shipped agent
+# runtime's multi-node research workflows (recall -> parallel search -> distill
+# -> answer). Part 2's workload through p1_cost_per_task.py is different in
+# shape: every task/strategy pair opens its own fresh budget and makes AT MOST
+# `evals.yaml strategies.max_attempts` (3) calls to a single `answer_with_evidence`
+# node — no fan-out, no upstream research calls to protect the terminal node
+# from. The numbers below were set FOR that shape, not copied from the shipped
+# runtime's.
+#
+# Worst-case projected cost per task/strategy, using this file's own
+# tiers.yaml + pricing.yaml (worst case = every rung's max_tokens ceiling, the
+# same pessimistic assumption admission itself uses):
+#   economy $0.000504 + standard $0.002208 + frontier $0.01686 = ~$0.01957
+# (the budget-aware cascade's worst case: one call on each rung, escalating).
+# default_budget below leaves roughly 28% headroom over that before the run
+# ceiling itself, not 5-10x like the shipped default — a deliberately tighter
+# policy, appropriate for a workload with no upstream calls competing for the
+# same allowance. (tiers.yaml's max_tokens ceilings on standard/frontier are
+# sized larger than a "typical" puzzle answer needs, specifically so each
+# rung's real worst-case cost stays robustly above the rung below it — see
+# tiers.yaml's own comments; that margin is what test_cross_model_ladder.py's
+# downgrade tests depend on, and it also sets the worst-case number here.)
 
 # Used when a caller asks for a budgeted run without naming an amount.
-default_budget: 0.05
+default_budget: 0.025
 
 # Fraction of the run's allowance held back from frontier allocation so the
 # terminal node (the one that actually answers) is never starved by its own
-# upstream work.
-reserve_fraction: 0.20
+# upstream work. Raised from the shipped 0.20: this workload's only call IS
+# the terminal node, so protecting its allocation matters more here, not less.
+reserve_fraction: 0.30
 
 # Spend ratio (spent / total) at or above which a node's requested tier is
-# downgraded one rung at a time down the ladder in tiers.yaml.
-downgrade_at: 0.50
+# downgraded one rung at a time down the ladder in tiers.yaml. Lowered from the
+# shipped 0.50 — with only 3 attempts and a steep economy-to-frontier spread
+# (0.15 -> 1.00 input, 20x), pressure should bite earlier so a cascade still
+# has budget left for the rung it's climbing toward.
+downgrade_at: 0.40
 
 # Spend ratio at or above which no further call is admitted at any tier.
-refuse_at: 0.90
+# Lowered from the shipped 0.90 to leave more real headroom under refuse_at
+# before the hard ceiling, given the frontier rung alone can be ~40% of the
+# whole per-task budget in one call.
+refuse_at: 0.85
 
 # A projected call must leave at least this much of the run allowance unspent,
-# as a fraction of the total. Stops the last call from landing exactly on zero.
-headroom_fraction: 0.02
+# as a fraction of the total. Raised from the shipped 0.02: a tighter default
+# budget (0.025 vs 0.05) means the same absolute margin needs a larger fraction.
+headroom_fraction: 0.05
 
 # Admission prices the WORST case, not a guess: output is bounded by the tier's
 # max_tokens and input by the prompt actually being sent. These two numbers turn
 # the prompt into a token count — roughly four characters per token, then a safety
 # factor because a provider's tokeniser is not ours.
 chars_per_token: 4
-input_estimate_safety: 1.25
+# Raised from the shipped 1.25: logic-puzzle prompts vary more in restatement
+# length (a knights-and-knaves setup vs. a one-line arithmetic puzzle) than the
+# shipped workload's more uniform research prompts, so admission's pessimistic
+# input estimate gets a wider safety margin.
+input_estimate_safety: 1.35
 
 # Hard ceiling on admitted calls per run. Denial-of-wallet defence that does not
-# depend on price estimates being right.
-max_calls_per_run: 60
+# depend on price estimates being right. Lowered sharply from the shipped 60:
+# this workload's ceiling per task/strategy is 3 calls
+# (evals.yaml strategies.max_attempts), so 60 would be a vestigial number that
+# never actually engages. 15 is still 5x the real ceiling — enough slack for a
+# retry storm to look wrong before the hard stop fires, not enough to be
+# meaningless.
+max_calls_per_run: 15
 
 # Hard ceiling on admitted calls attributable to one graph node, so a single
-# retrying node cannot spin.
-max_calls_per_node: 6
+# retrying node cannot spin. Set to match evals.yaml's own
+# strategies.max_attempts (3) exactly, so the hard call-count ceiling and the
+# strategy's own retry/escalate ceiling agree instead of one being unreachable
+# slack behind the other.
+max_calls_per_node: 3
 
 # Optional per-principal allowance overrides. A principal named here gets this
 # ceiling regardless of what the caller asked for, whichever is smaller.

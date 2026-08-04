@@ -56,6 +56,31 @@ models:
     measured_reference_usd: 0.0001029
     measured_non_empty: true
     measured_needs_reasoning_off: true
+  # ── Part 2's own ladder (part2-logic-puzzle-policy, config/tiers.yaml) ─────
+  # LADDER rung 2 (standard). Real Groq published per-token rate, unchanged.
+  # MEASURED against glc_v4 on 2026-08-03: 71 in / 123 out, $0.00013906,
+  # 1120 ms, no reasoning dial needed (not in glc_v4/providers.py's
+  # REASONING_MODEL_HINTS — the field is simply never sent to this model).
+  llama-3.3-70b-versatile:
+    input: 0.59
+    output: 0.79
+    measured_latency_ms: 1120
+    measured_reference_usd: 0.00013906
+    measured_non_empty: true
+  # LADDER rung 3 (frontier). gemma-4-31b is a Cerebras PREVIEW model with no
+  # published commercial price list, so this row is an ASSUMED placeholder —
+  # deliberately set equal to this file's own `default` row below, so the
+  # ladder's monotonic-pricing invariant holds honestly rather than by an
+  # implicit, unpriced fallback (same disclosure pattern part1-reproduce-floor
+  # used for its own temporary frontier substitute). Reachability MEASURED
+  # against glc_v4 on 2026-08-03: 49 in / 58 out, 1474 ms, no reasoning dial
+  # needed, answered in full at max_tokens 512 with no truncation.
+  gemma-4-31b:
+    input: 1.00
+    output: 5.00
+    measured_latency_ms: 1474
+    measured_non_empty: true
+    measured_assumed_price: true
   # MEASURED 35 in / 86 out, $0.0000605 at 1033 ms with reasoning off; with the
   # dial alone it burned all 512 output tokens and returned "" for $0.0002735.
   # Rate corrected from 0.20/0.80 to the 0.50/0.50 Cerebras actually bills,

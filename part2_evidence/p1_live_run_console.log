@@ -1,0 +1,92 @@
+
+p1: 15 tasks x 3 strategies, live mode
+  ladder   economy < standard < frontier
+  models   ['gemma-4-31b', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b']
+  judges   ['cerebras/zai-glm-4.7', 'openrouter/nvidia/nemotron-3-super-120b-a12b:free']
+  bar      overall >= 0.75, no criterion below 0.5 (normalised)
+
+  A logic_t1           resolved     attempts=1 cost=0.00152100 tiers=frontier
+  A logic_t2           resolved     attempts=1 cost=0.00109100 tiers=frontier
+  A logic_t3           resolved     attempts=1 cost=0.00019100 tiers=frontier
+  A logic_m1           resolved     attempts=1 cost=0.00178000 tiers=frontier
+  A logic_m2           resolved     attempts=1 cost=0.00164700 tiers=frontier
+  A logic_m3           resolved     attempts=1 cost=0.00155400 tiers=frontier
+  A logic_m4           resolved     attempts=1 cost=0.00250700 tiers=frontier
+  A logic_m5           resolved     attempts=1 cost=0.00149700 tiers=frontier
+  A logic_h1           resolved     attempts=1 cost=0.00182900 tiers=frontier
+  A logic_h2           resolved     attempts=1 cost=0.00304400 tiers=frontier
+  A logic_h3           resolved     attempts=1 cost=0.00146500 tiers=frontier
+  A logic_h4           resolved     attempts=1 cost=0.00301600 tiers=frontier
+  A logic_h5           resolved     attempts=1 cost=0.00154100 tiers=frontier
+  A logic_h6           resolved     attempts=1 cost=0.00232500 tiers=frontier
+  A logic_h7           resolved     attempts=1 cost=0.00128800 tiers=frontier
+  B logic_t1           resolved     attempts=1 cost=0.00031680 tiers=economy
+  B logic_t2           resolved     attempts=1 cost=0.00018180 tiers=economy
+  B logic_t3           resolved     attempts=1 cost=0.00005565 tiers=economy
+  B logic_m1           resolved     attempts=1 cost=0.00041715 tiers=economy
+  B logic_m2           resolved     attempts=1 cost=0.00041385 tiers=economy
+  B logic_m3           resolved     attempts=1 cost=0.00015810 tiers=economy
+  B logic_m4           resolved     attempts=1 cost=0.00039270 tiers=economy
+  B logic_m5           resolved     attempts=1 cost=0.00026775 tiers=economy
+  B logic_h1           unresolved   attempts=3 cost=0.00126675 tiers=economy,economy,economy
+  B logic_h2           unresolved   attempts=3 cost=0.00125325 tiers=economy,economy,economy
+  B logic_h3           resolved     attempts=1 cost=0.00041475 tiers=economy
+  B logic_h4           resolved     attempts=3 cost=0.00125955 tiers=economy,economy,economy
+  B logic_h5           resolved     attempts=1 cost=0.00025860 tiers=economy
+  B logic_h6           resolved     attempts=1 cost=0.00028665 tiers=economy
+  B logic_h7           resolved     attempts=1 cost=0.00041865 tiers=economy
+  C logic_t1           resolved     attempts=1 cost=0.00031680 tiers=economy
+  C logic_t2           resolved     attempts=1 cost=0.00019380 tiers=economy
+  C logic_t3           resolved     attempts=1 cost=0.00005565 tiers=economy
+  C logic_m1           resolved     attempts=1 cost=0.00041715 tiers=economy
+  C logic_m2           resolved     attempts=1 cost=0.00041385 tiers=economy
+  C logic_m3           resolved     attempts=1 cost=0.00015810 tiers=economy
+  C logic_m4           resolved     attempts=1 cost=0.00032520 tiers=economy
+  C logic_m5           resolved     attempts=1 cost=0.00026775 tiers=economy
+  C logic_h1           resolved     attempts=3 cost=0.00268600 tiers=economy,standard,frontier
+  C logic_h2           resolved     attempts=2 cost=0.00104020 tiers=economy,standard
+  C logic_h3           resolved     attempts=1 cost=0.00041475 tiers=economy
+  C logic_h4           resolved     attempts=2 cost=0.00104720 tiers=economy,standard
+  C logic_h5           resolved     attempts=1 cost=0.00030810 tiers=economy
+  C logic_h6           resolved     attempts=1 cost=0.00028515 tiers=economy
+  C logic_h7           resolved     attempts=1 cost=0.00041865 tiers=economy
+
+  FINDING  signature failure mode OBSERVED
+    B_vs_A: cost/call -80.0%, cost/resolved -67.7%
+      B resolved 87% of tasks; the trap begins below 42.9% (derived from the measured price spread and 3 attempts)
+    B_vs_C: cost/call -20.2%, cost/resolved +1.8%
+      B resolved 87% of tasks; the trap begins below 83.6% (derived from the measured price spread and 3 attempts)
+
+p1_cost_per_task  (live mode)
+  task      15 tasks from proofs/tasks/logic-puzzles-tasks.jsonl
+  budget    0.025  principal proofs/s15/p1
+  transport {"base_url": "http://127.0.0.1:8111"}
+
+  A always_frontier                                                              spend 0.02629600 USD  calls 15  cost/call 0.00175307  resolved 15/15  cost/resolved 0.00175307  tiers frontier
+  B always_cheapest                                                              spend 0.00736200 USD  calls 21  cost/call 0.00035057  resolved 13/15  cost/resolved 0.00056631  tiers economy
+  C budget_aware                                                                 spend 0.00834835 USD  calls 19  cost/call 0.00043939  resolved 15/15  cost/resolved 0.00055656  tiers economy,frontier,standard
+  A resolved by difficulty                                                       {"hard": 7, "moderate": 5, "trivial": 3}  of {"trivial": 3, "moderate": 5, "hard": 7}
+  B resolved by difficulty                                                       {"hard": 5, "moderate": 5, "trivial": 3}  of {"trivial": 3, "moderate": 5, "hard": 7}
+  C resolved by difficulty                                                       {"hard": 7, "moderate": 5, "trivial": 3}  of {"trivial": 3, "moderate": 5, "hard": 7}
+  ladder                                                                         economy < standard < frontier
+  tasks                                                                          15 from proofs/tasks/logic-puzzles-tasks.jsonl  {'trivial': ['logic_t1', 'logic_t2', 'logic_t3'], 'moderate': ['logic_m1', 'logic_m2', 'logic_m3', 'logic_m4', 'logic_m5'], 'hard': ['logic_h1', 'logic_h2', 'logic_h3', 'logic_h4', 'logic_h5', 'logic_h6', 'logic_h7']}
+  per-task ceiling                                                               0.025 USD (principal proofs/s15/p1)
+  judge panel                                                                    cerebras/zai-glm-4.7, openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge bar                                                                      overall >= 0.75, min criterion 0.5, tie_break score
+  judge meta-cost                                                                90 calls, 0.02953460 USD, 0 unusable, 45 transport retries, 8 verdicts reused
+  signature failure mode                                                         OBSERVED — {"B_vs_A": {"cost_per_call_delta_pct": -80.00239036898606, "cost_per_resolved_task_delta_pct": -67.69616905759285, "resolution_rate": {"B": 0.8666666666666667, "A": 1.0}, "cheaper_per_call": true, "dearer_per_resolved_task": false, "signature_failure_mode": false, "worse_than_dearer": false, "break_even_resolution_rate": 0.42853484004160003, "headroom_above_break_even": 0.43813182662506667, "note": ""}, "B_vs_C": {"cost_per_call_delta_pct": -20.213489577495643, "cost_per_resolved_task_delta_pct": 1.7520274618982783, "resolution_rate": {"B": 0.8666666666666667, "C": 1.0}, "cheaper_per_call": tr
+  wall clock                                                                     3895.2s
+  where the strategies disagreed                                                 {"A_vs_B": ["logic_h1 (hard): A resolved on frontier, B did not on economy/economy/economy", "logic_h2 (hard): A resolved on frontier, B did not on economy/economy/economy"], "C_vs_B": ["logic_h1 (hard): C resolved on economy/standard/frontier, B did not on economy/economy/economy", "logic_h2 (hard): C resolved on economy/standard, B did not on economy/economy/economy"]}
+
+  [PASS] every strategy attempted every task in the file                                3 strategies x 15 tasks
+  [PASS] every answering provider call that returned is metered                         55 transport calls, 55 ledger charges, 0 transport failures (no tokens reported, so not charged)
+  [PASS] no verdict was unparseable (an unparseable judge is a JUDGE failure)           0 tasks ended with status=judge_failed, 0 unusable judge samples
+  [PASS] an empty or errored answer never counted as resolved                           0 such rows
+  [PASS] no answer was graded by its own model                                          judges ['nvidia/nemotron-3-super-120b-a12b:free', 'zai-glm-4.7'] vs ladder ['gemma-4-31b', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b']
+  [PASS] at least one strategy resolved at least one task, so cost/resolved is defined  43 resolved rows across 3 strategies
+  [PASS] the configured ladder separates cost per call at all                           projected top 0.01686000 > bottom 0.00050400
+  [PASS] every model that answered has its own row in pricing.yaml                      all priced
+  [PASS] no semantic-cache hit served one strategy another's answer                     {'before': {'hits': 7, 'stores': 49, 'lookups': 57}, 'after': {'hits': 7, 'stores': 49, 'lookups': 57}}
+
+  ALL CHECKS PASSED -> C:\Raghu\MyLearnings\EAG_V3\S15-01082026\assignment\S15Code\proofs\out\p1_cost_per_task.json
+

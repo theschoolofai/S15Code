@@ -17,6 +17,205 @@ Two things are true no matter what the model does with its tokens:
 
 ---
 
+# Part 2 — Build a Policy and Measure It
+
+*Branch: `part2-logic-puzzle-policy`, stacked on `part1-reproduce-floor`. This
+section is the Part 2 submission. Raw evidence (the full per-attempt JSON and
+the live console log) is committed under
+[`part2_evidence/`](part2_evidence/) — `proofs/out/` itself is gitignored, so
+this is a copy, not a symlink.*
+
+## Our own ladder and budget policy
+
+Both were designed independently for this workload (15 pure logic puzzles,
+`proofs/tasks/logic-puzzles-tasks.jsonl`, copied verbatim from the assignment
+material) — not a relabel of the shipped ladder from Part 1. Full rationale,
+including every candidate model that was tried and rejected, lives as comments
+in [`config/tiers.yaml`](config/tiers.yaml) and
+[`config/budgets.yaml`](config/budgets.yaml); this is the short version.
+
+**The ladder** (`config/tiers.yaml`), one candidate model at a time, measured
+live against the gateway on 2026-08-03 before being written down:
+
+| Rung | Provider | Model | $/Mtok in/out | Notes |
+|---|---|---|---|---|
+| economy | groq | `openai/gpt-oss-120b` | 0.15 / 0.75 | Same model Part 1's shipped ladder uses — kept because it's simply the cheapest live-reachable, clean model across every provider tried |
+| standard | groq | `llama-3.3-70b-versatile` | 0.59 / 0.79 | New — never used in the shipped ladder or the judge panel |
+| frontier | cerebras | `gemma-4-31b` | 1.00 / 5.00 (assumed) | New provider entirely — a Cerebras preview model with no public commercial price list, so its row is an honest ASSUMED placeholder (set equal to `pricing.yaml`'s own `default` row), same disclosure pattern Part 1 used for its temporary frontier substitute |
+
+Two live candidates were tried and deliberately ruled out, not guessed away:
+
+- **`gemini/gemini-3.1-flash-lite`** (the shipped ladder's own standard rung)
+  turned out to be mathematically incompatible with `llama-3.3-70b-versatile`
+  in the same ladder: flash-lite is cheaper on input (0.25 < 0.59) but
+  *pricier* on output (1.50 > 0.79) — no ordering can make both rates rise
+  together, which is exactly the monotonic-pricing trap Part 1's own lessons
+  flagged. One had to go.
+- **`nvidia`** was avoided entirely for this ladder's answering rungs.
+  Part 1 measured its free endpoint failing roughly 1-in-3 calls (`HTTP 529`),
+  with the gateway's own backoff then benching the provider for several
+  seconds — a real cascading-failure risk across the ~55 live calls one full
+  15-puzzle × 3-strategy run makes. Cerebras was picked for frontier
+  specifically because it sidesteps both of this assignment's known failure
+  modes: GitHub's outage and NVIDIA's flakiness.
+
+Every provider used (groq, cerebras) is a confirmed free-tier key — the
+dollar figures above are notional list prices for the cost-accounting
+exercise, not real spend, same disclosure as the rest of this project's
+pricing.
+
+**The budget policy** (`config/budgets.yaml`) was sized for this workload's
+actual shape, not copied from Part 1's numbers. `p1_cost_per_task.py` opens a
+*fresh* budget per task/strategy and makes at most `evals.yaml`'s
+`max_attempts` (3) calls to one `answer_with_evidence` node — no upstream
+fan-out to protect a terminal node from, unlike the full agent runtime Part 1
+exercised. Headline differences from the shipped policy: `default_budget`
+$0.025 (vs $0.05 — a workload with no upstream calls needs less), `downgrade_at`
+0.40 / `refuse_at` 0.85 (vs 0.50 / 0.90 — pressure bites earlier, given a 20x
+economy-to-frontier input-price spread), `max_calls_per_run` 15 / `max_calls_per_node`
+3 (vs 60 / 6 — sized to this workload's real 3-call ceiling instead of a
+vestigial number that never engages).
+
+**A real gotcha hit while building this, worth recording honestly:** the
+admission controller prices a call's *worst case* — input estimated from the
+actual prompt, output priced at the tier's `max_tokens` ceiling. For a short
+test prompt, input is nearly free, so a tier's real cost is almost entirely
+its `max_tokens × output price`. Two invariant tests
+(`test_cross_model_ladder.py::test_pressure_downgrades_to_a_different_model_at_every_rung`,
+`test_budget_runtime.py::test_a_tight_ceiling_never_buys_more_than_the_ceiling`)
+initially failed because `standard`'s `max_tokens` (1024) put its real
+worst-case cost *below* the boundary those tests construct from
+`projected_input_tokens` — the downgrade logic correctly judged standard
+"affordable" when the test expected it to fall back to economy. Fixed by
+raising `standard`'s and `frontier`'s `max_tokens` (1024→2048, 2048→3072)
+until each rung's real worst-case cost robustly exceeds the rung below it.
+`uv run pytest -q` is green at 277/277 with the final numbers.
+
+## The live run
+
+```bash
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/logic-puzzles-tasks.jsonl
+```
+
+All three strategies (A always-frontier, B always-cheapest-with-retries, C our
+budget-aware cascade) against all 15 puzzles, one ledger, live against the real
+gateway. Took ~65 minutes wall-clock — mostly Cerebras' free-tier limit of 5
+requests/minute per model, which the two-judge panel hit 45 times; every one
+retried automatically and every task still got judged (0 unusable verdicts, 0
+judge failures). Judge panel (`cerebras/zai-glm-4.7`,
+`openrouter/nvidia/nemotron-3-super-120b-a12b:free`) is confirmed disjoint from
+the answering ladder's models — the "no answer was graded by its own model"
+check passed. Full per-task log:
+[`part2_evidence/p1_cost_per_task.json`](part2_evidence/p1_cost_per_task.json)
+(`detail.per_task`), console output:
+[`part2_evidence/p1_live_run_console.log`](part2_evidence/p1_live_run_console.log).
+
+### Cost per call and cost per resolved task
+
+| Strategy | Spend | Calls | Cost/call | Resolved | Cost/resolved task |
+|---|---|---|---|---|---|
+| A always-frontier | $0.026296 | 15 | $0.001753 | 15/15 (100%) | $0.001753 |
+| B always-cheapest (retries) | $0.007362 | 21 | $0.000351 | 13/15 (86.7%) | $0.000566 |
+| **C our cascade** | $0.008348 | 19 | $0.000439 | 15/15 (100%) | **$0.000557** |
+
+Our policy has the *lowest* cost per resolved task of the three — 68.3%
+cheaper than always-frontier while matching its full 100% resolution rate, and
+even slightly ahead of the always-cheapest baseline despite that baseline
+having a 20% lower raw cost per call. That last point is the whole reason
+"cost per call" is a trap: B looks cheaper on the number most people would
+report, and is actually more expensive on the number that matters.
+
+Judged against `config/evals.yaml`'s rubric (5 criteria, 0–4 scale, resolved
+at weighted score ≥0.75 with no single criterion below 0.5) — unchanged from
+the shipped rubric, since Part 2's own instructions ask us to build the ladder
+and budget policy, not necessarily the judge.
+
+### Break-even resolution rate
+
+`p1` computes `r* = k / (C/c − 1 + k)` itself. **Quoting `k = cheapest_attempts
+= 3`, not `cheapest_retries = 2`** — `evals.yaml` sets `cheapest_retries: 2`,
+and `cheapest_attempts = min(max_attempts, 1 + cheapest_retries) = min(3, 3) = 3`
+is the value the formula actually needs (this is the exact slip the
+assignment material's own summary table made, per the assignment doc).
+
+| Comparison | Break-even r* | B's actual resolution rate | Headroom | Signature failure mode observed? |
+|---|---|---|---|---|
+| B vs A | 42.9% | 86.7% | +43.8 pts | No — B safely beats always-frontier here |
+| B vs C | 83.6% | 86.7% | +3.0 pts | **Yes** — B is 1.75% dearer per resolved task than C, despite B's rate sitting *above* the formula's break-even threshold |
+
+The B-vs-C row is worth stating honestly rather than smoothing over: the
+formula predicts that above `r*`, the cheap strategy should tie-or-win — but
+the **measured** numbers show B losing to C anyway. `r*` is a first-order
+model (uniform cost per call, a task failed once is assumed failed forever);
+at only 15 tasks and with B/C's cost-per-call gap being fairly narrow (-20%),
+reality diverged slightly from the formula's prediction. That's not a bug in
+the formula, it's a reminder that it's a derived estimate reported *beside*
+the measurement, never instead of it — exactly as `p1`'s own docstring says.
+
+### A task our policy routed to the wrong rung, and what it cost
+
+The assignment flags `logic_h2` (knights-and-knaves) and `logic_h4` (the
+boy-born-Tuesday puzzle) as likely candidates for a "confidently wrong"
+failure. Checked both against their known-correct answers — **honestly,
+neither failed on this run**: every attempt that resolved either puzzle,
+at every tier that resolved it, reached the actual correct answer (X=knave,
+Y=knight, Z=knight for `logic_h2`; 13/27 for `logic_h4`).
+
+The real wrong-rung case turned up at **`logic_h1`** (three sealed packages,
+courier ferries at most one at a time, correct answer: **7 crossings**) —
+under strategy C, our own policy:
+
+1. **economy** (`gpt-oss-120b`) — returned an **empty answer**. Cost
+   $0.000422, wasted.
+2. **standard** (`llama-3.3-70b-versatile`) — returned a fully-formed,
+   confident, **wrong** answer: *"...the minimum number of river crossings
+   needed is 5 (since after the fifth crossing, all packages and the courier
+   are on the other side, fulfilling the task's requirement)..."* — the
+   correct answer is 7. Cost $0.000435. The judge panel correctly caught this
+   as unresolved (both judges disagreed with the rubric's `meets_expectation`
+   criterion).
+3. **frontier** (`gemma-4-31b`) — correct: 7 crossings, valid sequence. Cost
+   $0.001829.
+
+**Total for C to solve `logic_h1`: $0.002686 — 47% more than Strategy A would
+have spent** going straight to frontier ($0.001829). That's the real,
+quantified cost of "start cheap and climb": two rungs that could not solve
+this particular puzzle (one silently empty, one confidently incorrect) had to
+be paid for before the rung that actually could kicked in. Full attempt-by-
+attempt detail (tier, decision, cost, verdict, answer excerpt) is in
+[`part2_evidence/p1_cost_per_task.json`](part2_evidence/p1_cost_per_task.json),
+`detail.per_task.C`, `task_id: "logic_h1"`.
+
+A related, secondary finding on `logic_h2`: strategy B (retry-only) burned all
+3 attempts on economy alone — one partial/truncated attempt, two empty ones —
+and never resolved it, spending $0.00125 for nothing. C, on the same puzzle,
+escalated to standard on attempt 2 and got the *correct* answer for **less**
+money ($0.00104 total) — a clean, concrete illustration of why "retry the same
+cheap tier" underperforms "escalate to a different one."
+
+### Invariant checks (from the proof's own gate, all passed)
+
+Every strategy attempted every task; every answering call that returned was
+metered (55 transport calls = 55 ledger charges, 0 transport failures); no
+verdict was unparseable; no empty/errored answer counted as resolved; no
+answer was graded by its own model; the ladder separates cost per call
+(projected top $0.01686 > bottom $0.000504); every model that answered has its
+own explicit `pricing.yaml` row (no silent fallback to `default`); no
+semantic-cache hit crossed strategies (cache hit count unchanged, 7 before and
+after).
+
+## Reproducing Part 2
+
+```bash
+# From S15Code, with the gateway (glc_v4, :8111) and Jaeger already running:
+cp htmlcov/logic-puzzles-tasks.jsonl proofs/tasks/logic-puzzles-tasks.jsonl   # already committed here
+uv run pytest -q                                                              # 277/277
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/logic-puzzles-tasks.jsonl
+# ~65 min live, mostly Cerebras' 5 req/min free-tier limit on the judge panel + frontier rung
+```
+
+---
+
 # Part 1 — Reproduce the Floor
 
 *Branch: `part1-reproduce-floor`. This section is the Part 1 submission — the
