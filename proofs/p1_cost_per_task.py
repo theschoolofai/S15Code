@@ -343,7 +343,7 @@ async def run_one(
             "latency_ms": charge.get("latency_ms", elapsed),
             "error": error,
             "answer_chars": len(answer),
-            "answer_excerpt": answer[-320:],
+            "answer": answer,
             "verdict": {
                 "status": judged.verdict.status,
                 "resolved": judged.verdict.resolved,

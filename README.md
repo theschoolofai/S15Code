@@ -99,31 +99,49 @@ uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/logic-puzzles-task
 
 All three strategies (A always-frontier, B always-cheapest-with-retries, C our
 budget-aware cascade) against all 15 puzzles, one ledger, live against the real
-gateway. Took ~65 minutes wall-clock — mostly Cerebras' free-tier limit of 5
-requests/minute per model, which the two-judge panel hit 45 times; every one
-retried automatically and every task still got judged (0 unusable verdicts, 0
-judge failures). Judge panel (`cerebras/zai-glm-4.7`,
-`openrouter/nvidia/nemotron-3-super-120b-a12b:free`) is confirmed disjoint from
-the answering ladder's models — the "no answer was graded by its own model"
-check passed. Full per-task log:
+gateway. Run **twice**, independently, on separate days — the second run to
+capture full answer text end-to-end (`proofs/p1_cost_per_task.py` originally
+kept only the last 320 characters of each answer; that truncation was removed
+so a reader can see exactly what each tier actually said, not just its tail).
+Both runs are reported here: **the second run is the one true evidence file**
+(`part2_evidence/p1_cost_per_task.json`, `ok: true`, full answers), but the
+first run's numbers are worth keeping visible too, because where the two runs
+*agree* is a stronger claim than either alone, and where they *disagree* is an
+honest lesson about live-LLM variance that a single run would have hidden.
+
+Each run took ~61–65 minutes wall-clock — mostly Cerebras' free-tier limit of
+5 requests/minute per model, which the two-judge panel hit 44–45 times each
+run; every one retried automatically and every task still got judged (0
+unusable verdicts, 0 judge failures both times). Judge panel
+(`cerebras/zai-glm-4.7`, `openrouter/nvidia/nemotron-3-super-120b-a12b:free`)
+is confirmed disjoint from the answering ladder's models — the "no answer was
+graded by its own model" check passed both times. Full per-task log (with
+complete, untruncated answer text):
 [`part2_evidence/p1_cost_per_task.json`](part2_evidence/p1_cost_per_task.json)
 (`detail.per_task`), console output:
 [`part2_evidence/p1_live_run_console.log`](part2_evidence/p1_live_run_console.log).
 
 ### Cost per call and cost per resolved task
 
-| Strategy | Spend | Calls | Cost/call | Resolved | Cost/resolved task |
-|---|---|---|---|---|---|
-| A always-frontier | $0.026296 | 15 | $0.001753 | 15/15 (100%) | $0.001753 |
-| B always-cheapest (retries) | $0.007362 | 21 | $0.000351 | 13/15 (86.7%) | $0.000566 |
-| **C our cascade** | $0.008348 | 19 | $0.000439 | 15/15 (100%) | **$0.000557** |
+| Strategy | Run 2 (evidence file) | | | | Run 1 (2026-08-03) | | | |
+|---|---|---|---|---|---|---|---|---|
+| | Spend | Calls | Cost/call | Resolved → Cost/resolved | Spend | Calls | Cost/call | Resolved → Cost/resolved |
+| A always-frontier | $0.026296 | 15 | $0.001753 | 15/15 (100%) → $0.001753 | $0.026296 | 15 | $0.001753 | 15/15 (100%) → $0.001753 |
+| B always-cheapest | $0.007351 | 21 | $0.000350 | 12/15 (80.0%) → $0.000613 | $0.007362 | 21 | $0.000351 | 13/15 (86.7%) → $0.000566 |
+| **C our cascade** | $0.011175 | 20 | $0.000559 | **15/15 (100%)** → $0.000745 | $0.008348 | 19 | $0.000439 | **15/15 (100%)** → $0.000557 |
 
-Our policy has the *lowest* cost per resolved task of the three — 68.3%
-cheaper than always-frontier while matching its full 100% resolution rate, and
-even slightly ahead of the always-cheapest baseline despite that baseline
-having a 20% lower raw cost per call. That last point is the whole reason
-"cost per call" is a trap: B looks cheaper on the number most people would
-report, and is actually more expensive on the number that matters.
+**A honest headline, not the tidier one:** in Run 1, our policy (C) had the
+*lowest* cost per resolved task of all three. In Run 2, it doesn't — B is
+actually cheaper than C on both cost/call (-37%) and cost/resolved-task
+(-18%) this time. What's **consistent across both runs**, and therefore the
+real, defensible claim: **C is the only strategy that resolves 100% of the
+puzzles in either run.** B's resolution rate moved between runs (86.7% →
+80.0%) depending on exactly which hard puzzles it happened to fail live; C's
+never did. Against always-frontier (A), C is unambiguously cheaper in both
+runs (57.5%–68.3% cheaper per resolved task) while matching its full
+resolution rate. Against always-cheapest (B), C is buying **completeness**,
+not always a lower bill — and the next section shows exactly which 3 puzzles
+that premium buys, and what each one specifically cost.
 
 Judged against `config/evals.yaml`'s rubric (5 criteria, 0–4 scale, resolved
 at weighted score ≥0.75 with no single criterion below 0.5) — unchanged from
@@ -138,71 +156,98 @@ and `cheapest_attempts = min(max_attempts, 1 + cheapest_retries) = min(3, 3) = 3
 is the value the formula actually needs (this is the exact slip the
 assignment material's own summary table made, per the assignment doc).
 
-| Comparison | Break-even r* | B's actual resolution rate | Headroom | Signature failure mode observed? |
-|---|---|---|---|---|
-| B vs A | 42.9% | 86.7% | +43.8 pts | No — B safely beats always-frontier here |
-| B vs C | 83.6% | 86.7% | +3.0 pts | **Yes** — B is 1.75% dearer per resolved task than C, despite B's rate sitting *above* the formula's break-even threshold |
+| Comparison | Run 2 r* | Run 2 B's rate | Run 2 headroom | Run 1 r* | Run 1 B's rate | Run 1 headroom |
+|---|---|---|---|---|---|---|
+| B vs A | 42.8% | 80.0% | +37.2 pts | 42.9% | 86.7% | +43.8 pts |
+| B vs C | 72.7% | 80.0% | +7.3 pts | 83.6% | 86.7% | +3.0 pts |
 
-The B-vs-C row is worth stating honestly rather than smoothing over: the
-formula predicts that above `r*`, the cheap strategy should tie-or-win — but
-the **measured** numbers show B losing to C anyway. `r*` is a first-order
-model (uniform cost per call, a task failed once is assumed failed forever);
-at only 15 tasks and with B/C's cost-per-call gap being fairly narrow (-20%),
-reality diverged slightly from the formula's prediction. That's not a bug in
-the formula, it's a reminder that it's a derived estimate reported *beside*
-the measurement, never instead of it — exactly as `p1`'s own docstring says.
+Neither run shows the textbook "signature failure mode" against A — B safely
+beats always-frontier on cost in both. Against C, the two runs tell **opposite**
+stories at the level of the formula's own flag: Run 1's measured numbers showed
+B *losing* to C on cost/resolved-task despite sitting above the formula's
+break-even threshold (`signature_failure_mode: true` — the formula under-
+predicted the trap). Run 2 shows B genuinely beating C on cost, consistent
+with its rate sitting above break-even (`signature_failure_mode: false`). This
+is the honest lesson of running it twice: `r*` is a first-order model (uniform
+cost per call, a task failed once is assumed failed forever) reported *beside*
+the measurement, never instead of it — at only 15 tasks, whether a strategy
+actually clears its own break-even line can depend on which specific hard
+puzzles it happened to fail on a given live run, not just its aggregate rate.
 
 ### A task our policy routed to the wrong rung, and what it cost
 
 The assignment flags `logic_h2` (knights-and-knaves) and `logic_h4` (the
 boy-born-Tuesday puzzle) as likely candidates for a "confidently wrong"
-failure. Checked both against their known-correct answers — **honestly,
-neither failed on this run**: every attempt that resolved either puzzle,
-at every tier that resolved it, reached the actual correct answer (X=knave,
-Y=knight, Z=knight for `logic_h2`; 13/27 for `logic_h4`).
+failure. Checked both against their known-correct answers in **both** runs —
+**honestly, neither failed in either run**: every attempt that resolved either
+puzzle, at every tier that resolved it, reached the actual correct answer
+(X=knave, Y=knight, Z=knight for `logic_h2`; 13/27 for `logic_h4`).
 
-The real wrong-rung case turned up at **`logic_h1`** (three sealed packages,
-courier ferries at most one at a time, correct answer: **7 crossings**) —
-under strategy C, our own policy:
+The real wrong-rung case turned up at **`logic_h1`** (three sealed packages, a
+courier who can ferry at most one at a time, correct answer: **7 crossings**)
+— under strategy C, our own policy, **reproduced independently in both runs**:
 
-1. **economy** (`gpt-oss-120b`) — returned an **empty answer**. Cost
-   $0.000422, wasted.
+1. **economy** (`gpt-oss-120b`) — returned an **empty answer** both times.
+   Cost $0.000422, wasted.
 2. **standard** (`llama-3.3-70b-versatile`) — returned a fully-formed,
-   confident, **wrong** answer: *"...the minimum number of river crossings
-   needed is 5 (since after the fifth crossing, all packages and the courier
-   are on the other side, fulfilling the task's requirement)..."* — the
-   correct answer is 7. Cost $0.000435. The judge panel correctly caught this
-   as unresolved (both judges disagreed with the rubric's `meets_expectation`
+   confident, **wrong** answer both times. Run 2's full text (previously only
+   the last 320 characters were kept — this is the complete answer): the
+   model correctly starts tracking constraints, then talks itself into an
+   error mid-derivation — *"...the sequence provided achieves the goal in 5
+   crossings, with the understanding that the courier's presence is required
+   to ensure the packages' safety during transport. The final result is: The
+   minimum number of river crossings needed is 5..."* — the correct answer is
+   7. Cost $0.000488. The judge panel correctly caught this as unresolved
+   both runs (both judges disagreed with the rubric's `meets_expectation`
    criterion).
-3. **frontier** (`gemma-4-31b`) — correct: 7 crossings, valid sequence. Cost
-   $0.001829.
+3. **frontier** (`gemma-4-31b`) — correct both times: 7 crossings, valid
+   sequence. Cost $0.001829.
 
-**Total for C to solve `logic_h1`: $0.002686 — 47% more than Strategy A would
-have spent** going straight to frontier ($0.001829). That's the real,
-quantified cost of "start cheap and climb": two rungs that could not solve
-this particular puzzle (one silently empty, one confidently incorrect) had to
-be paid for before the rung that actually could kicked in. Full attempt-by-
-attempt detail (tier, decision, cost, verdict, answer excerpt) is in
+**Total for C to solve `logic_h1`: $0.002740 in Run 2 (was $0.002686 in Run
+1) — roughly 50% more than Strategy A would have spent** going straight to
+frontier ($0.001829), consistent across both runs (47% then 50%). That
+consistency is what makes this a *structural* finding rather than one-off
+noise: two rungs that cannot solve this particular constraint-satisfaction
+puzzle — one silently empty, one confidently wrong via a genuine reasoning
+slip near the very end of an otherwise-correct derivation — have to be paid
+for before the rung that actually can kicks in. Full attempt-by-attempt
+detail (tier, decision, cost, verdict, complete answer text) is in
 [`part2_evidence/p1_cost_per_task.json`](part2_evidence/p1_cost_per_task.json),
 `detail.per_task.C`, `task_id: "logic_h1"`.
 
-A related, secondary finding on `logic_h2`: strategy B (retry-only) burned all
-3 attempts on economy alone — one partial/truncated attempt, two empty ones —
-and never resolved it, spending $0.00125 for nothing. C, on the same puzzle,
-escalated to standard on attempt 2 and got the *correct* answer for **less**
-money ($0.00104 total) — a clean, concrete illustration of why "retry the same
-cheap tier" underperforms "escalate to a different one."
+A related, secondary finding, new to Run 2: on `logic_h2`, strategy C's
+**standard**-tier attempt hit a genuine **infrastructure failure**, not a
+content problem — `RuntimeError: gateway /v1/chat returned 503: "all
+providers unavailable. attempts: [{'provider': 'groq', 'reason': 'TPM
+limit'}]"`. Groq's own free-tier tokens-per-minute limit, not Cerebras' or
+NVIDIA's (the two flaky providers Part 1 already documented) — a new
+provider added to that list. The call was correctly charged **$0.00** (no
+tokens returned, nothing to bill) and counted as an unresolved attempt; the
+cascade moved on to frontier and resolved the puzzle anyway. This is the
+system working as designed under a real transport failure, not a hidden one
+— visible in the ledger as attempt 2 with `charged_tier: null`, `cost: 0.0`,
+and the raw error in `verdict.reason`.
 
-### Invariant checks (from the proof's own gate, all passed)
+A third finding, consistent in both runs: strategy B (retry-only) burned all
+3 attempts on `logic_h2`'s economy tier alone — partial or truncated answers
+every time — and never resolved it, spending ~$0.00125 for nothing both runs.
+C, on the same puzzle, escalated past the retry trap and got the *correct*
+answer in both runs — a clean, concrete illustration of why "retry the same
+cheap tier" underperforms "escalate to a different one," independent of the
+Run 1 vs Run 2 cost/resolved-task headline flip above.
+
+### Invariant checks (from the proof's own gate, all passed — Run 2)
 
 Every strategy attempted every task; every answering call that returned was
-metered (55 transport calls = 55 ledger charges, 0 transport failures); no
-verdict was unparseable; no empty/errored answer counted as resolved; no
+metered (56 transport calls = 56 ledger charges; 1 transport failure — the
+Groq TPM-limit 503 above — correctly not charged, since no tokens came back);
+no verdict was unparseable; no empty/errored answer counted as resolved; no
 answer was graded by its own model; the ladder separates cost per call
 (projected top $0.01686 > bottom $0.000504); every model that answered has its
 own explicit `pricing.yaml` row (no silent fallback to `default`); no
 semantic-cache hit crossed strategies (cache hit count unchanged, 7 before and
-after).
+after). Run 1 passed the same gate at 55/55 transport calls/charges, 0
+failures.
 
 ## Reproducing Part 2
 
