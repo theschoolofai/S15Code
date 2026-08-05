@@ -210,3 +210,180 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+## Evidence: a Policy, Measured and Attacked (Loomstack Billing-Support Triage)
+
+A worked case study proving out this session's whole claim — routing, budgeting,
+tracing — on a task class and a ladder this exercise built, not the shipped
+`config/`. Full detail and every raw number lives in `docs/part1_validation.md`,
+`docs/part2_makeapolicy.md` and `docs/part3_attack_the_budget.md`; this section
+is the operator-facing summary.
+
+### The workload and the ladder
+
+18 support tickets for a fictional SaaS billing desk
+(`proofs/tasks/part2_billing_support.jsonl`) — classify a ticket and apply a
+six-rule refund/billing policy correctly, including six tickets built as
+deliberate traps (a false "duplicate charge" claim, an exact-boundary usage
+percentage, a rule that only applies to enterprise accounts, a genuinely
+ambiguous request, two policy rules that conflict, and two invoices whose
+failed-payment clocks must be tracked independently).
+
+A dedicated ladder and budget (`config/part2_billing_support/`), not an edit to
+the shipped one:
+
+| Rung | Provider / model | $/Mtok in / out |
+|---|---|---|
+| economy | `groq` / `openai/gpt-oss-120b` | 0.15 / 0.75 |
+| standard | `gemini` / `gemini-3.1-flash-lite` | 0.25 / 1.50 |
+| frontier | `openrouter` / `deepseek/deepseek-chat` | 0.2574 / 1.029 |
+
+The shipped ladder's frontier rung (`github`/`openai/gpt-4.1`) was measured dead
+mid-session — a live `410 Gone`, "a scheduled retirement brownout," from GitHub's
+own API (`docs/part1_validation.md` Section 4) — so this ladder's frontier rung
+points at a provider confirmed reachable the same day, priced from a live
+fetch of OpenRouter's own pricing page rather than copied or guessed. Budget:
+`default_budget: 0.01` per ticket, sized off the ladder's own projected worst
+case with roughly 8x headroom (`config/part2_billing_support/budgets.yaml`).
+
+### Cost per call and cost per resolved task, against always-frontier
+
+Measured live (`proofs/p1_cost_per_task.py`), on the 14 tasks the frontier
+baseline actually got to attempt before an unrelated `openrouter` daily rate
+limit cut it off mid-run (the fair subset; full accounting and the raw 18-task
+numbers are in `part2_makeapolicy.md` Section 4.1):
+
+| Strategy | Cost/call | Cost/resolved | Resolved |
+|---|---|---|---|
+| Always-frontier (baseline) | $0.00017469 | $0.00017469 | 14/14 (100%) |
+| **My policy** | **$0.00015330 (−12.24%)** | **$0.00020047 (+14.76%)** | 13/14 (92.9%) |
+
+My policy is cheaper per call and **more expensive per resolved task** than
+always calling the frontier model. That is not a bug in the measurement — see
+break-even below.
+
+### Break-even resolution rate
+
+```
+r* = k / (C/c - 1 + k) = 3 / (0.00017469/0.00015330 - 1 + 3) = 95.56%
+```
+
+(`k` = 3 max attempts, `c` = my policy's cost/call, `C` = the baseline's
+cost/resolved — the identical `break_even_resolution_rate()` function
+`proofs/p1_cost_per_task.py` itself uses, not a reimplementation.) My policy's
+measured resolution rate is **92.86%** — **1.87 points below its own
+break-even rate**. Below `r*`, cost per call falls while cost per resolved task
+rises, which is exactly what the table above shows. On this ladder's price
+spread (1.7x, frontier to economy — the shipped ladder's was 13x) and this task
+class's short structured replies, cascading loses to simply calling the
+frontier model every time.
+
+### A Jaeger trace, span hierarchy with costs
+
+One real trace from the adversarial run below
+(`085f12c4e067ccb46dd7a0c3156e2f26`, `http://127.0.0.1:16686/api/traces/085f12c4e067ccb46dd7a0c3156e2f26`),
+103 spans: `run: 1, agent_loop: 31, plan: 31, node: 30, provider_call: 10`. One
+admitted call's span, read back from the backend itself:
+
+```
+gen_ai.provider.name: gemini_1        gen_ai.request.model: gemini-3.1-flash-lite
+gen_ai.usage.input_tokens: 25         gen_ai.usage.output_tokens: 9
+s15.cost: 0.00001975                  s15.cost.projected: 0.0006085
+s15.budget.decision: proceed          s15.tier: standard
+```
+
+### The adversarial test: spend before control, refusal after
+
+`proofs/p8_attack_the_budget.py` (new proof) drives a runaway loop — one more
+node from every outcome, forever, requesting the same tier every round — twice:
+once against an unbounded stand-in config
+(`config/part2_billing_support_uncontrolled/`, `default_budget: 1000`,
+`max_calls_per_run: 100000`) and once against the real, deployed policy.
+
+| | Ceiling | Admitted calls | Spent | Refusals |
+|---|---|---|---|---|
+| **Before control** | $1000 | 30 / 30 rounds | $0.00059475 | 0 |
+| **After control** | $0.01 | 10 / 30 rounds | $0.00019775 | 20 |
+
+Every one of the 20 refused rounds is a real `ERROR`-status span, fetched back
+out of Jaeger by trace id, carrying the exact reason:
+
+```
+otel.status_description: "BudgetRefused: budget refused a standard call
+  for loop_16: run call ceiling reached (10/10)"
+```
+
+A second attack — requesting a tier with a ceiling below what a single token
+could cost (`proofs/p2_budget_holds.py`'s `impossible` allowance, run against
+this same policy) — is refused in 91ms with **zero calls and zero transport
+calls**: the admission gate refuses on the *projected* cost, before any
+provider is ever contacted, so this half of the attack holds regardless of
+which providers happen to be reachable. Full write-up, including one honest
+complication (a still-live `openrouter` rate limit that caused unrelated
+transport failures elsewhere in that same run), in
+`docs/part3_attack_the_budget.md`.
+
+### A case this policy got wrong
+
+`bs08_refund_in_window_high_usage` — my policy escalated economy → standard →
+a rate-limited frontier attempt, spending **$0.00040244 across 3 attempts**,
+and still finished unresolved. Always-frontier answered it correctly in one
+**$0.00018658** call — 2.16x cheaper than my policy's failed attempt. Root
+cause (`part2_makeapolicy.md` Section 7): the cheaper tiers gave a
+*substantively correct* answer (deny the refund, offer a prorated credit) but
+picked a different action label than the task's exact `expectation` string
+named, out of two labels that overlap under my own policy text — a taxonomy
+ambiguity that spending more on a stronger model cannot reliably fix, because
+tier is the wrong lever for a labeling-convention gap.
+
+### Reproduce from a fresh checkout
+
+```bash
+# 1. the gateway (separate repo, sibling directory)
+cd glc_v4 && uv sync && cp .env.example .env   # fill in provider keys
+uv run glc serve &                              # http://127.0.0.1:8111
+
+# 2. (optional but required for the trace evidence) Jaeger
+docker compose -f glc_v4/docker-compose.observability.yml up -d
+# UI: http://localhost:16686   OTLP: http://localhost:4318
+
+# 3. this repo
+cd S15Code && uv sync
+uv run pytest -q                                # 277 passed
+
+# 4. the measurement (cost per call/resolved, break-even)
+uv run python proofs/p1_cost_per_task.py \
+  --tasks proofs/tasks/part2_billing_support.jsonl \
+  --principal part2/billing_support \
+  --config-dir config/part2_billing_support \
+  --base-url http://127.0.0.1:8111
+
+# 5. the adversarial test — before, then after
+uv run python proofs/p8_attack_the_budget.py \
+  --task "Reply with any short greeting." \
+  --config-dir config/part2_billing_support_uncontrolled \
+  --principal part3/attack --tier standard --loop-limit 30
+
+uv run python proofs/p8_attack_the_budget.py \
+  --task "Reply with any short greeting." \
+  --config-dir config/part2_billing_support \
+  --principal part3/attack --tier standard --loop-limit 30 \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces
+
+# 6. the unaffordable-tier refusal (no live gateway required for the claim itself)
+uv run python proofs/p2_budget_holds.py \
+  --task "Draft a one-sentence reply to a billing question." \
+  --budget 0.01 --principal part3/attack \
+  --config-dir config/part2_billing_support
+```
+
+Every command above exits non-zero on a failed check and writes machine-readable
+JSON to `proofs/out/`. `--otel-endpoint` is optional everywhere it appears —
+omit it and every proof still builds and asserts its spans in-process, just
+sends nothing over the wire.
+
+No secrets, `.env`, or real user data are anywhere in this evidence: every
+config file above is priced from a publicly documented rate, every task is
+about a fictional product ("Loomstack"), and every principal string
+(`part2/billing_support`, `part3/attack`) is a synthetic label with no
+connection to a real tenant.

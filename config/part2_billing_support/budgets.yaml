@@ -1,0 +1,35 @@
+# Budget policy for the Loomstack billing-support triage task class.
+#
+# A real support ticket should not cost more than a fraction of a cent to
+# triage, even escalated through the whole ladder -- this is not a research
+# or coding task where a wide allowance is defensible. The ceiling below is
+# sized off the ladder's own projected worst case (config/pricing.yaml x
+# tiers.yaml's projected_input/output_tokens), not picked arbitrarily:
+#
+#   economy   700in/150out  @ 0.15/0.75  -> $0.00022 projected
+#   standard  700in/150out  @ 0.25/1.50  -> $0.00040 projected
+#   frontier  700in/200out  @ 0.2574/1.029 -> $0.00039 projected
+#
+# so a full three-rung cascade (Section 5.1's style) worst-cases at roughly
+# $0.001 projected. $0.01 leaves > 8x headroom over that -- enough that
+# `refuse_at` guards against a genuinely oversized ticket (a very long
+# pasted email thread), not against ordinary triage.
+
+default_budget: 0.01
+
+reserve_fraction: 0.20
+downgrade_at: 0.50
+refuse_at: 0.90
+headroom_fraction: 0.02
+
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# A triage ticket is one call, occasionally escalated up to three (matching
+# config/evals.yaml's strategies.max_attempts). Ten calls per run is already
+# generous; a support-triage node retrying past that is a bug, not a
+# legitimate cascade, so the ceiling is tight on purpose.
+max_calls_per_run: 10
+max_calls_per_node: 3
+
+principals: {}

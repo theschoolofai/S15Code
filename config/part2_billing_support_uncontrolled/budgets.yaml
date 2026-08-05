@@ -1,0 +1,23 @@
+# NOT a real deployment policy. This is the "before control" side of
+# proofs/p8_attack_the_budget.py's adversarial test -- the ladder and pricing
+# are identical to config/part2_billing_support/, but every ceiling here is
+# set high enough to be functionally absent, standing in for what a run looks
+# like with no economic control layer at all (glc_v3's actual starting point,
+# per s15architecture.md Section 2: throughput caps existed, a spend cap did
+# not). See docs/part3_attack_the_budget.md for the paired "after control"
+# run against config/part2_billing_support/'s real numbers.
+
+default_budget: 1000.0
+
+reserve_fraction: 0.20
+downgrade_at: 1.0
+refuse_at: 1.0
+headroom_fraction: 0.0
+
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+max_calls_per_run: 100000
+max_calls_per_node: 100000
+
+principals: {}
