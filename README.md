@@ -316,12 +316,17 @@ r* = k / (C/c − 1 + k)
 | measured price ratio `C/c` | **6.81** |
 | calls consumed by a failed task `k` | 3 |
 | **break-even resolution rate `r*`** | **34.1%** (harness reports 30.4% from a different denominator) |
-| **measured failure rate** | **20%** |
-| **headroom** | **14 percentage points** |
+| **measured resolution rate** (B, 12/15) | **80.0%** |
+| **headroom above break-even** | **45.9 percentage points** (49.6 on the harness figure) |
 
-Below a ~66% resolution rate the cheap rung's retry loop costs more per resolved
-task than always-frontier. We are comfortably clear, so the signature failure mode
-(cheaper per call, dearer per resolved task) was **NOT OBSERVED**.
+`r*` is a **resolution** threshold, so it is compared against a resolution rate:
+below **34.1% resolved** the cheap rung's retry loop costs more per resolved task
+than always-frontier. It measured **80% resolved**, clearing the bar by a wide
+margin — so the signature failure mode (cheaper per call, dearer per resolved
+task) was **NOT OBSERVED**.
+
+Restated as failures, since that inverts less confusingly than it looks: the cheap
+rung could fail up to **65.9%** of tasks before the trap bites. It failed **20%**.
 
 **`C/c` is a variable you set, not one you are given.** Capping frontier at
 `max_tokens: 900` — a sensible cost control — narrowed the ratio from 9.2x to
@@ -522,8 +527,10 @@ are not a reliable capability ordering.
 matches always-frontier task for task. At $0.004, exactly one task
 (`m04_swallowed_error`) for a further 10 points of saving.
 
-**When it stops being worth it:** when the cheap rung's failure rate exceeds
-**34%**. Measured 20%. Recompute after any change to models or token ceilings.
+**When it stops being worth it:** when the cheap rung's **resolution** rate falls
+below **34.1%** — equivalently, when it fails more than **65.9%** of tasks. It
+measured **80% resolved / 20% failed**, so there are **45.9 points** of margin.
+Recompute after any change to models or token ceilings, since both move `C/c`.
 
 **The measurement's own cost is the sharpest finding.** The judge panel cost
 $0.029 to grade $0.042 of work — **70% overhead** — and is also the least reliable
