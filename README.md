@@ -278,6 +278,15 @@ every rung, asserted by the harness and by
 | **C this policy** | $0.012 | 20 | $0.010270 | $0.00051349 | **14/15** | **$0.00073355** |
 | D descending, tight ceiling | **$0.004** | 19 | $0.006900 | $0.00036317 | 13/15 | $0.00053079 |
 
+**Logs.** A, B and C are one run —
+[`p1_cost_per_task_part2_codereview.json`](evidence/logs/p1_cost_per_task_part2_codereview.json)
+(9/9 checks). A′ is
+[`p1_cost_per_task_frontier_fair.json`](evidence/logs/p1_cost_per_task_frontier_fair.json),
+D is [`p1_cost_per_task_descend.json`](evidence/logs/p1_cost_per_task_descend.json).
+Each records every per-task attempt with the tier charged, the verdict and its
+panel agreement, so any figure above traces to the call behind it. Home paths are
+replaced with `<repo>`/`<path>`; nothing else is altered.
+
 **A′ is the honest baseline, and it exists because A was unfair.** The harness
 caps strategy A at one attempt while B and C take three. Since these models are
 not deterministic even at `temperature: 0` (§6), one sample is a materially weaker
@@ -373,7 +382,9 @@ bill this back.
 ### 5. The adversarial test — spend before the control, refusal after
 
 [`proofs/part3_attack.py`](proofs/part3_attack.py), four attacks against this
-policy, all through the real controller, graph and journal.
+policy, all through the real controller, graph and journal. Full analysis in
+**[`part3/README.md`](part3/README.md)**; log:
+[`evidence/logs/part3_attack.json`](evidence/logs/part3_attack.json).
 
 | Attack | Demanded | Allowed | Held? |
 |---|---|---|---|
@@ -456,7 +467,9 @@ noise.
 
 **The judge's verdict is stable; its scoring is not.** I predicted the judge was
 the noise source and tested it: one answer per task, submitted to the panel ten
-times ([`proofs/part2_judge_noise.py`](proofs/part2_judge_noise.py), free-tier, $0).
+times ([`proofs/part2_judge_noise.py`](proofs/part2_judge_noise.py), free-tier, $0;
+log: [`evidence/logs/part2_judge_noise.json`](evidence/logs/part2_judge_noise.json),
+which holds all 40 trials with their individual scores).
 
 | Task | Verdict | Distinct scores | Panel split | Verdict flipped? |
 |---|---|---|---|---|

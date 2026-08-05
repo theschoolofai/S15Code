@@ -1,0 +1,2963 @@
+{
+  "proof": "p1_cost_per_task",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "15 tasks from proofs/tasks/codereview.jsonl",
+    "budget": 0.012,
+    "principal": "part2/frontier-fair",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "<repo>/config/part2_frontier_fair",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.012,
+    "thresholds": {
+      "downgrade_at": 0.85,
+      "refuse_at": 0.95,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.0,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "C budget_aware": "spend 0.03466925 USD  calls 19  cost/call 0.00182470  resolved 14/15  cost/resolved 0.00247637  tiers frontier,standard",
+    "C resolved by difficulty": "{\"easy\": 5, \"hard\": 5, \"moderate\": 4}  of {\"easy\": 5, \"moderate\": 5, \"hard\": 5}",
+    "ladder": "economy < standard < frontier",
+    "tasks": "15 from proofs/tasks/codereview.jsonl  {'easy': ['e01_offbyone', 'e02_operator', 'e03_missing_return', 'e04_shadowed_sum', 'e05_int_division'], 'moderate': ['m01_mutate_during_iter', 'm02_mutable_default', 'm03_shallow_copy', 'm04_swallowed_error', 'm05_float_equality'], 'hard': ['h01_late_binding', 'h02_check_then_act', 'h03_binary_search', 'h04_retry_budget', 'h05_partial_write']}",
+    "per-task ceiling": "0.012 USD (principal part2/frontier-fair)",
+    "judge panel": "cerebras/zai-glm-4.7, nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "judge bar": "overall >= 0.8, min criterion 0.67, tie_break unresolved",
+    "judge meta-cost": "38 calls, 0.01118640 USD, 0 unusable, 20 transport retries, 0 verdicts reused",
+    "signature failure mode": "NOT OBSERVED \u2014 {}",
+    "wall clock": "788.8s",
+    "where the strategies disagreed": "no task split the strategies"
+  },
+  "checks": [
+    {
+      "claim": "every strategy attempted every task in the file",
+      "ok": true,
+      "observed": "1 strategies x 15 tasks"
+    },
+    {
+      "claim": "every answering provider call that returned is metered",
+      "ok": true,
+      "observed": "19 transport calls, 19 ledger charges, 0 transport failures (no tokens reported, so not charged)"
+    },
+    {
+      "claim": "no verdict was unparseable (an unparseable judge is a JUDGE failure)",
+      "ok": true,
+      "observed": "0 tasks ended with status=judge_failed, 0 unusable judge samples"
+    },
+    {
+      "claim": "an empty or errored answer never counted as resolved",
+      "ok": true,
+      "observed": "0 such rows"
+    },
+    {
+      "claim": "no answer was graded by its own model",
+      "ok": true,
+      "observed": "judges ['nvidia/nemotron-3-super-120b-a12b', 'zai-glm-4.7'] vs ladder ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']"
+    },
+    {
+      "claim": "at least one strategy resolved at least one task, so cost/resolved is defined",
+      "ok": true,
+      "observed": "14 resolved rows across 1 strategies"
+    },
+    {
+      "claim": "the configured ladder separates cost per call at all",
+      "ok": true,
+      "observed": "projected top 0.00800000 > bottom 0.00036000"
+    },
+    {
+      "claim": "every model that answered has its own row in pricing.yaml",
+      "ok": true,
+      "observed": "all priced"
+    },
+    {
+      "claim": "no semantic-cache hit served one strategy another's answer",
+      "ok": true,
+      "observed": {
+        "before": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        },
+        "after": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        }
+      }
+    }
+  ],
+  "detail": {
+    "divergences": {},
+    "finding": {
+      "observed": null,
+      "reason": "strategy B did not run; nothing to compare"
+    },
+    "summaries": {
+      "C": {
+        "strategy": "C",
+        "name": "budget_aware",
+        "description": "opens on the most_capable rung (frontier), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict",
+        "start_tier": "frontier",
+        "max_attempts": 3,
+        "escalates": true,
+        "tasks": 15,
+        "spend": 0.03466925,
+        "calls": 19,
+        "attempts": 19,
+        "cost_per_call": 0.0018246973684210525,
+        "cost_per_task": 0.002311283333333333,
+        "resolved": 14,
+        "unresolved": 1,
+        "judge_failed": 0,
+        "cost_per_resolved_task": 0.002476375,
+        "resolution_rate": 0.9333333333333333,
+        "tokens": 6742,
+        "tokens_per_resolved_task": 481.57142857142856,
+        "latency_ms": 50697.0,
+        "errors": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "tiers_charged": [
+          "frontier",
+          "standard"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite",
+          "openai/gpt-4.1"
+        ],
+        "resolved_by_difficulty": {
+          "easy": 5,
+          "hard": 5,
+          "moderate": 4
+        }
+      }
+    },
+    "strategies": {
+      "A": {
+        "key": "A",
+        "name": "always_frontier",
+        "start_tier": "frontier",
+        "attempts": 1,
+        "escalate": false,
+        "description": "every task once on the top rung (frontier)"
+      },
+      "B": {
+        "key": "B",
+        "name": "always_cheapest",
+        "start_tier": "economy",
+        "attempts": 3,
+        "escalate": false,
+        "description": "every task on the bottom rung (economy), retried up to 3 times on an unresolved verdict"
+      },
+      "C": {
+        "key": "C",
+        "name": "budget_aware",
+        "start_tier": "frontier",
+        "attempts": 3,
+        "escalate": true,
+        "description": "opens on the most_capable rung (frontier), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict"
+      }
+    },
+    "evals_config": {
+      "directory": "<repo>/config/part2_frontier_fair",
+      "judge": {
+        "scale_max": 3.0,
+        "threshold": 0.8,
+        "min_criterion": 0.67,
+        "tie_break": "unresolved",
+        "retries": 5,
+        "retry_backoff_seconds": 15.0,
+        "pace_seconds": 4.0,
+        "criteria": [
+          {
+            "name": "identifies_defect",
+            "weight": 3.0,
+            "requires_expectation": true
+          },
+          {
+            "name": "correct_fix",
+            "weight": 2.0,
+            "requires_expectation": true
+          },
+          {
+            "name": "no_false_alarms",
+            "weight": 1.0,
+            "requires_expectation": false
+          }
+        ],
+        "panel": [
+          {
+            "name": "judge_a",
+            "provider": "cerebras",
+            "model": "zai-glm-4.7"
+          },
+          {
+            "name": "judge_b",
+            "provider": "nvidia",
+            "model": "nvidia/nemotron-3-super-120b-a12b"
+          }
+        ]
+      },
+      "strategies": {
+        "max_attempts": 3,
+        "cheapest_retries": 2,
+        "cheapest_attempts": 3,
+        "escalate": true,
+        "start": "most_capable"
+      }
+    },
+    "judge_meter": {
+      "judge_calls": 38,
+      "judge_failures": 0,
+      "judge_transport_failures": 20,
+      "judge_cost": 0.011186399999999999,
+      "judge_input_tokens": 40732,
+      "judge_output_tokens": 2565,
+      "panel": [
+        {
+          "name": "judge_a",
+          "provider": "cerebras",
+          "model": "zai-glm-4.7"
+        },
+        {
+          "name": "judge_b",
+          "provider": "nvidia",
+          "model": "nvidia/nemotron-3-super-120b-a12b"
+        }
+      ]
+    },
+    "judge_verdict_reuses": 0,
+    "tasks": [
+      {
+        "id": "e01_offbyone",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef last_n(items, n):\n    # return the final n items, in order\n    return items[len(items) - n - 1:]\n```",
+        "expectation": "Identifies the off-by-one in the slice start: it should be items[len(items)-n:] (or items[-n:]), because subtracting an extra 1 returns n+1 items.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e02_operator",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef is_expired(age_seconds, ttl_seconds):\n    # an entry is expired once it is older than its ttl\n    return age_seconds < ttl_seconds\n```",
+        "expectation": "Identifies the inverted comparison: it should be age_seconds > ttl_seconds (or >=). As written it reports fresh entries as expired and vice versa.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e03_missing_return",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef normalise(name):\n    if name is None:\n        return \"\"\n    name.strip().lower()\n```",
+        "expectation": "Identifies the missing return on the final line: it should be return name.strip().lower(). As written the function returns None.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e04_shadowed_sum",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef total_bytes(chunks):\n    sum = 0\n    for c in chunks:\n        sum += len(c)\n    return sum(chunks)\n```",
+        "expectation": "Identifies that the final line calls sum(chunks) instead of returning the accumulated variable; it should be return sum. Calling the shadowed name raises TypeError because sum is now an int.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e05_int_division",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef average_latency_ms(total_ms, count):\n    if count == 0:\n        return 0.0\n    return total_ms // count\n```",
+        "expectation": "Identifies the floor division: it should be total_ms / count. Integer division discards the fractional part of the average.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "m01_mutate_during_iter",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef drop_expired(cache, now):\n    for key, entry in cache.items():\n        if entry.expires_at <= now:\n            del cache[key]\n    return cache\n```",
+        "expectation": "Identifies mutation of the dict while iterating over it, which raises RuntimeError: dictionary changed size during iteration. Fix is to iterate over a snapshot, e.g. list(cache.items()), or build a new dict.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m02_mutable_default",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef collect(item, seen=[]):\n    seen.append(item)\n    return seen\n```",
+        "expectation": "Identifies the mutable default argument: the list is created once at definition time and shared across all calls, so results accumulate between unrelated calls. Fix is seen=None with seen = [] inside the body.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m03_shallow_copy",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef with_extra_header(request, key, value):\n    copy = dict(request)\n    copy[\"headers\"][key] = value\n    return copy\n```",
+        "expectation": "Identifies that dict(request) is a shallow copy, so the nested headers dict is shared and the caller's original request is mutated. Fix is to copy the nested dict too, e.g. copy['headers'] = {**request['headers'], key: value}, or use copy.deepcopy.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m04_swallowed_error",
+        "task": "This function has exactly one defect. Name the defect and explain why it matters.\n\n```python\ndef load_all(paths, parse):\n    results = []\n    for p in paths:\n        try:\n            results.append(parse(p))\n        except Exception:\n            pass\n    return results\n```",
+        "expectation": "Identifies that the bare except swallows every failure silently, so the caller receives a short list indistinguishable from a genuinely short input and cannot tell that files failed to parse. Fix is to log or collect the errors, or narrow and re-raise.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m05_float_equality",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef is_fully_spent(spent, budget):\n    return spent == budget\n```",
+        "expectation": "Identifies exact float equality: accumulated floating point spend will essentially never equal the budget exactly, so this returns False when the budget is effectively exhausted. Fix is a tolerance comparison, e.g. spent >= budget - epsilon, or use integers/Decimal.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "h01_late_binding",
+        "task": "This function has exactly one defect. Name the defect and give the corrected code.\n\n```python\ndef make_validators(limits):\n    validators = []\n    for limit in limits:\n        validators.append(lambda v: v <= limit)\n    return validators\n```",
+        "expectation": "Identifies the late-binding closure: every lambda captures the variable limit, not its value, so after the loop all validators compare against the LAST limit. Fix is a default argument, lambda v, limit=limit: v <= limit, or functools.partial. Answers that only say 'use a list comprehension' or blame the mutable list do NOT identify the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h02_check_then_act",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef reserve(pool, node_id, amount):\n    # pool.remaining() and pool.take() are each individually thread-safe\n    if pool.remaining() >= amount:\n        pool.take(amount)\n        return True\n    return False\n```",
+        "expectation": "Identifies the check-then-act race (TOCTOU): between remaining() and take() another thread can take the capacity, so two callers can both pass the check and overdraw the pool. Individually thread-safe calls do not compose. Fix is to hold a lock across both, or use an atomic compare-and-take. Answers that say the individual calls need locking have MISSED it.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h03_binary_search",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef first_ge(sorted_values, target):\n    # index of the first value >= target, or len(sorted_values)\n    lo, hi = 0, len(sorted_values) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if sorted_values[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo\n```",
+        "expectation": "Identifies that hi is initialised to len-1 rather than len, so when every value is < target the function returns len-1 instead of the documented len. Fix is hi = len(sorted_values). Answers that claim an infinite loop, or that mid should be lo + (hi-lo)//2 for overflow, have NOT found the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h04_retry_budget",
+        "task": "This function has exactly one defect relating to the deadline. Name it and explain how to fix it.\n\n```python\ndef call_with_retries(send, payload, attempts=3, deadline=None):\n    last = None\n    for _ in range(attempts):\n        try:\n            return send(payload, timeout=deadline)\n        except TimeoutError as e:\n            last = e\n    raise last\n```",
+        "expectation": "Identifies that the same absolute deadline (or full timeout) is passed to every attempt rather than being decremented by time already elapsed, so the total wall time is up to attempts x deadline instead of bounded by deadline. Fix is to track remaining time and pass the shrinking budget, aborting when it reaches zero. Answers about missing backoff or catching too-narrow an exception have NOT found the stated defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h05_partial_write",
+        "task": "This function claims to write atomically but has exactly one defect that can still leave the destination holding truncated data after a crash. Name it and explain the fix.\n\n```python\ndef save_atomic(path, data, tmp_suffix=\".tmp\"):\n    tmp = path + tmp_suffix\n    with open(tmp, \"w\") as f:\n        f.write(data)\n    os.replace(tmp, path)\n```",
+        "expectation": "Identifies that the file is not flushed and fsynced before os.replace, so the rename can be durable while the data is still in the OS buffer, leaving an empty or truncated file after a power loss. Fix is f.flush() then os.fsync(f.fileno()) inside the with block (ideally also fsyncing the directory). Answers that only say 'os.replace is atomic so this is fine', or that flag the missing import of os, have NOT found the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      }
+    ],
+    "per_task": {
+      "C": [
+        {
+          "task_id": "e01_offbyone",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e01_offbyone#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0008339999999999999,
+              "input_tokens": 133,
+              "output_tokens": 71,
+              "latency_ms": 1936.0,
+              "error": null,
+              "answer_chars": 264,
+              "answer_excerpt": "**Defect:** The slicing index is off by one. The current code starts the slice at `len(items) - n - 1`, which omits one extra item from the end. The correct starting index should be `len(items) - n`.\n\n**Corrected line:**\n```python\nreturn items[len(items) - n:]\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0008339999999999999,
+          "calls": 1,
+          "input_tokens": 133,
+          "output_tokens": 71,
+          "latency_ms": 1936.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e01_offbyone",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.00048499999999999997,
+            "judge_tokens": {
+              "input": 1776,
+              "output": 123
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the off-by-one error in the slice start index and provides the exact fix. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 911,
+                "output_tokens": 59,
+                "cost": 0.00048499999999999997,
+                "latency_ms": 1620,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the off-by-one error in the slice start index and provides the exact fix. No false alarms.\"}\r"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the off-by-one error in the slice start index and provides the exact fix. No extra defects are mentioned.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 865,
+                "output_tokens": 64,
+                "cost": 0.0,
+                "latency_ms": 1423,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the off-by-one error in the slice start index and provides the exact fix. No extra defects are mentioned.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e02_operator",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e02_operator#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001014,
+              "input_tokens": 135,
+              "output_tokens": 93,
+              "latency_ms": 1302.0,
+              "error": null,
+              "answer_chars": 372,
+              "answer_excerpt": "e function currently returns `True` when the entry is **not** expired (i.e., when `age_seconds` is less than `ttl_seconds`). It should return `True` when the entry **is** expired, i.e., when `age_seconds` is **greater than or equal to** `ttl_seconds`.\n\n**Corrected line:**\n```python\nreturn age_seconds >= ttl_seconds\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.001014,
+          "calls": 1,
+          "input_tokens": 135,
+          "output_tokens": 93,
+          "latency_ms": 1302.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e02_operator",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004992999999999999,
+            "judge_tokens": {
+              "input": 1803,
+              "output": 116
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the inverted comparison and provides the right fix. No extra issues claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 920,
+                "output_tokens": 53,
+                "cost": 0.0004992999999999999,
+                "latency_ms": 1065,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the inverted comparison and provides the right fix. No extra issues claimed.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the inverted comparison as the sole defect and proposes the appropriate fix (>=). No extra defects are alleged.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 883,
+                "output_tokens": 63,
+                "cost": 0.0,
+                "latency_ms": 1372,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the inverted comparison as the sole defect and proposes the appropriate fix (>=). No extra defects are alleged.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e03_missing_return",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e03_missing_return#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0007099999999999999,
+              "input_tokens": 123,
+              "output_tokens": 58,
+              "latency_ms": 1566.0,
+              "error": null,
+              "answer_chars": 249,
+              "answer_excerpt": "**Defect:** The result of `name.strip().lower()` is not returned or assigned, so the function always returns `None` (the default return value of a function with no return statement).\n\n**Corrected line:**\n```python\n    return name.strip().lower()\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0007099999999999999,
+          "calls": 1,
+          "input_tokens": 123,
+          "output_tokens": 58,
+          "latency_ms": 1566.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e03_missing_return",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004753,
+            "judge_tokens": {
+              "input": 1705,
+              "output": 113
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies missing return and provides the exact fix. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 874,
+                "output_tokens": 51,
+                "cost": 0.0004753,
+                "latency_ms": 1116,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing return and provides the exact fix. No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the missing return statement as the sole defect and provides the exact fix. No extra defects are alleged.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 831,
+                "output_tokens": 62,
+                "cost": 0.0,
+                "latency_ms": 1017,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the missing return statement as the sole defect and provides the exact fix. No extra defects are alleged.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e04_shadowed_sum",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e04_shadowed_sum#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001362,
+              "input_tokens": 133,
+              "output_tokens": 137,
+              "latency_ms": 1517.0,
+              "error": null,
+              "answer_chars": 538,
+              "answer_excerpt": " return statement should return the accumulated total, not call `sum()` on `chunks`.\n\n**Corrected line:**  \nReplace:\n```python\nreturn sum(chunks)\n```\nwith:\n```python\nreturn sum\n```\n\n**Final corrected function:**\n```python\ndef total_bytes(chunks):\n    sum = 0\n    for c in chunks:\n        sum += len(c)\n    return sum\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.001362,
+          "calls": 1,
+          "input_tokens": 133,
+          "output_tokens": 137,
+          "latency_ms": 1517.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e04_shadowed_sum",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005225,
+            "judge_tokens": {
+              "input": 1930,
+              "output": 125
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies shadowing of built-in sum and wrong return call. Fix is accurate. No extra bugs claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 986,
+                "output_tokens": 59,
+                "cost": 0.0005225,
+                "latency_ms": 8000,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies shadowing of built-in sum and wrong return call. Fix is accurate. No extra bugs claimed.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the defect (shadowing sum and incorrect return), proposes the exact fix (return sum), and asserts no additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 944,
+                "output_tokens": 66,
+                "cost": 0.0,
+                "latency_ms": 851,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the defect (shadowing sum and incorrect return), proposes the exact fix (return sum), and asserts no additional defects.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e05_int_division",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e05_int_division#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0007700000000000001,
+              "input_tokens": 133,
+              "output_tokens": 63,
+              "latency_ms": 1656.0,
+              "error": null,
+              "answer_chars": 281,
+              "answer_excerpt": "**Defect:** The function uses integer division (`//`) instead of floating-point division (`/`), which will return an integer result instead of a float. This is incorrect for calculating an average, which should be a float.\n\n**Corrected line:**\n```python\nreturn total_ms / count\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0007700000000000001,
+          "calls": 1,
+          "input_tokens": 133,
+          "output_tokens": 63,
+          "latency_ms": 1656.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e05_int_division",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004827999999999999,
+            "judge_tokens": {
+              "input": 1722,
+              "output": 114
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies integer division as the defect and provides the exact fix. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 884,
+                "output_tokens": 56,
+                "cost": 0.0004827999999999999,
+                "latency_ms": 1131,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies integer division as the defect and provides the exact fix. No false alarms raised.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the floor division defect and proposes the exact fix. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 838,
+                "output_tokens": 58,
+                "cost": 0.0,
+                "latency_ms": 817,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the floor division defect and proposes the exact fix. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m01_mutate_during_iter",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m01_mutate_during_iter#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001814,
+              "input_tokens": 139,
+              "output_tokens": 192,
+              "latency_ms": 7376.0,
+              "error": null,
+              "answer_chars": 836,
+              "answer_excerpt": "s_to_delete = [key for key, entry in cache.items() if entry.expires_at <= now]\n    for key in keys_to_delete:\n        del cache[key]\n    return cache\n```\n\n**Summary:**  \n- **Defect:** Modifying a dictionary while iterating over it.\n- **Fix:** Collect keys to delete in a separate list, then delete them in a second loop.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.001814,
+          "calls": 1,
+          "input_tokens": 139,
+          "output_tokens": 192,
+          "latency_ms": 7376.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m01_mutate_during_iter",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005678,
+            "judge_tokens": {
+              "input": 2058,
+              "output": 128
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies mutation during iteration as the defect and proposes a valid fix using a separate list of keys. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1049,
+                "output_tokens": 61,
+                "cost": 0.0005678,
+                "latency_ms": 1240,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies mutation during iteration as the defect and proposes a valid fix using a separate list of keys. No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the defect (mutating dict during iteration) and proposes a valid fix (collect keys first). No extra defects are alleged.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1009,
+                "output_tokens": 67,
+                "cost": 0.0,
+                "latency_ms": 960,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the defect (mutating dict during iteration) and proposes a valid fix (collect keys first). No extra defects are alleged.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m02_mutable_default",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m02_mutable_default#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0017519999999999999,
+              "input_tokens": 120,
+              "output_tokens": 189,
+              "latency_ms": 1664.0,
+              "error": null,
+              "answer_chars": 838,
+              "answer_excerpt": "`None` as the default value and create a new list inside the function if `seen` is not provided.\n\n**Corrected Function:**\n```python\ndef collect(item, seen=None):\n    if seen is None:\n        seen = []\n    seen.append(item)\n    return seen\n```\n\nNow, each call to `collect()` without a `seen` argument will use a new list.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0017519999999999999,
+          "calls": 1,
+          "input_tokens": 120,
+          "output_tokens": 189,
+          "latency_ms": 1664.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m02_mutable_default",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005578,
+            "judge_tokens": {
+              "input": 2015,
+              "output": 126
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies mutable default argument, explains the shared list issue, and provides the standard fix using None. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1029,
+                "output_tokens": 61,
+                "cost": 0.0005578,
+                "latency_ms": 1197,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies mutable default argument, explains the shared list issue, and provides the standard fix using None. No false alarms.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies mutable default argument as the sole defect, provides the standard fix using None and conditional initialization, and asserts no other issues.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 986,
+                "output_tokens": 65,
+                "cost": 0.0,
+                "latency_ms": 988,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies mutable default argument as the sole defect, provides the standard fix using None and conditional initialization, and asserts no other issues.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m03_shallow_copy",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m03_shallow_copy#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.002196,
+              "input_tokens": 134,
+              "output_tokens": 241,
+              "latency_ms": 5886.0,
+              "error": null,
+              "answer_chars": 1051,
+              "answer_excerpt": " dict(request[\"headers\"])  # Make a shallow copy of headers\n    copy[\"headers\"][key] = value\n    return copy\n```\n\n**Summary:**  \nThe defect is that only a shallow copy of the outer dictionary is made, so nested dictionaries are still shared. The fix is to also copy the nested `\"headers\"` dictionary before modifying it.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.002196,
+          "calls": 1,
+          "input_tokens": 134,
+          "output_tokens": 241,
+          "latency_ms": 5886.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m03_shallow_copy",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006043,
+            "judge_tokens": {
+              "input": 2216,
+              "output": 114
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies shallow copy issue and shared nested dict. Fix copies headers dict. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1126,
+                "output_tokens": 57,
+                "cost": 0.0006043,
+                "latency_ms": 1154,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies shallow copy issue and shared nested dict. Fix copies headers dict. No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies shallow copy defect and proposes proper nested dict copy fix, with no extra false claims.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1090,
+                "output_tokens": 57,
+                "cost": 0.0,
+                "latency_ms": 834,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies shallow copy defect and proposes proper nested dict copy fix, with no extra false claims.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m04_swallowed_error",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m04_swallowed_error#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0030399999999999997,
+              "input_tokens": 140,
+              "output_tokens": 345,
+              "latency_ms": 4515.0,
+              "error": null,
+              "answer_chars": 1620,
+              "answer_excerpt": " error:\n\n```python\ndef load_all(paths, parse):\n    results = []\n    for p in paths:\n        results.append(parse(p))  # Let exceptions propagate\n    return results\n```\n\n**Summary:**  \nThe defect is **silently ignoring all exceptions**. This matters because it hides errors, making debugging and error handling difficult.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0030399999999999997,
+          "calls": 1,
+          "input_tokens": 140,
+          "output_tokens": 345,
+          "latency_ms": 4515.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m04_swallowed_error",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006648,
+            "judge_tokens": {
+              "input": 2440,
+              "output": 131
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies silent exception swallowing as the defect. Proposes valid fixes (logging or re-raising). No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1242,
+                "output_tokens": 62,
+                "cost": 0.0006648,
+                "latency_ms": 1275,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies silent exception swallowing as the defect. Proposes valid fixes (logging or re-raising). No false alarms raised.\"}\r"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the bare except swallowing all exceptions as the sole defect, proposes a valid fix (logging errors), and does not assert any additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1198,
+                "output_tokens": 69,
+                "cost": 0.0,
+                "latency_ms": 1082,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the bare except swallowing all exceptions as the sole defect, proposes a valid fix (logging errors), and does not assert any additional defects.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m05_float_equality",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m05_float_equality#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0019299999999999999,
+              "input_tokens": 121,
+              "output_tokens": 211,
+              "latency_ms": 1918.0,
+              "error": null,
+              "answer_chars": 812,
+              "answer_excerpt": " (`==`) to a greater-than-or-equal-to check (`>=`):\n\n```python\ndef is_fully_spent(spent, budget):\n    return spent >= budget\n```\n\n**Summary:**  \n- **Defect:** Off-by-one error (using `==` instead of `>=`)\n- **Fix:** Replace `==` with `>=` so the function returns `True` when `spent` is equal to or greater than `budget`.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.08333333333333333,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges did not resolve",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "m05_float_equality#C2",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0019939999999999997,
+              "input_tokens": 121,
+              "output_tokens": 219,
+              "latency_ms": 2314.0,
+              "error": null,
+              "answer_chars": 856,
+              "answer_excerpt": " (`==`) to a greater-than-or-equal-to check (`>=`):\n\n```python\ndef is_fully_spent(spent, budget):\n    return spent >= budget\n```\n\n**Summary:**  \n- **Defect:** Off-by-one error (using `==` instead of `>=`)\n- **Fix:** Replace `==` with `>=` so the function returns `True` when `spent` is equal to or greater than `budget`.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.08333333333333333,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges did not resolve",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "m05_float_equality#C3",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001666,
+              "input_tokens": 121,
+              "output_tokens": 178,
+              "latency_ms": 1814.0,
+              "error": null,
+              "answer_chars": 720,
+              "answer_excerpt": "e` if `spent` is **greater than or equal to** `budget`.\n\n**How to Fix:**  \nChange the equality operator (`==`) to a greater-than-or-equal-to operator (`>=`):\n\n```python\ndef is_fully_spent(spent, budget):\n    return spent >= budget\n```\n\nThis will correctly return `True` when the budget has been fully spent or overspent.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.08333333333333333,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges did not resolve",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": false,
+          "status": "unresolved",
+          "overall": 0.08333333333333333,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0055899999999999995,
+          "calls": 3,
+          "input_tokens": 363,
+          "output_tokens": 608,
+          "latency_ms": 6046.0,
+          "tiers_charged": [
+            "frontier",
+            "frontier",
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m05_float_equality",
+            "status": "unresolved",
+            "resolved": false,
+            "overall": 0.0833,
+            "threshold": 0.8,
+            "reason": "2/2 judges did not resolve",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 1.5,
+                "normalized": 0.5,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005587999999999999,
+            "judge_tokens": {
+              "input": 2001,
+              "output": 157
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 0.0,
+                  "correct_fix": 0.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 0.1667,
+                "resolved": false,
+                "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+                "notes": "The review identifies a different defect (overspending) rather than the floating-point equality issue named in the criterion. The proposed fix (>=) does not address the floating-point tolerance problem.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1020,
+                "output_tokens": 72,
+                "cost": 0.0005587999999999999,
+                "latency_ms": 1651,
+                "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review identifies a different defect (overspending) rather than the floating-point equality issue named in the criterion. The proposed fix (>=) does not address the floating-point tolerance problem.\"}"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 0.0,
+                  "correct_fix": 0.0,
+                  "no_false_alarms": 0.0
+                },
+                "overall": 0.0,
+                "resolved": false,
+                "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+                "notes": "The answer misidentifies the defect as using equality instead of >=, while the real defect is floating-point equality comparison. The proposed fix does not address floating-point tolerance, and the answer asserts a false interpretation of 'fully spent'.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 981,
+                "output_tokens": 85,
+                "cost": 0.0,
+                "latency_ms": 1108,
+                "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer misidentifies the defect as using equality instead of >=, while the real defect is floating-point equality comparison. The proposed fix does not address floating-point tolerance, and the answer asserts a false interpretation of 'fully spent'.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h01_late_binding",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h01_late_binding#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001588,
+              "input_tokens": 134,
+              "output_tokens": 165,
+              "latency_ms": 2196.0,
+              "error": null,
+              "answer_chars": 738,
+              "answer_excerpt": "on\ndef make_validators(limits):\n    validators = []\n    for limit in limits:\n        validators.append(lambda v, limit=limit: v <= limit)\n    return validators\n```\n\n**Correction:**  \nBy adding `limit=limit` as a default argument to the lambda, each lambda captures the current value of `limit` at the time it is created.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.001588,
+          "calls": 1,
+          "input_tokens": 134,
+          "output_tokens": 165,
+          "latency_ms": 2196.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h01_late_binding",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005652999999999999,
+            "judge_tokens": {
+              "input": 2065,
+              "output": 111
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies late-binding closure and provides the standard default-argument fix. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1051,
+                "output_tokens": 54,
+                "cost": 0.0005652999999999999,
+                "latency_ms": 1959,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies late-binding closure and provides the standard default-argument fix. No false alarms.\"}"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies late-binding closure and provides proper fix with default argument. No extra defects claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1014,
+                "output_tokens": 57,
+                "cost": 0.0,
+                "latency_ms": 807,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies late-binding closure and provides proper fix with default argument. No extra defects claimed.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h02_check_then_act",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h02_check_then_act#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.003138,
+              "input_tokens": 149,
+              "output_tokens": 355,
+              "latency_ms": 2747.0,
+              "error": null,
+              "answer_chars": 1662,
+              "answer_excerpt": "True\n        return False\n\ndef reserve(pool, node_id, amount):\n    return pool.try_take(amount)\n```\n\n**Summary:**  \nThe defect is a **race condition** due to a non-atomic check-then-act sequence. Fix it by making the check and take operation atomic, either with a lock or by providing an atomic method in the pool class.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.003138,
+          "calls": 1,
+          "input_tokens": 149,
+          "output_tokens": 355,
+          "latency_ms": 2747.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h02_check_then_act",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006833,
+            "judge_tokens": {
+              "input": 2533,
+              "output": 135
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the TOCTOU race condition between remaining() and take(). Proposes valid atomic fixes (lock or atomic method). No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1276,
+                "output_tokens": 65,
+                "cost": 0.0006833,
+                "latency_ms": 1845,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the TOCTOU race condition between remaining() and take(). Proposes valid atomic fixes (lock or atomic method). No false alarms.\"}"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies the check-then-act race (TOCTOU) and proposes a proper atomic fix via lock or atomic method. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1257,
+                "output_tokens": 70,
+                "cost": 0.0,
+                "latency_ms": 830,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies the check-then-act race (TOCTOU) and proposes a proper atomic fix via lock or atomic method. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h03_binary_search",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h03_binary_search#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.001418,
+              "input_tokens": 189,
+              "output_tokens": 130,
+              "latency_ms": 1798.0,
+              "error": null,
+              "answer_chars": 538,
+              "answer_excerpt": "cted line:**  \nChange the initialization of `hi` from `len(sorted_values) - 1` to `len(sorted_values)`:\n\n```python\nlo, hi = 0, len(sorted_values)\n```\n\nThis way, the search space includes the \"virtual\" index after the last element, and the function will return `len(sorted_values)` if all elements are less than `target`.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.001418,
+          "calls": 1,
+          "input_tokens": 189,
+          "output_tokens": 130,
+          "latency_ms": 1798.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h03_binary_search",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005787999999999999,
+            "judge_tokens": {
+              "input": 2088,
+              "output": 154
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies that hi is initialized to len-1 instead of len, causing wrong return when target > all elements. Fix is correct and complete. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1061,
+                "output_tokens": 71,
+                "cost": 0.0005787999999999999,
+                "latency_ms": 1128,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies that hi is initialized to len-1 instead of len, causing wrong return when target > all elements. Fix is correct and complete. No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the defect: hi initialized to len-1 causes return of last index instead of len when target exceeds all values. It proposes the exact fix: hi = len(sorted_values). No extra defects are claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1027,
+                "output_tokens": 83,
+                "cost": 0.0,
+                "latency_ms": 1433,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the defect: hi initialized to len-1 causes return of last index instead of len when target exceeds all values. It proposes the exact fix: hi = len(sorted_values). No extra defects are claimed.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h04_retry_budget",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h04_retry_budget#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.002778,
+              "input_tokens": 165,
+              "output_tokens": 306,
+              "latency_ms": 2684.0,
+              "error": null,
+              "answer_chars": 1460,
+              "answer_excerpt": "              return send(payload)\n        except TimeoutError as e:\n            last = e\n    raise last\n```\n\n**Summary:**  \nThe defect is that the deadline is not decremented between retries, so the total time can exceed the intended deadline. The fix is to track elapsed time and pass the remaining time to each retry.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.9444444444444444,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "h04_retry_budget#C2",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.0029939999999999997,
+              "input_tokens": 165,
+              "output_tokens": 333,
+              "latency_ms": 2507.0,
+              "error": null,
+              "answer_chars": 1640,
+              "answer_excerpt": "out=remaining)\n            else:\n                return send(payload)\n        except TimeoutError as e:\n            last = e\n    raise last\n```\n\n**Summary:**  \nThe defect is that the deadline is not enforced across all attempts. The fix is to track elapsed time and pass the remaining time as the timeout for each retry.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.9444444444444444,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "h04_retry_budget#C3",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00070725,
+              "input_tokens": 165,
+              "output_tokens": 444,
+              "latency_ms": 2575.0,
+              "error": null,
+              "answer_chars": 1910,
+              "answer_excerpt": " the original `deadline` is left.\n3. **Early exit**: If `remaining` is less than or equal to zero, it prevents unnecessary calls to `send` and raises an error immediately.\n4. **Dynamic timeout**: The `send` function is called with the `remaining` time, ensuring the total execution time respects the original `deadline`.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.006479249999999999,
+          "calls": 3,
+          "input_tokens": 495,
+          "output_tokens": 1083,
+          "latency_ms": 7766.0,
+          "tiers_charged": [
+            "frontier",
+            "frontier",
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite",
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h04_retry_budget",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0007317000000000001,
+            "judge_tokens": {
+              "input": 2685,
+              "output": 144
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies that the full deadline is reused per retry instead of tracking elapsed time. Fix tracks start time, calculates remaining budget, and aborts if expired. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1353,
+                "output_tokens": 72,
+                "cost": 0.0007317000000000001,
+                "latency_ms": 1240,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies that the full deadline is reused per retry instead of tracking elapsed time. Fix tracks start time, calculates remaining budget, and aborts if expired. No false alarms.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the defect (static deadline passed to each attempt) and proposes a proper fix (tracking elapsed time and passing remaining timeout). No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1332,
+                "output_tokens": 72,
+                "cost": 0.0,
+                "latency_ms": 1183,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the defect (static deadline passed to each attempt) and proposes a proper fix (tracking elapsed time and passing remaining timeout). No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h05_partial_write",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h05_partial_write#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "frontier",
+              "decision": "proceed",
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1",
+              "cost": 0.002964,
+              "input_tokens": 162,
+              "output_tokens": 330,
+              "latency_ms": 2726.0,
+              "error": null,
+              "answer_chars": 1334,
+              "answer_excerpt": "  with open(tmp, \"w\") as f:\n        f.write(data)\n        f.flush()\n        os.fsync(f.fileno())\n    os.replace(tmp, path)\n```\n\n**Summary:**  \n**Defect:** Not calling `f.flush()` and `os.fsync(f.fileno())` before replacing.  \n**Fix:** Add `f.flush()` and `os.fsync(f.fileno())` after writing and before closing the file.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.002964,
+          "calls": 1,
+          "input_tokens": 162,
+          "output_tokens": 330,
+          "latency_ms": 2726.0,
+          "tiers_charged": [
+            "frontier"
+          ],
+          "models": [
+            "openai/gpt-4.1"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h05_partial_write",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006833,
+            "judge_tokens": {
+              "input": 2540,
+              "output": 123
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "openrouter",
+              "model": "openai/gpt-4.1"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies missing flush/fsync as the defect and provides the exact fix. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1284,
+                "output_tokens": 57,
+                "cost": 0.0006833,
+                "latency_ms": 2137,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing flush/fsync as the defect and provides the exact fix. No false alarms raised.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies missing flush/fsync before os.replace as the defect, proposes the proper fix, and does not assert any additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1256,
+                "output_tokens": 66,
+                "cost": 0.0,
+                "latency_ms": 1013,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing flush/fsync before os.replace as the defect, proposes the proper fix, and does not assert any additional defects.\"}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "simulated": false,
+    "cache_stats": {
+      "before": {
+        "hits": 0,
+        "stores": 0,
+        "lookups": 0
+      },
+      "after": {
+        "hits": 0,
+        "stores": 0,
+        "lookups": 0
+      }
+    },
+    "wall_clock_seconds": 788.7615387439728
+  }
+}
