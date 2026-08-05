@@ -244,9 +244,23 @@ independent check on the ledger; it is the same claim rendered differently.
 | A3 runaway loop | unbounded, ~$0.38/10k rounds | $0.00229 | **yes**, at call 60 |
 | A4 fail after tokens | $0.13 consumed vs $0.004 ceiling (32×) | ledger says $0.00 | **NO** |
 
-Three of four attacks were stopped by deterministic code before any provider was
-contacted, with the refusal visible in the journal, the graph state and the
-exported trace.
+Three of four attacks were contained inside the ceiling by deterministic code, but
+by **three different mechanisms**, and only one of them refused outright. The
+distinction matters, so it should not be flattened into "refused before any
+provider was contacted":
+
+| Attack | Contained how | Provider contacted | Refusals |
+|---|---|---|---|
+| A1 | **refused outright** — the ladder was walked to its cheapest rung and even that did not fit | **no**, 0 calls, $0.00 | 1 |
+| A2 | **downgraded** — every node was served a cheaper rung than it demanded | yes, 8 calls, $0.000306 | **0** |
+| A3 | **admitted then refused** — spend proceeded until the call ceiling bound | yes, 60 calls, $0.00229 | 90 |
+
+Only A1 kept every provider untouched. A2 and A3 both spent money; they were
+contained rather than blocked, which is the correct behaviour but a weaker claim.
+
+Where a refusal did occur it is visible in the journal, the graph state and the
+exported trace. **A2 produced none at all** — a 16x overrun absorbed silently,
+which §2 argues is the more uncomfortable of the two outcomes.
 
 The fourth was not stopped, and the honest conclusion is the one Part 3 exists
 to surface: **the budget controller is exactly as good as the meter beneath it.**
