@@ -1,0 +1,66 @@
+# Capability tiers for the Loomstack billing-support triage task class
+# (proofs/tasks/part2_billing_support.jsonl). See docs/part2_makeapolicy.md
+# for why this ladder was built rather than reusing config/tiers.yaml as-is.
+#
+# The shipped ladder's frontier rung (github/openai/gpt-4.1) was found dead
+# on 2026-08-05 -- a live "GitHub Models retirement brownout" (see
+# docs/part1_validation.md Section 4) -- so this ladder repoints frontier at
+# a provider/model confirmed reachable the same day. economy and standard
+# are unchanged from the shipped ladder: both were independently confirmed
+# live during Part 1 and there was no reason to replace what already works.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+# Support triage answers are short and structured (category + action + one
+# sentence), so max_tokens is capped tighter here than the shipped ladder's
+# generic 512/1024/4096 -- a triage reply that runs past ~150 tokens has
+# stopped being triage.
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 300
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 700
+    projected_output_tokens: 150
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 400
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 700
+    projected_output_tokens: 150
+
+  # Confirmed reachable 2026-08-05 (github/openai/gpt-4.1, the shipped
+  # frontier, was not). deepseek/deepseek-chat is DeepSeek-V3's non-reasoning
+  # chat variant -- a materially different, more capable model than either
+  # rung below, on a provider neither the economy nor standard rung nor the
+  # judge panel (config/evals.yaml: cerebras/zai-glm-4.7 and
+  # openrouter/nvidia/nemotron-3-super-120b-a12b:free) uses, so no rung of
+  # this ladder can be graded by a judge sharing its own model.
+  frontier:
+    request:
+      provider: openrouter
+      model: deepseek/deepseek-chat
+      reasoning: "off"
+      max_tokens: 500
+      temperature: 0
+    price_model: deepseek/deepseek-chat
+    projected_input_tokens: 700
+    projected_output_tokens: 200
+
+# Not load-bearing for proofs/p1_cost_per_task.py (it drives `tier` directly
+# per strategy, never through role_tiers), but kept for parity with the
+# shipped file and for any future full-agent-graph run of this task class.
+role_tiers:
+  default: standard
+  answer_with_evidence: frontier
