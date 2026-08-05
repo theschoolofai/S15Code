@@ -176,3 +176,29 @@ model tier as having answered every one of these four runs. The ledger
 (`budget["charges"][i]["tier"]`) is the only place the *served* tier is
 recorded correctly; the node-level trace metadata is not a reliable source
 for it.
+
+## 5. Publication
+
+This document existed before the README did. Once asked "Github Link to
+Part 1 ... Need to see your README.md that describes your results/
+findings," the gap was real: `README.md` only carried the Part 2/3 evidence
+section (the billing-support policy and its adversarial test), never a
+summary of this file's own results. Fixed by adding a "Reproduce the Floor"
+section to `README.md` — both suites, the five-proof result table, all four
+traced runs condensed into one table (prompt, tier requested→served,
+Jaeger trace ID, cost, answer), the honest limitation above, and the
+fresh-checkout reproduction commands — committed and pushed to the same
+branch this document already lived on, updating both open pull requests at
+once:
+
+- README with the Part 1 section:
+  `https://github.com/theschoolofai/S15Code/blob/part3-attack-the-budget/README.md`
+- Upstream PR (the real submission target — this fork's `origin` is
+  `deephazar-eva-ai/S15Code`, itself a fork of `theschoolofai/S15Code`, so a
+  PR against the fork's own `main` never appears in the upstream's PR list):
+  `https://github.com/theschoolofai/S15Code/pull/4`
+
+The README section is the operator-facing summary; this file remains the
+source of full detail — the complete ordered event trace and every ledger
+row for all four runs, not just the condensed one-line-per-run table the
+README carries.
