@@ -211,6 +211,90 @@ filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
 
+## Evidence: Reproduce the Floor (Both Suites, Five Proofs, Four Traced Runs)
+
+Full detail and every raw number lives in `docs/part1_validation.md`; this
+section is the operator-facing summary. Everything below is from a real run
+against a live `glc_v4` gateway and a live Jaeger, on 2026-08-05 — no
+`--offline` pass.
+
+### Both suites
+
+```
+cd glc_v4  && uv run pytest -q     # 448 passed, 8 skipped
+cd S15Code && uv run pytest -q     # 277 passed
+```
+
+### The five proofs, live
+
+| Proof | Result |
+|---|---|
+| `p1_cost_per_task.py` | PASS (9/9 checks) |
+| `p2_budget_holds.py` | PASS (5/5 checks) |
+| `p3_denial_of_wallet.py` | PASS (6/6 checks) |
+| `p4_trace_export.py` | PASS (14/14 checks, incl. a real Jaeger round trip) |
+| `p7_cross_model_ladder.py` | **FAILED** (7/9 checks) — see the honest limitation below |
+
+### Four runs, traced end to end
+
+Four self-contained prompts, each run through the real `AgentRuntime`
+against the live gateway with OTel export on — prompt, tier requested vs.
+served, the ordered event trace, the real Jaeger trace ID, the ledger row,
+and the final answer, for every one:
+
+| # | Prompt | Tier requested → served | Jaeger trace ID | Cost | Answer |
+|---|---|---|---|---|---|
+| 1 | "Convert 100 kilometers to miles." | frontier → **standard** (downgrade) | `82a58c0635b39776a11d7680ab041b74` | $0.00007825 | "100 kilometers is approximately 62.1371 miles." |
+| 2 | "Explain what a circuit breaker pattern is, in one paragraph." | frontier → **standard** (downgrade) | `9a0e3e5c99115abc73ff43a944f66d9c` | $0.00025000 | A circuit-breaker-pattern explanation (state machine, trip threshold, half-open retry) |
+| 3 | "List the capital cities of France, Japan, and Brazil." | 3×economy (search) + standard (distill) + frontier→**standard** (answer, downgrade) | `2b61e2111189d77ef4343a9661d6f5f1` | $0.0017575 total, 5 ledger rows | Paris / Tokyo / Brasília, each cited |
+| 4 | "What is the boiling point of water in Celsius and Fahrenheit?" | frontier → **standard** (downgrade) | `5ea9b7448cc9a6c440a0ea674824da21` | $0.00009700 | "100 degrees Celsius or 212 degrees Fahrenheit." |
+
+Every `answer` node in all four runs requested `frontier` and was downgraded
+to `standard` under a $0.02 per-node allowance — the ordered event trace,
+full ledger rows (provider/model/tokens/decision), and complete answer text
+for each run are in `docs/part1_validation.md` Section 3.
+
+### One honest limitation the traces exposed
+
+**The `frontier` rung (`github`/`openai/gpt-4.1`) is dead — a live, dated
+fact, not a config mistake.** `p7_cross_model_ladder.py`'s frontier rung
+failed with a real `502` wrapping GitHub's own `410 Gone`:
+`"github_models_retirement_brownout"` — GitHub is mid-retirement of this API
+as of this run. Two measured, downstream effects: `p7` failed its exit code
+(no frontier measurement means "top rung costs more" has nothing to compare
+against), and a live rerun of `p1_cost_per_task.py`'s always-frontier
+strategy resolved **0/12 tasks** — every frontier call transport-failed, so
+it never got billed and never resolved anything, making its own cost-per-
+resolved-task comparison undefined (`n/a`) rather than silently wrong. The
+control layer's own behavior under that failure — downgrade where an
+allowance permits it, refuse where it doesn't, and report the gap (two real
+`[FAIL]` lines, an honest `n/a`) rather than paper over it — is itself
+evidence the layer works; the ladder's config naming a now-dead provider is
+what needs updating, not the enforcement mechanism. Full analysis, plus a
+second, smaller finding (a node's graph-level trace metadata reports the
+*requested* tier even after a downgrade — only the ledger row shows what was
+actually *served*), is in `docs/part1_validation.md` Section 4.
+
+### Reproduce
+
+```bash
+cd glc_v4 && uv sync && cp .env.example .env && uv run glc serve &   # :8111
+docker compose -f glc_v4/docker-compose.observability.yml up -d       # Jaeger
+cd S15Code && uv sync
+uv run pytest -q && (cd ../glc_v4 && uv run pytest -q)
+
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/mixed.jsonl \
+  --principal reviewer --base-url http://127.0.0.1:8111
+uv run python proofs/p2_budget_holds.py --task "<any task>" --budget 0.02 \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces
+uv run python proofs/p3_denial_of_wallet.py --task "<any task>" --budget 0.002 \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces
+uv run python proofs/p4_trace_export.py --task "<any task>" --budget 0.02 \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces
+uv run python proofs/p7_cross_model_ladder.py --task "<any task>" \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces
+```
+
 ## Evidence: a Policy, Measured and Attacked (Loomstack Billing-Support Triage)
 
 A worked case study proving out this session's whole claim — routing, budgeting,
