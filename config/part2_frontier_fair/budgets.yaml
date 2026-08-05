@@ -1,0 +1,64 @@
+# Part 2 budget policy.
+#
+# The ceiling has to be derived from the ladder, not guessed, or the measurement
+# is just a report on an arbitrary number. Worst-case projected cost per call,
+# from tiers.yaml x pricing.yaml:
+#
+#   economy    400 in x 0.15 + 400 out x 0.75  =  $0.000360
+#   standard   400 in x 0.25 + 600 out x 1.50  =  $0.001000
+#   frontier   400 in x 2.00 + 900 out x 8.00  =  $0.008000
+#
+# (Admission prices max_tokens for output, not the projected_output_tokens
+#  estimate, so these are the numbers the controller actually admits against.)
+#
+# A cascade that starts at economy and climbs to frontier costs at most
+# 0.000360 + 0.001000 + 0.008000 = $0.00936 for one task. The per-task ceiling
+# below is set to $0.012, which is that full climb plus ~28% headroom.
+#
+# That choice is deliberate and it is the interesting one: the ceiling is set so
+# a full three-rung escalation is ALWAYS affordable. The policy therefore never
+# refuses on money for a single task, which means every quality loss it produces
+# is attributable to the ROUTING decision rather than to the budget running out.
+# Confounding the two would make "where did the policy choose wrongly" impossible
+# to answer, which is the question Part 2 exists to answer.
+#
+# The run-level ceiling is a separate matter and is set per-invocation by p1.
+
+default_budget: 0.012
+
+# No per-principal caps: this is a measurement harness, not a shared tenant.
+principals: {}
+
+# ── thresholds ───────────────────────────────────────────────────────────────
+# NOTE ON SCHEMA, learned the hard way in Part 3. These keys live at the TOP
+# LEVEL of this file. `PolicyThresholds.from_mapping()` is handed the whole
+# budgets mapping and reads them by name; it does not look inside a nested
+# `thresholds:` block. An earlier version of this file nested them, and every
+# one was silently ignored in favour of the library defaults -- no error, no
+# warning. Part 3's attack harness is what surfaced it, by printing the
+# thresholds AS LOADED rather than as written.
+
+# Pressure at which the policy prefers a cheaper rung than the one requested.
+# Set high (0.85) because the per-task ceiling is sized so that escalation is
+# always affordable. A low value here would silently convert budget pressure
+# into quality loss and pollute the attribution.
+downgrade_at: 0.85
+
+# Refuse rather than start a call once this fraction of the ceiling is gone.
+refuse_at: 0.95
+
+# Leave 2% unspent so the last admitted call cannot land exactly on the line.
+headroom_fraction: 0.02
+reserve_fraction: 0.0
+
+# Hard stops that do not depend on any price being right. The task set is 15
+# tasks and the deepest legitimate path is 3 rungs, so 6 calls per node is
+# twice the honest maximum and 60 per run bounds a runaway cascade.
+max_calls_per_node: 6
+max_calls_per_run: 60
+
+# Input-size estimation for admission. The snippets in this task class run
+# 40-160 tokens and the wrapper prompt adds more; 4.0 chars/token with a 25%
+# safety factor keeps the projection an upper bound.
+chars_per_token: 4.0
+input_estimate_safety: 1.25

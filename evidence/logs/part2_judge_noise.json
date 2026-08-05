@@ -1,0 +1,4361 @@
+{
+ "trials_per_task": 10,
+ "tier_graded": "economy",
+ "judges": [
+  "zai-glm-4.7",
+  "nvidia/nemotron-3-super-120b-a12b"
+ ],
+ "bar": 0.8,
+ "min_criterion": 0.67,
+ "tie_break": "unresolved",
+ "rows": [
+  {
+   "task_id": "m04_swallowed_error",
+   "model": "openai/gpt-oss-120b",
+   "answer_chars": 1043,
+   "answer": "**Defect:**\u202f*Broad exception swallowing* \u2013 the `except Exception: pass` catches **all** errors and discards them silently.\n\n**Why it matters**  \n- Real problems (e.g., file\u2011not\u2011found, parsing bugs, permission errors) are hidden, making debugging hard.  \n- The caller receives an incomplete `results` list with no indication that some inputs failed.  \n- It can mask bugs that should stop execution or be reported.\n\n**Corrected code**\n\n```python\ndef load_all(paths, parse):\n    results = []\n    for p in paths:\n        try:\n            results.append(parse(p))\n        except Exception as e:          # catch the error\n            # Option 1: log it and continue\n            import logging\n            logging.warning(\"Failed to parse %s: %s\", p, e)\n            # Optionally re\u2011raise if you want the caller to know\n            # raise\n    return results\n```\n\n*Key change*: the exception is no longer silently ignored; it is logged (or could be re\u2011raised), preserving visibility into failures while still allowing the loop to continue if desired.",
+   "trials": [
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006047,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 127
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors, preserving visibility. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 57,
+       "cost": 0.0006047,
+       "latency_ms": 1598,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors, preserving visibility. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1952,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006371999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 58,
+       "cost": 0.0006371999999999999,
+       "latency_ms": 1121,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 893,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006371999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 58,
+       "cost": 0.0006371999999999999,
+       "latency_ms": 1084,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1974,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006371999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 58,
+       "cost": 0.0006371999999999999,
+       "latency_ms": 1146,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1033,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006371999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 58,
+       "cost": 0.0006371999999999999,
+       "latency_ms": 1357,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1138,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006371999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of silently ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 58,
+       "cost": 0.0006371999999999999,
+       "latency_ms": 1078,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of silently ignoring them. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional bugs.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 873,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional bugs.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006367,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 124
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 57,
+       "cost": 0.0006367,
+       "latency_ms": 1060,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging errors), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 67,
+       "cost": 0.0,
+       "latency_ms": 863,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging errors), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006367,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 127
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors, preserving visibility. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 57,
+       "cost": 0.0006367,
+       "latency_ms": 1087,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors, preserving visibility. No false alarms.\"}\r"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 999,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006367,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 127
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 57,
+       "cost": 0.0006367,
+       "latency_ms": 1625,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of ignoring them. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1059,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m04_swallowed_error",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006376999999999999,
+     "judge_tokens": {
+      "input": 2185,
+      "output": 129
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of silently ignoring them. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1114,
+       "output_tokens": 59,
+       "cost": 0.0006376999999999999,
+       "latency_ms": 1381,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies broad exception swallowing and its impact. Fix logs errors instead of silently ignoring them. No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1071,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 1214,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the broad exception swallowing as the sole defect, proposes a proper fix (logging or re-raising), and does not assert any additional defects.\"}"
+      }
+     ]
+    }
+   ],
+   "resolved_true": 10,
+   "resolved_false": 0,
+   "verdict_flipped": false,
+   "overall_min": 1.0,
+   "overall_max": 1.0,
+   "overall_mean": 1.0,
+   "overall_stdev": 0.0,
+   "distinct_overalls": 1
+  },
+  {
+   "task_id": "m05_float_equality",
+   "model": "openai/gpt-oss-120b",
+   "answer_chars": 403,
+   "answer": "**Defect:**  \nThe function uses equality (`==`) to decide if the budget is fully spent. This fails when `spent` exceeds the budget \u2013 a situation that should also be considered \u201cfully spent\u201d (or over\u2011spent).\n\n**Fix:**  \nUse a greater\u2011than\u2011or\u2011equal comparison.\n\n```python\ndef is_fully_spent(spent, budget):\n    \"\"\"Return True if the budget has been exhausted or exceeded.\"\"\"\n    return spent >= budget\n```",
+   "trials": [
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005183,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 169
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005183,
+       "latency_ms": 1976,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 99,
+       "cost": 0.0,
+       "latency_ms": 3418,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.5833333333333334,
+     "threshold": 0.8,
+     "reason": "panel split 1/2; tie_break=unresolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 0.5,
+     "disputed": true,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 437
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1172,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "}}},hhh||nn,fweb,, and,,,,,|f, and, y,n, ..,en, ..,..,..,..,..,..,..,,,,,..,,..,,..,,,,,,,..,,..,,..,,..k,,,..k,,,..k,,,..kk,,k,,,..kk,,..kk,,..kk ikk#!##,,..,,,,,,,,~~** #y,,..kkkk,,,..kkkk,..,,,,,,~w#1You,, ....,,..,,,,,,,~",
+       "warnings": [
+        "identifies_defect 12 clamped to 3.0",
+        "correct_fix 2666 clamped to 3.0",
+        "no_false_alarms 2666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666611 clamped to 3.0"
+       ],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 367,
+       "cost": 0.0,
+       "latency_ms": 18496,
+       "raw": "{\"scores\": {\"identifies_defect\": 12, \"correct_fix\": 2666, \"no_false_alarms\": 2666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666611}, \"notes\": \"}}},hhh||nn,fweb,, and,,,,,|f, and, y,n, ..,en, ..,..,..,..,..,..,..,,,,,..,,..,,..,,,,,,,..,,..,,..,,..k,,,..k,,,..k,,,..kk,,k,,,..kk,,..kk,,..kk ikk#!##,,..,,,,,,,,~~** #y,,..kkkk,,,..kkkk,..,,,,,,~w#1You,, ....,,..,,,,,,,~\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 154
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1261,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using equality instead of >=, but the real defect is float equality; it misidentifies the problem and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 84,
+       "cost": 0.0,
+       "latency_ms": 967,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using equality instead of >=, but the real defect is float equality; it misidentifies the problem and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 169
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1142,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 99,
+       "cost": 0.0,
+       "latency_ms": 1097,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 157
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1163,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using == instead of >=, but the real defect is float equality comparison. It misidentifies the root cause and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 87,
+       "cost": 0.0,
+       "latency_ms": 10357,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using == instead of >=, but the real defect is float equality comparison. It misidentifies the root cause and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 165
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1906,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the root cause and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 95,
+       "cost": 0.0,
+       "latency_ms": 1853,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the root cause and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 151
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1113,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the defect, so all criteria score 0.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 81,
+       "cost": 0.0,
+       "latency_ms": 3762,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the defect, so all criteria score 0.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 169
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1416,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 99,
+       "cost": 0.0,
+       "latency_ms": 1192,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using == instead of >=, but the success criterion states the defect is exact float equality causing false negatives due to floating-point imprecision. The answer misidentifies the defect and proposes an incorrect fix. It also adds no extra false alarms beyond misidentifying the single defect.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.08333333333333333,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 1.5,
+       "normalized": 0.5,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 192
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 6787,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 0.0
+       },
+       "overall": 0.0,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+       "notes": "The answer claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The proposed fix changes the operator but does not address floating-point tolerance, so it does not repair the actual defect. The answer also does not mention any other defects, but since it misidentifies the defect and offers an incorrect fix, it scores 0 across all criteria.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 122,
+       "cost": 0.0,
+       "latency_ms": 1215,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The proposed fix changes the operator but does not address floating-point tolerance, so it does not repair the actual defect. The answer also does not mention any other defects, but since it misidentifies the defect and offers an incorrect fix, it scores 0 across all criteria.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "m05_float_equality",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.16666666666666666,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 0.0,
+       "normalized": 0.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0005503,
+     "judge_tokens": {
+      "input": 1841,
+      "output": 165
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 941,
+       "output_tokens": 70,
+       "cost": 0.0005503,
+       "latency_ms": 1380,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is missing >= for over-spend, but the criterion names float equality as the real defect. The fix addresses the wrong problem. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 0.0,
+        "correct_fix": 0.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.1667,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect (overall 0.167)",
+       "notes": "The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the root cause. The fix proposed (>=) does not address floating-point tolerance. No extra defects are asserted.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 900,
+       "output_tokens": 95,
+       "cost": 0.0,
+       "latency_ms": 1049,
+       "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 3}, \"notes\": \"The review claims the defect is using == instead of >=, but the success criterion states the defect is float equality causing false negatives due to precision. The review misidentifies the root cause. The fix proposed (>=) does not address floating-point tolerance. No extra defects are asserted.\"}"
+      }
+     ]
+    }
+   ],
+   "resolved_true": 0,
+   "resolved_false": 10,
+   "verdict_flipped": false,
+   "overall_min": 0.08333333333333333,
+   "overall_max": 0.5833333333333334,
+   "overall_mean": 0.14166666666666666,
+   "overall_stdev": 0.1573801719357255,
+   "distinct_overalls": 3
+  },
+  {
+   "task_id": "h04_retry_budget",
+   "model": "openai/gpt-oss-120b",
+   "answer_chars": 1390,
+   "answer": "**Defect name:**\u202f*Deadline is treated as a per\u2011attempt timeout instead of an overall deadline.*\n\n**Why it\u2019s a problem**  \n`deadline` is passed unchanged to every retry as the `timeout` argument. If the caller supplies an overall deadline (e.g., \u201cgive up after 5\u202fseconds\u201d), the current code can exceed that limit because each retry gets the full timeout again.\n\n**Fix**  \nInterpret `deadline` as an absolute time limit: compute the absolute expiry moment once, then on each retry pass the *remaining* time (or raise if the deadline has passed).  \n\n```python\nimport time\n\ndef call_with_retries(send, payload, attempts=3, deadline=None):\n    \"\"\"\n    Call `send(payload, timeout=\u2026)` up to `attempts` times.\n\n    If `deadline` is given (seconds), it is treated as an overall time limit\n    for the whole operation, not per\u2011attempt.\n    \"\"\"\n    last = None\n    # Convert deadline (seconds from now) to an absolute timestamp, if needed\n    end_time = time.time() + deadline if deadline is not None else None\n\n    for _ in range(attempts):\n        # Compute remaining time for this attempt\n        timeout = None\n        if end_time is not None:\n            timeout = max(0.0, end_time - time.time())\n            if timeout == 0.0:\n                # Deadline already reached\n                raise TimeoutError(\"deadline exceeded before retry\")\n\n        try:\n            return send(payload, timeout",
+   "trials": [
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006767,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 119
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0006767,
+       "latency_ms": 1271,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}\r"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the deadline reuse defect. Fix tracks remaining time but omits raising last exception on timeout expiry, making it incomplete.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 63,
+       "cost": 0.0,
+       "latency_ms": 1093,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the deadline reuse defect. Fix tracks remaining time but omits raising last exception on timeout expiry, making it incomplete.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007145999999999999,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 133
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 55,
+       "cost": 0.0007145999999999999,
+       "latency_ms": 1169,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the defect: deadline not decremented across attempts. Fix is correct in concept but code is incomplete (cut off mid-sentence), so not fully executable. No extra defects claimed.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 78,
+       "cost": 0.0,
+       "latency_ms": 1120,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the defect: deadline not decremented across attempts. Fix is correct in concept but code is incomplete (cut off mid-sentence), so not fully executable. No extra defects claimed.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007151,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 137
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0007151,
+       "latency_ms": 1216,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off mid-sentence (incomplete), so not fully compilable/complete. No extra defects alleged.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 81,
+       "cost": 0.0,
+       "latency_ms": 986,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off mid-sentence (incomplete), so not fully compilable/complete. No extra defects alleged.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007151,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 145
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0007151,
+       "latency_ms": 1323,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the defect: deadline used as per-attempt timeout instead of overall limit. Fix is mostly correct but incomplete snippet (cut off mid-sentence) and lacks handling of last exception raise; still directionally right. No extra defects claimed.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 89,
+       "cost": 0.0,
+       "latency_ms": 1721,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the defect: deadline used as per-attempt timeout instead of overall limit. Fix is mostly correct but incomplete snippet (cut off mid-sentence) and lacks handling of last exception raise; still directionally right. No extra defects claimed.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007155999999999999,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 57,
+       "cost": 0.0007155999999999999,
+       "latency_ms": 1125,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but incomplete (code cut off mid-sentence). No extra defects claimed.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 71,
+       "cost": 0.0,
+       "latency_ms": 997,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but incomplete (code cut off mid-sentence). No extra defects claimed.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007151,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 128
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0007151,
+       "latency_ms": 1297,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off (missing closing parenthesis and docstring), so incomplete.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 72,
+       "cost": 0.0,
+       "latency_ms": 1403,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off (missing closing parenthesis and docstring), so incomplete.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.9444444444444444,
+     "threshold": 0.8,
+     "reason": "panel split 1/2; tie_break=unresolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.5,
+       "normalized": 0.8333,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 0.5,
+     "disputed": true,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007206,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 143
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies that deadline is reused per attempt instead of being an overall limit. Fix computes remaining time and aborts when zero. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 67,
+       "cost": 0.0007206,
+       "latency_ms": 1569,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies that deadline is reused per attempt instead of being an overall limit. Fix computes remaining time and aborts when zero. No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off mid-sentence (missing closing parenthesis and function body), so incomplete.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 76,
+       "cost": 0.0,
+       "latency_ms": 1396,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off mid-sentence (missing closing parenthesis and function body), so incomplete.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007145999999999999,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 127
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 55,
+       "cost": 0.0007145999999999999,
+       "latency_ms": 1098,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code truncated). No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off (missing closing parenthesis and function body), so incomplete.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 72,
+       "cost": 0.0,
+       "latency_ms": 1339,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the per-attempt vs overall deadline issue. Fix is correct in concept but code is cut off (missing closing parenthesis and function body), so incomplete.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007151,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 123
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code cut off). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0007151,
+       "latency_ms": 1243,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code cut off). No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the deadline reuse defect. Fix is correct in concept but truncated code omits the return statement and closing parenthesis, making it incomplete.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 67,
+       "cost": 0.0,
+       "latency_ms": 1240,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the deadline reuse defect. Fix is correct in concept but truncated code omits the return statement and closing parenthesis, making it incomplete.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h04_retry_budget",
+     "status": "unresolved",
+     "resolved": false,
+     "overall": 0.8888888888888888,
+     "threshold": 0.8,
+     "reason": "2/2 judges did not resolve",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 2.0,
+       "normalized": 0.6667,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007151,
+     "judge_tokens": {
+      "input": 2493,
+      "output": 139
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Identifies defect correctly. Fix is directionally right but incomplete (code cut off). No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1259,
+       "output_tokens": 56,
+       "cost": 0.0007151,
+       "latency_ms": 1167,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Identifies defect correctly. Fix is directionally right but incomplete (code cut off). No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 2.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 0.8889,
+       "resolved": false,
+       "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+       "notes": "Correctly identifies the defect: deadline used as per-attempt timeout instead of overall limit. Fix is correct in concept but code is incomplete (cut off mid-sentence), so not fully valid. No extra defects asserted.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1234,
+       "output_tokens": 83,
+       "cost": 0.0,
+       "latency_ms": 4509,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the defect: deadline used as per-attempt timeout instead of overall limit. Fix is correct in concept but code is incomplete (cut off mid-sentence), so not fully valid. No extra defects asserted.\"}"
+      }
+     ]
+    }
+   ],
+   "resolved_true": 0,
+   "resolved_false": 10,
+   "verdict_flipped": false,
+   "overall_min": 0.8888888888888888,
+   "overall_max": 0.9444444444444444,
+   "overall_mean": 0.8944444444444445,
+   "overall_stdev": 0.01756820922315767,
+   "distinct_overalls": 2
+  },
+  {
+   "task_id": "h05_partial_write",
+   "model": "openai/gpt-oss-120b",
+   "answer_chars": 1181,
+   "answer": "**Defect \u2013 missing\u202f`fsync` (and directory sync)**  \nThe function writes the temporary file and then renames it, but it never forces the data (or the rename) to be flushed to the storage device. If the process crashes after `os.replace` but before the OS has actually written the new file contents to disk, the destination file can end up truncated or empty.\n\n**Fix \u2013 flush and `fsync` the temporary file, then `fsync` the containing directory after the rename.**\n\n```python\nimport os\n\ndef save_atomic(path, data, tmp_suffix=\".tmp\"):\n    tmp = path + tmp_suffix\n    # Write to a temporary file\n    with open(tmp, \"w\") as f:\n        f.write(data)\n        f.flush()                     # push data to OS buffers\n        os.fsync(f.fileno())          # force data to storage\n\n    # Atomically replace the target\n    os.replace(tmp, path)\n\n    # Ensure the rename is persisted (sync the directory)\n    dir_fd = os.open(os.path.dirname(path) or \".\", os.O_DIRECTORY)\n    try:\n        os.fsync(dir_fd)\n    finally:\n        os.close(dir_fd)\n```\n\nNow, even if a crash occurs immediately after the rename, the new file\u2019s contents are guaranteed to be on disk, eliminating the truncation risk.",
+   "trials": [
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006552999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 131
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0006552999999999999,
+       "latency_ms": 1333,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the missing flush/fsync before os.replace as the defect, proposes a proper fix including file and directory fsync, and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 74,
+       "cost": 0.0,
+       "latency_ms": 1068,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the missing flush/fsync before os.replace as the defect, proposes a proper fix including file and directory fsync, and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 124
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1212,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing fsync before rename as the defect, provides a proper fix including file and directory fsync, and asserts no other issues.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 67,
+       "cost": 0.0,
+       "latency_ms": 1326,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing fsync before rename as the defect, provides a proper fix including file and directory fsync, and asserts no other issues.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 122
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1312,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing fsync/flush before replace as the defect, provides a proper fix, and does not assert any additional bugs.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 65,
+       "cost": 0.0,
+       "latency_ms": 1099,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing fsync/flush before replace as the defect, provides a proper fix, and does not assert any additional bugs.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 104
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1161,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review's not flushed and directory sync, ",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 47,
+       "cost": 0.0,
+       "latency_ms": 9861,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review's not flushed and directory sync, \"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 122
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1177,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing fsync/flush before rename as the defect, proposes a proper fix, and does not assert any additional bugs.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 65,
+       "cost": 0.0,
+       "latency_ms": 927,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing fsync/flush before rename as the defect, proposes a proper fix, and does not assert any additional bugs.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 127
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1385,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing flush/fsync before os.replace as the defect, provides a proper fix including file and directory fsync, and asserts no additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 70,
+       "cost": 0.0,
+       "latency_ms": 3343,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing flush/fsync before os.replace as the defect, provides a proper fix including file and directory fsync, and asserts no additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 130
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1275,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\r\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "The review correctly identifies the missing flush/fsync before os.replace as the defect, proposes a proper fix including file and directory sync, and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 73,
+       "cost": 0.0,
+       "latency_ms": 1334,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the missing flush/fsync before os.replace as the defect, proposes a proper fix including file and directory sync, and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0006996,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 121
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 56,
+       "cost": 0.0006996,
+       "latency_ms": 1220,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing fsync/flush before rename as the defect, provides a proper fix, and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 65,
+       "cost": 0.0,
+       "latency_ms": 2068,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing fsync/flush before rename as the defect, provides a proper fix, and does not assert any additional defects.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 124
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 2478,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing flush/fsync before rename as the defect and provides a proper fix with file and directory sync. No extra defects asserted.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 67,
+       "cost": 0.0,
+       "latency_ms": 1828,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing flush/fsync before rename as the defect and provides a proper fix with file and directory sync. No extra defects asserted.\"}"
+      }
+     ]
+    },
+    {
+     "task_id": "h05_partial_write",
+     "status": "resolved",
+     "resolved": true,
+     "overall": 1.0,
+     "threshold": 0.8,
+     "reason": "2/2 judges resolved",
+     "criteria": [
+      {
+       "name": "identifies_defect",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.5
+      },
+      {
+       "name": "correct_fix",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.3333
+      },
+      {
+       "name": "no_false_alarms",
+       "score": 3.0,
+       "normalized": 1.0,
+       "weight": 0.1667
+      }
+     ],
+     "agreement": 1.0,
+     "disputed": false,
+     "judge_calls": 2,
+     "judge_failures": 0,
+     "judge_cost": 0.0007000999999999999,
+     "judge_tokens": {
+      "input": 2421,
+      "output": 130
+     },
+     "judged_by": [
+      "cerebras/zai-glm-4.7",
+      "nvidia/nvidia/nemotron-3-super-120b-a12b"
+     ],
+     "answer": {
+      "provider": null,
+      "model": null
+     },
+     "self_judged": false,
+     "expectation_used": true,
+     "samples": [
+      {
+       "judge": "judge_a",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "answered_by": {
+        "provider": "cerebras",
+        "model": "zai-glm-4.7"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1228,
+       "output_tokens": 57,
+       "cost": 0.0007000999999999999,
+       "latency_ms": 1283,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before rename and provides a complete fix including directory sync. No false alarms.\"}\n"
+      },
+      {
+       "judge": "judge_b",
+       "ok": true,
+       "called": true,
+       "requested": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "answered_by": {
+        "provider": "nvidia",
+        "model": "nvidia/nemotron-3-super-120b-a12b"
+       },
+       "scores": {
+        "identifies_defect": 3.0,
+        "correct_fix": 3.0,
+        "no_false_alarms": 3.0
+       },
+       "overall": 1.0,
+       "resolved": true,
+       "reason": "overall 1.000 >= threshold 0.8",
+       "notes": "Answer correctly identifies missing flush/fsync before os.replace as the defect, provides a proper fix including file fsync and directory sync, and does not assert any additional defects.",
+       "warnings": [],
+       "error": null,
+       "input_tokens": 1193,
+       "output_tokens": 73,
+       "cost": 0.0,
+       "latency_ms": 1069,
+       "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies missing flush/fsync before os.replace as the defect, provides a proper fix including file fsync and directory sync, and does not assert any additional defects.\"}"
+      }
+     ]
+    }
+   ],
+   "resolved_true": 10,
+   "resolved_false": 0,
+   "verdict_flipped": false,
+   "overall_min": 1.0,
+   "overall_max": 1.0,
+   "overall_mean": 1.0,
+   "overall_stdev": 0.0,
+   "distinct_overalls": 1
+  }
+ ]
+}

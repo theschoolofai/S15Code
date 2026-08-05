@@ -1,0 +1,105 @@
+# Part 2 ladder — built for one task class: single-defect code review.
+#
+# This is NOT the shipped ladder. It is designed against the failure modes of
+# THIS task class, which are different from a general-knowledge set:
+#
+#   1. The answer is short. A correct review is "the defect is X, fix is Y" in
+#      two or three sentences. Output ceilings can therefore be tight, which
+#      matters because output is billed 4-6x input on every rung here.
+#
+#   2. The input is NOT short, and does not shrink as you go down the ladder.
+#      Every rung must read the whole snippet. So input cost is roughly constant
+#      across rungs and the ladder's real spread is narrower than the headline
+#      per-token rates suggest. Measured below.
+#
+#   3. Reasoning is worth paying for on the hard rung and wasted on the easy
+#      one. `h02_check_then_act` and `h04_retry_budget` need an execution-order
+#      argument; `e02_operator` needs one comparison read correctly.
+#
+# Rungs were each called against glc_v4 on 2026-08-02 before being written down.
+#
+#   rung      provider    model                  $/Mtok in/out  latency  quota/day
+#   economy   groq        openai/gpt-oss-120b    0.15 / 0.75     500 ms  1000
+#   standard  gemini      gemini-3.1-flash-lite  0.25 / 1.50     895 ms  1000
+#   frontier  openrouter  openai/gpt-4.1         2.00 / 8.00    1026 ms  metered credit
+#
+# Rejected rungs, and why — recorded because the reasons are the interesting part:
+#
+#   gemini-3.1-pro          404 on this key; the name exists in pricing.yaml but
+#                           not in the account's model list.
+#   gemini-3.1-pro-preview  429. Gemini's free tier does not include pro models,
+#                           so the strong Google model is unreachable, not merely
+#                           expensive.
+#   github/openai/gpt-4.1   HTTP 410. GitHub Models is in scheduled retirement.
+#   nvidia/nemotron-3-      Works, 677 ms, 9999/day, and a 550B model — the best
+#     ultra-550b-a55b       *technical* candidate. Rejected because it is free at
+#                           source and has no published price, so cost per
+#                           resolved task would have been a modelled number
+#                           rather than a measured one. A $0 rung also cannot be
+#                           exhausted by a dollar ceiling, which would have made
+#                           the refusal path untestable in money.
+#
+# The surviving frontier rung is the only one on this gateway that is both
+# strong and honestly priced. That is itself a finding about free-tier ladders.
+
+order: [economy, standard, frontier]
+default_tier: economy
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      # gpt-oss-120b thinks by default and will spend the entire output budget
+      # in its reasoning channel, returning "" at full price. Not optional.
+      reasoning: "off"
+      # A defect report is short. 400 is generous for "the bug is X, fix is Y"
+      # and keeps the projected worst case near the real cost, which matters
+      # because admission prices the ceiling, not the average.
+      max_tokens: 400
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 400
+    projected_output_tokens: 300
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 600
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 400
+    projected_output_tokens: 450
+
+  frontier:
+    request:
+      provider: openrouter
+      model: openai/gpt-4.1
+      # gpt-4.1 has no thinking channel to disable, so the dial is left alone
+      # rather than sent and ignored.
+      max_tokens: 900
+      temperature: 0
+    price_model: openai/gpt-4.1
+    projected_input_tokens: 400
+    projected_output_tokens: 700
+
+# Which role asks for which rung.
+#
+# THE POLICY DECISION: the answering role opens on `economy`, not on frontier.
+#
+# The reasoning is a prior about this task class, and it is falsifiable by the
+# measurement that follows: two thirds of the set (easy + moderate) are defects
+# visible within one or two lines, which a 120B model reads reliably. Opening on
+# frontier would buy nothing on those ten tasks while paying 10x for them.
+#
+# The cascade is expected to earn its keep on the five hard tasks, where the
+# decoys are designed to catch a model that pattern-matches instead of tracing
+# execution order. If it does not, the ladder is not justified for this class
+# and the honest response is to collapse it.
+role_tiers:
+  default: economy
+  answer_with_evidence: economy
+  memory_recall: economy
+  reviewer: economy

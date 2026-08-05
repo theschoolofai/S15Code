@@ -83,7 +83,13 @@ tiers:
 
   frontier:
     request:
-      provider: github
+      # Was `github`. GitHub Models entered a scheduled retirement brownout and
+      # now answers HTTP 410 to everyone — confirmed unauthenticated, so it is
+      # the service going away, not a credential. OpenRouter serves the same
+      # model at the same published rate, so pricing.yaml needs no edit.
+      # Free-tier quota there is 50 requests/day, which is the binding limit on
+      # a full live p1 (the nemotron judge shares that allowance).
+      provider: openrouter
       model: openai/gpt-4.1
       # gpt-4.1 has no thinking channel to switch off, so the dial is left
       # alone here rather than sent and ignored.

@@ -55,6 +55,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import httpx  # noqa: E402
+from harness import DEFAULT_BASE_URL as HARNESS_DEFAULT_BASE_URL  # noqa: E402
 from harness import OUT, Args, Proof, sync  # noqa: E402
 
 from s15code.economics import (  # noqa: E402
@@ -70,7 +71,12 @@ from s15code.evals.judge import STATUS_JUDGE_FAILED  # noqa: E402
 from s15code.evals.tasks import EvalTask, by_difficulty  # noqa: E402
 from s15code.gateway import GatewayClient  # noqa: E402
 
-DEFAULT_BASE_URL = os.getenv("GLC_BASE_URL", "http://127.0.0.1:8112")
+# Was hardcoded to :8112, which disagreed with harness.DEFAULT_BASE_URL (:8111)
+# and with the gateway's own default port. The mismatch was silent: an
+# unreachable base URL falls back to the offline transport, so the proof printed
+# a full table of deterministic simulation and labelled it OFFLINE rather than
+# failing. Reuse the shared default so the two cannot drift again.
+DEFAULT_BASE_URL = HARNESS_DEFAULT_BASE_URL
 DEFAULT_TASKS = Path(__file__).resolve().parent / "tasks" / "mixed.jsonl"
 
 #: The role every answering call declares. It is a ROLE, not a task class: the

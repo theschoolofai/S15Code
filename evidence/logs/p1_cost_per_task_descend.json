@@ -1,0 +1,2960 @@
+{
+  "proof": "p1_cost_per_task",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "15 tasks from proofs/tasks/codereview.jsonl",
+    "budget": 0.004,
+    "principal": "part2/descend",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "<repo>/config/part2_descend",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.004,
+    "thresholds": {
+      "downgrade_at": 0.85,
+      "refuse_at": 0.95,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.0,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "C budget_aware": "spend 0.00690025 USD  calls 19  cost/call 0.00036317  resolved 13/15  cost/resolved 0.00053079  tiers standard",
+    "C resolved by difficulty": "{\"easy\": 5, \"hard\": 5, \"moderate\": 3}  of {\"easy\": 5, \"moderate\": 5, \"hard\": 5}",
+    "ladder": "economy < standard < frontier",
+    "tasks": "15 from proofs/tasks/codereview.jsonl  {'easy': ['e01_offbyone', 'e02_operator', 'e03_missing_return', 'e04_shadowed_sum', 'e05_int_division'], 'moderate': ['m01_mutate_during_iter', 'm02_mutable_default', 'm03_shallow_copy', 'm04_swallowed_error', 'm05_float_equality'], 'hard': ['h01_late_binding', 'h02_check_then_act', 'h03_binary_search', 'h04_retry_budget', 'h05_partial_write']}",
+    "per-task ceiling": "0.004 USD (principal part2/descend)",
+    "judge panel": "cerebras/zai-glm-4.7, nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "judge bar": "overall >= 0.8, min criterion 0.67, tie_break unresolved",
+    "judge meta-cost": "30 calls, 0.00870180 USD, 0 unusable, 16 transport retries, 4 verdicts reused",
+    "signature failure mode": "NOT OBSERVED \u2014 {}",
+    "wall clock": "605.0s",
+    "where the strategies disagreed": "no task split the strategies"
+  },
+  "checks": [
+    {
+      "claim": "every strategy attempted every task in the file",
+      "ok": true,
+      "observed": "1 strategies x 15 tasks"
+    },
+    {
+      "claim": "every answering provider call that returned is metered",
+      "ok": true,
+      "observed": "19 transport calls, 19 ledger charges, 0 transport failures (no tokens reported, so not charged)"
+    },
+    {
+      "claim": "no verdict was unparseable (an unparseable judge is a JUDGE failure)",
+      "ok": true,
+      "observed": "0 tasks ended with status=judge_failed, 0 unusable judge samples"
+    },
+    {
+      "claim": "an empty or errored answer never counted as resolved",
+      "ok": true,
+      "observed": "0 such rows"
+    },
+    {
+      "claim": "no answer was graded by its own model",
+      "ok": true,
+      "observed": "judges ['nvidia/nemotron-3-super-120b-a12b', 'zai-glm-4.7'] vs ladder ['gemini-3.1-flash-lite', 'openai/gpt-4.1', 'openai/gpt-oss-120b']"
+    },
+    {
+      "claim": "at least one strategy resolved at least one task, so cost/resolved is defined",
+      "ok": true,
+      "observed": "13 resolved rows across 1 strategies"
+    },
+    {
+      "claim": "the configured ladder separates cost per call at all",
+      "ok": true,
+      "observed": "projected top 0.00800000 > bottom 0.00036000"
+    },
+    {
+      "claim": "every model that answered has its own row in pricing.yaml",
+      "ok": true,
+      "observed": "all priced"
+    },
+    {
+      "claim": "no semantic-cache hit served one strategy another's answer",
+      "ok": true,
+      "observed": {
+        "before": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        },
+        "after": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        }
+      }
+    }
+  ],
+  "detail": {
+    "divergences": {},
+    "finding": {
+      "observed": null,
+      "reason": "strategy B did not run; nothing to compare"
+    },
+    "summaries": {
+      "C": {
+        "strategy": "C",
+        "name": "budget_aware",
+        "description": "opens on the most_capable rung (frontier), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict",
+        "start_tier": "frontier",
+        "max_attempts": 3,
+        "escalates": true,
+        "tasks": 15,
+        "spend": 0.00690025,
+        "calls": 19,
+        "attempts": 19,
+        "cost_per_call": 0.00036317105263157897,
+        "cost_per_task": 0.0004600166666666667,
+        "resolved": 13,
+        "unresolved": 2,
+        "judge_failed": 0,
+        "cost_per_resolved_task": 0.0005307884615384616,
+        "resolution_rate": 0.8666666666666667,
+        "tokens": 6766,
+        "tokens_per_resolved_task": 520.4615384615385,
+        "latency_ms": 30148.0,
+        "errors": 0,
+        "downgrades": 19,
+        "branches": 0,
+        "refusals": 0,
+        "tiers_charged": [
+          "standard"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "resolved_by_difficulty": {
+          "easy": 5,
+          "hard": 5,
+          "moderate": 3
+        }
+      }
+    },
+    "strategies": {
+      "A": {
+        "key": "A",
+        "name": "always_frontier",
+        "start_tier": "frontier",
+        "attempts": 1,
+        "escalate": false,
+        "description": "every task once on the top rung (frontier)"
+      },
+      "B": {
+        "key": "B",
+        "name": "always_cheapest",
+        "start_tier": "economy",
+        "attempts": 3,
+        "escalate": false,
+        "description": "every task on the bottom rung (economy), retried up to 3 times on an unresolved verdict"
+      },
+      "C": {
+        "key": "C",
+        "name": "budget_aware",
+        "start_tier": "frontier",
+        "attempts": 3,
+        "escalate": true,
+        "description": "opens on the most_capable rung (frontier), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict"
+      }
+    },
+    "evals_config": {
+      "directory": "<repo>/config/part2_descend",
+      "judge": {
+        "scale_max": 3.0,
+        "threshold": 0.8,
+        "min_criterion": 0.67,
+        "tie_break": "unresolved",
+        "retries": 5,
+        "retry_backoff_seconds": 15.0,
+        "pace_seconds": 4.0,
+        "criteria": [
+          {
+            "name": "identifies_defect",
+            "weight": 3.0,
+            "requires_expectation": true
+          },
+          {
+            "name": "correct_fix",
+            "weight": 2.0,
+            "requires_expectation": true
+          },
+          {
+            "name": "no_false_alarms",
+            "weight": 1.0,
+            "requires_expectation": false
+          }
+        ],
+        "panel": [
+          {
+            "name": "judge_a",
+            "provider": "cerebras",
+            "model": "zai-glm-4.7"
+          },
+          {
+            "name": "judge_b",
+            "provider": "nvidia",
+            "model": "nvidia/nemotron-3-super-120b-a12b"
+          }
+        ]
+      },
+      "strategies": {
+        "max_attempts": 3,
+        "cheapest_retries": 2,
+        "cheapest_attempts": 3,
+        "escalate": true,
+        "start": "most_capable"
+      }
+    },
+    "judge_meter": {
+      "judge_calls": 30,
+      "judge_failures": 0,
+      "judge_transport_failures": 16,
+      "judge_cost": 0.0087018,
+      "judge_input_tokens": 31530,
+      "judge_output_tokens": 1984,
+      "panel": [
+        {
+          "name": "judge_a",
+          "provider": "cerebras",
+          "model": "zai-glm-4.7"
+        },
+        {
+          "name": "judge_b",
+          "provider": "nvidia",
+          "model": "nvidia/nemotron-3-super-120b-a12b"
+        }
+      ]
+    },
+    "judge_verdict_reuses": 4,
+    "tasks": [
+      {
+        "id": "e01_offbyone",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef last_n(items, n):\n    # return the final n items, in order\n    return items[len(items) - n - 1:]\n```",
+        "expectation": "Identifies the off-by-one in the slice start: it should be items[len(items)-n:] (or items[-n:]), because subtracting an extra 1 returns n+1 items.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e02_operator",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef is_expired(age_seconds, ttl_seconds):\n    # an entry is expired once it is older than its ttl\n    return age_seconds < ttl_seconds\n```",
+        "expectation": "Identifies the inverted comparison: it should be age_seconds > ttl_seconds (or >=). As written it reports fresh entries as expired and vice versa.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e03_missing_return",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef normalise(name):\n    if name is None:\n        return \"\"\n    name.strip().lower()\n```",
+        "expectation": "Identifies the missing return on the final line: it should be return name.strip().lower(). As written the function returns None.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e04_shadowed_sum",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef total_bytes(chunks):\n    sum = 0\n    for c in chunks:\n        sum += len(c)\n    return sum(chunks)\n```",
+        "expectation": "Identifies that the final line calls sum(chunks) instead of returning the accumulated variable; it should be return sum. Calling the shadowed name raises TypeError because sum is now an int.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "e05_int_division",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef average_latency_ms(total_ms, count):\n    if count == 0:\n        return 0.0\n    return total_ms // count\n```",
+        "expectation": "Identifies the floor division: it should be total_ms / count. Integer division discards the fractional part of the average.",
+        "difficulty": "easy",
+        "metadata": {}
+      },
+      {
+        "id": "m01_mutate_during_iter",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef drop_expired(cache, now):\n    for key, entry in cache.items():\n        if entry.expires_at <= now:\n            del cache[key]\n    return cache\n```",
+        "expectation": "Identifies mutation of the dict while iterating over it, which raises RuntimeError: dictionary changed size during iteration. Fix is to iterate over a snapshot, e.g. list(cache.items()), or build a new dict.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m02_mutable_default",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef collect(item, seen=[]):\n    seen.append(item)\n    return seen\n```",
+        "expectation": "Identifies the mutable default argument: the list is created once at definition time and shared across all calls, so results accumulate between unrelated calls. Fix is seen=None with seen = [] inside the body.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m03_shallow_copy",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef with_extra_header(request, key, value):\n    copy = dict(request)\n    copy[\"headers\"][key] = value\n    return copy\n```",
+        "expectation": "Identifies that dict(request) is a shallow copy, so the nested headers dict is shared and the caller's original request is mutated. Fix is to copy the nested dict too, e.g. copy['headers'] = {**request['headers'], key: value}, or use copy.deepcopy.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m04_swallowed_error",
+        "task": "This function has exactly one defect. Name the defect and explain why it matters.\n\n```python\ndef load_all(paths, parse):\n    results = []\n    for p in paths:\n        try:\n            results.append(parse(p))\n        except Exception:\n            pass\n    return results\n```",
+        "expectation": "Identifies that the bare except swallows every failure silently, so the caller receives a short list indistinguishable from a genuinely short input and cannot tell that files failed to parse. Fix is to log or collect the errors, or narrow and re-raise.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "m05_float_equality",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef is_fully_spent(spent, budget):\n    return spent == budget\n```",
+        "expectation": "Identifies exact float equality: accumulated floating point spend will essentially never equal the budget exactly, so this returns False when the budget is effectively exhausted. Fix is a tolerance comparison, e.g. spent >= budget - epsilon, or use integers/Decimal.",
+        "difficulty": "moderate",
+        "metadata": {}
+      },
+      {
+        "id": "h01_late_binding",
+        "task": "This function has exactly one defect. Name the defect and give the corrected code.\n\n```python\ndef make_validators(limits):\n    validators = []\n    for limit in limits:\n        validators.append(lambda v: v <= limit)\n    return validators\n```",
+        "expectation": "Identifies the late-binding closure: every lambda captures the variable limit, not its value, so after the loop all validators compare against the LAST limit. Fix is a default argument, lambda v, limit=limit: v <= limit, or functools.partial. Answers that only say 'use a list comprehension' or blame the mutable list do NOT identify the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h02_check_then_act",
+        "task": "This function has exactly one defect. Name the defect and explain how to fix it.\n\n```python\ndef reserve(pool, node_id, amount):\n    # pool.remaining() and pool.take() are each individually thread-safe\n    if pool.remaining() >= amount:\n        pool.take(amount)\n        return True\n    return False\n```",
+        "expectation": "Identifies the check-then-act race (TOCTOU): between remaining() and take() another thread can take the capacity, so two callers can both pass the check and overdraw the pool. Individually thread-safe calls do not compose. Fix is to hold a lock across both, or use an atomic compare-and-take. Answers that say the individual calls need locking have MISSED it.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h03_binary_search",
+        "task": "This function has exactly one defect. Name the defect and give the corrected line.\n\n```python\ndef first_ge(sorted_values, target):\n    # index of the first value >= target, or len(sorted_values)\n    lo, hi = 0, len(sorted_values) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if sorted_values[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo\n```",
+        "expectation": "Identifies that hi is initialised to len-1 rather than len, so when every value is < target the function returns len-1 instead of the documented len. Fix is hi = len(sorted_values). Answers that claim an infinite loop, or that mid should be lo + (hi-lo)//2 for overflow, have NOT found the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h04_retry_budget",
+        "task": "This function has exactly one defect relating to the deadline. Name it and explain how to fix it.\n\n```python\ndef call_with_retries(send, payload, attempts=3, deadline=None):\n    last = None\n    for _ in range(attempts):\n        try:\n            return send(payload, timeout=deadline)\n        except TimeoutError as e:\n            last = e\n    raise last\n```",
+        "expectation": "Identifies that the same absolute deadline (or full timeout) is passed to every attempt rather than being decremented by time already elapsed, so the total wall time is up to attempts x deadline instead of bounded by deadline. Fix is to track remaining time and pass the shrinking budget, aborting when it reaches zero. Answers about missing backoff or catching too-narrow an exception have NOT found the stated defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      },
+      {
+        "id": "h05_partial_write",
+        "task": "This function claims to write atomically but has exactly one defect that can still leave the destination holding truncated data after a crash. Name it and explain the fix.\n\n```python\ndef save_atomic(path, data, tmp_suffix=\".tmp\"):\n    tmp = path + tmp_suffix\n    with open(tmp, \"w\") as f:\n        f.write(data)\n    os.replace(tmp, path)\n```",
+        "expectation": "Identifies that the file is not flushed and fsynced before os.replace, so the rename can be durable while the data is still in the OS buffer, leaving an empty or truncated file after a power loss. Fix is f.flush() then os.fsync(f.fileno()) inside the with block (ideally also fsyncing the directory). Answers that only say 'os.replace is atomic so this is fine', or that flag the missing import of os, have NOT found the defect.",
+        "difficulty": "hard",
+        "metadata": {}
+      }
+    ],
+    "per_task": {
+      "C": [
+        {
+          "task_id": "e01_offbyone",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e01_offbyone#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0001795,
+              "input_tokens": 130,
+              "output_tokens": 98,
+              "latency_ms": 985.0,
+              "error": null,
+              "answer_chars": 358,
+              "answer_excerpt": "in the slice start index. By subtracting 1 from the length, the function includes an extra element before the desired range (or returns the wrong number of elements).\n\n**Defect:** The slice start index `len(items) - n - 1` is incorrect; it should be `len(items) - n`.\n\n**Corrected line:**\n`return items[len(items) - n:]`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0001795,
+          "calls": 1,
+          "input_tokens": 130,
+          "output_tokens": 98,
+          "latency_ms": 985.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e01_offbyone",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005093,
+            "judge_tokens": {
+              "input": 1819,
+              "output": 125
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the off-by-one error and provides the exact fix items[len(items)-n:] without any false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 933,
+                "output_tokens": 60,
+                "cost": 0.0005093,
+                "latency_ms": 4520,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the off-by-one error and provides the exact fix items[len(items)-n:] without any false alarms.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the off-by-one error in the slice start index and provides the exact fix needed. No extra defects are mentioned.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 886,
+                "output_tokens": 65,
+                "cost": 0.0,
+                "latency_ms": 1959,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the off-by-one error in the slice start index and provides the exact fix needed. No extra defects are mentioned.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e02_operator",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e02_operator#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0001275,
+              "input_tokens": 132,
+              "output_tokens": 63,
+              "latency_ms": 1465.0,
+              "error": null,
+              "answer_chars": 237,
+              "answer_excerpt": "The defect is a **logical error**: the function incorrectly returns `True` when the entry is *not* expired (i.e., when the age is less than the TTL) and `False` when it is expired.\n\n**Corrected line:**\n`return age_seconds >= ttl_seconds`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0001275,
+          "calls": 1,
+          "input_tokens": 132,
+          "output_tokens": 63,
+          "latency_ms": 1465.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e02_operator",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.00048279999999999997,
+            "judge_tokens": {
+              "input": 1737,
+              "output": 121
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the inverted comparison and provides the right fix. No extra issues claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 887,
+                "output_tokens": 53,
+                "cost": 0.00048279999999999997,
+                "latency_ms": 1149,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the inverted comparison and provides the right fix. No extra issues claimed.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the inverted comparison as the sole defect and proposes the proper fix (age_seconds >= ttl_seconds). No extra defects are alleged.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 850,
+                "output_tokens": 68,
+                "cost": 0.0,
+                "latency_ms": 3033,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the inverted comparison as the sole defect and proposes the proper fix (age_seconds >= ttl_seconds). No extra defects are alleged.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e03_missing_return",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e03_missing_return#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0001665,
+              "input_tokens": 120,
+              "output_tokens": 91,
+              "latency_ms": 957.0,
+              "error": null,
+              "answer_chars": 408,
+              "answer_excerpt": "n Python, strings are immutable, so `name.strip().lower()` creates a new string but does not modify the original or return it to the caller; the function currently returns `None` by default.\n\n**Defect:** The function lacks a `return` statement for the processed string.\n\n**Corrected line:**\n`return name.strip().lower()`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0001665,
+          "calls": 1,
+          "input_tokens": 120,
+          "output_tokens": 91,
+          "latency_ms": 957.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e03_missing_return",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004908,
+            "judge_tokens": {
+              "input": 1767,
+              "output": 112
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies missing return and provides exact fix. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 906,
+                "output_tokens": 50,
+                "cost": 0.0004908,
+                "latency_ms": 3279,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing return and provides exact fix. No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the missing return statement as the sole defect and proposes the exact fix. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 861,
+                "output_tokens": 62,
+                "cost": 0.0,
+                "latency_ms": 1983,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the missing return statement as the sole defect and proposes the exact fix. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e04_shadowed_sum",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e04_shadowed_sum#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0001465,
+              "input_tokens": 130,
+              "output_tokens": 76,
+              "latency_ms": 1396.0,
+              "error": null,
+              "answer_chars": 321,
+              "answer_excerpt": "he defect is a **name shadowing/type error**: the variable `sum` is used as an integer accumulator, which then shadows the built-in `sum()` function, causing the final `return sum(chunks)` statement to raise a `TypeError` because it attempts to call an integer as if it were a function.\n\n**Corrected line:**\n`return sum`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0001465,
+          "calls": 1,
+          "input_tokens": 130,
+          "output_tokens": 76,
+          "latency_ms": 1396.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e04_shadowed_sum",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004967999999999999,
+            "judge_tokens": {
+              "input": 1780,
+              "output": 131
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies shadowing and the wrong return statement. Fix is accurate. No extra bugs claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 912,
+                "output_tokens": 56,
+                "cost": 0.0004967999999999999,
+                "latency_ms": 1201,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies shadowing and the wrong return statement. Fix is accurate. No extra bugs claimed.\"}\r"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the defect as the final line calling sum(chunks) after sum has been shadowed, and proposes the correct fix 'return sum'. No additional defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 868,
+                "output_tokens": 75,
+                "cost": 0.0,
+                "latency_ms": 1112,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the defect as the final line calling sum(chunks) after sum has been shadowed, and proposes the correct fix 'return sum'. No additional defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "e05_int_division",
+          "difficulty": "easy",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "e05_int_division#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00012575,
+              "input_tokens": 131,
+              "output_tokens": 62,
+              "latency_ms": 870.0,
+              "error": null,
+              "answer_chars": 302,
+              "answer_excerpt": "The defect in the function is the use of the floor division operator (`//`), which performs integer division and discards the fractional part of the result. This leads to inaccurate latency calculations when the division does not result in a whole number.\n\n**Corrected line:**\n`return total_ms / count`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00012575,
+          "calls": 1,
+          "input_tokens": 131,
+          "output_tokens": 62,
+          "latency_ms": 870.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "e05_int_division",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0004827999999999999,
+            "judge_tokens": {
+              "input": 1722,
+              "output": 114
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies floor division as the defect and proposes the exact fix required. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 884,
+                "output_tokens": 56,
+                "cost": 0.0004827999999999999,
+                "latency_ms": 1261,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies floor division as the defect and proposes the exact fix required. No false alarms raised.\"}\r"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The answer correctly identifies the floor division defect and proposes the exact fix. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 838,
+                "output_tokens": 58,
+                "cost": 0.0,
+                "latency_ms": 884,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The answer correctly identifies the floor division defect and proposes the exact fix. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m01_mutate_during_iter",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m01_mutate_during_iter#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0005205,
+              "input_tokens": 138,
+              "output_tokens": 324,
+              "latency_ms": 1872.0,
+              "error": null,
+              "answer_chars": 1319,
+              "answer_excerpt": " del cache[key]\n        \n    return cache\n```\n\nAlternatively, you can use a dictionary comprehension to create a new dictionary containing only the non-expired items, which is often considered more \"Pythonic\":\n\n```python\ndef drop_expired(cache, now):\n    return {k: v for k, v in cache.items() if v.expires_at > now}\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0005205,
+          "calls": 1,
+          "input_tokens": 138,
+          "output_tokens": 324,
+          "latency_ms": 1872.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m01_mutate_during_iter",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006242999999999999,
+            "judge_tokens": {
+              "input": 2285,
+              "output": 122
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies mutation during iteration as the defect. Provides two valid fixes (list of keys or dict comprehension). No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1161,
+                "output_tokens": 62,
+                "cost": 0.0006242999999999999,
+                "latency_ms": 1163,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies mutation during iteration as the defect. Provides two valid fixes (list of keys or dict comprehension). No false alarms.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the defect (mutating dict during iteration) and offers valid fixes. No extra defects asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1124,
+                "output_tokens": 60,
+                "cost": 0.0,
+                "latency_ms": 878,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the defect (mutating dict during iteration) and offers valid fixes. No extra defects asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m02_mutable_default",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m02_mutable_default#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00034250000000000003,
+              "input_tokens": 116,
+              "output_tokens": 209,
+              "latency_ms": 1602.0,
+              "error": null,
+              "answer_chars": 932,
+              "answer_excerpt": " value to `None` and initialize the list inside the function body. This ensures that a new list is created every time the function is called without an explicit `seen` argument.\n\n**Corrected Code:**\n\n```python\ndef collect(item, seen=None):\n    if seen is None:\n        seen = []\n    seen.append(item)\n    return seen\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00034250000000000003,
+          "calls": 1,
+          "input_tokens": 116,
+          "output_tokens": 209,
+          "latency_ms": 1602.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m02_mutable_default",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005637999999999999,
+            "judge_tokens": {
+              "input": 2025,
+              "output": 127
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies mutable default argument and explains the shared list issue. Provides the standard fix using None and initializing inside the body. No false alarms or extra defects claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1034,
+                "output_tokens": 68,
+                "cost": 0.0005637999999999999,
+                "latency_ms": 1156,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies mutable default argument and explains the shared list issue. Provides the standard fix using None and initializing inside the body. No false alarms or extra defects claimed.\"}"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies mutable default argument as the sole defect and provides the standard fix. No extra defects are claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 991,
+                "output_tokens": 59,
+                "cost": 0.0,
+                "latency_ms": 838,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies mutable default argument as the sole defect and provides the standard fix. No extra defects are claimed.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m03_shallow_copy",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m03_shallow_copy#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0005682500000000001,
+              "input_tokens": 131,
+              "output_tokens": 357,
+              "latency_ms": 2040.0,
+              "error": null,
+              "answer_chars": 1508,
+              "answer_excerpt": "an manually copy the nested dictionary:\n\n```python\ndef with_extra_header(request, key, value):\n    new_request = dict(request)\n    # Create a new dictionary for headers to avoid mutating the original\n    new_request[\"headers\"] = dict(request[\"headers\"])\n    new_request[\"headers\"][key] = value\n    return new_request\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0005682500000000001,
+          "calls": 1,
+          "input_tokens": 131,
+          "output_tokens": 357,
+          "latency_ms": 2040.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m03_shallow_copy",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006527999999999999,
+            "judge_tokens": {
+              "input": 2402,
+              "output": 115
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies shallow copy issue and mutation of original. Fixes are valid (deepcopy or manual nested copy). No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1218,
+                "output_tokens": 62,
+                "cost": 0.0006527999999999999,
+                "latency_ms": 1169,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies shallow copy issue and mutation of original. Fixes are valid (deepcopy or manual nested copy). No false alarms.\"}\r"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies shallow copy defect and proper fix; no extra defects claimed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1184,
+                "output_tokens": 53,
+                "cost": 0.0,
+                "latency_ms": 771,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies shallow copy defect and proper fix; no extra defects claimed.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m04_swallowed_error",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m04_swallowed_error#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.000496,
+              "input_tokens": 142,
+              "output_tokens": 307,
+              "latency_ms": 1972.0,
+              "error": null,
+              "answer_chars": 1459,
+              "answer_excerpt": "o way of knowing which files were skipped or why, making the function unreliable for data integrity.\n\n**Recommended Fix:**\nThe function should catch only the specific exceptions expected during the parsing process (e.g., `IOError` or `ValueError`) and ideally log the error or provide a mechanism to report the failures.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.9444444444444444,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "m04_swallowed_error#C2",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.000496,
+              "input_tokens": 142,
+              "output_tokens": 307,
+              "latency_ms": 1985.0,
+              "error": null,
+              "answer_chars": 1459,
+              "answer_excerpt": "o way of knowing which files were skipped or why, making the function unreliable for data integrity.\n\n**Recommended Fix:**\nThe function should catch only the specific exceptions expected during the parsing process (e.g., `IOError` or `ValueError`) and ideally log the error or provide a mechanism to report the failures.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.9444444444444444,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": true
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "m04_swallowed_error#C3",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.000496,
+              "input_tokens": 142,
+              "output_tokens": 307,
+              "latency_ms": 2108.0,
+              "error": null,
+              "answer_chars": 1459,
+              "answer_excerpt": "o way of knowing which files were skipped or why, making the function unreliable for data integrity.\n\n**Recommended Fix:**\nThe function should catch only the specific exceptions expected during the parsing process (e.g., `IOError` or `ValueError`) and ideally log the error or provide a mechanism to report the failures.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.9444444444444444,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": true
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": false,
+          "status": "unresolved",
+          "overall": 0.9444444444444444,
+          "agreement": 0.5,
+          "self_judged": false,
+          "cost": 0.0014880000000000002,
+          "calls": 3,
+          "input_tokens": 426,
+          "output_tokens": 921,
+          "latency_ms": 6065.0,
+          "tiers_charged": [
+            "standard",
+            "standard",
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 3,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m04_swallowed_error",
+            "status": "unresolved",
+            "resolved": false,
+            "overall": 0.9444,
+            "threshold": 0.8,
+            "reason": "panel split 1/2; tie_break=unresolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 2.5,
+                "normalized": 0.8333,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 0.5,
+            "disputed": true,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006417,
+            "judge_tokens": {
+              "input": 2298,
+              "output": 140
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 2.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 0.8889,
+                "resolved": false,
+                "reason": "criterion floor 0.67 not met on correct_fix (overall 0.889)",
+                "notes": "Correctly identifies the silent swallowing of exceptions. Suggests narrowing the exception type, which is a valid fix, but the criterion also mentions logging or collecting errors, which are not fully addressed.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1170,
+                "output_tokens": 75,
+                "cost": 0.0006417,
+                "latency_ms": 1284,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 2, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the silent swallowing of exceptions. Suggests narrowing the exception type, which is a valid fix, but the criterion also mentions logging or collecting errors, which are not fully addressed.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the bare except as the defect, explains why it matters, proposes a proper fix, and does not invent additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1128,
+                "output_tokens": 65,
+                "cost": 0.0,
+                "latency_ms": 875,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the bare except as the defect, explains why it matters, proposes a proper fix, and does not invent additional defects.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "m05_float_equality",
+          "difficulty": "moderate",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "m05_float_equality#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00029375,
+              "input_tokens": 113,
+              "output_tokens": 177,
+              "latency_ms": 1461.0,
+              "error": null,
+              "answer_chars": 782,
+              "answer_excerpt": "import math\n\ndef is_fully_spent(spent, budget):\n    return math.isclose(spent, budget)\n```\n\n**Explanation:**\n`math.isclose()` compares the values by checking if the difference between them is smaller than a relative or absolute tolerance, which is the standard and robust way to compare floating-point numbers in Python.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.5,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "m05_float_equality#C2",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00029375,
+              "input_tokens": 113,
+              "output_tokens": 177,
+              "latency_ms": 1297.0,
+              "error": null,
+              "answer_chars": 782,
+              "answer_excerpt": "import math\n\ndef is_fully_spent(spent, budget):\n    return math.isclose(spent, budget)\n```\n\n**Explanation:**\n`math.isclose()` compares the values by checking if the difference between them is smaller than a relative or absolute tolerance, which is the standard and robust way to compare floating-point numbers in Python.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.5,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": true
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "m05_float_equality#C3",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00029375,
+              "input_tokens": 113,
+              "output_tokens": 177,
+              "latency_ms": 1213.0,
+              "error": null,
+              "answer_chars": 782,
+              "answer_excerpt": "import math\n\ndef is_fully_spent(spent, budget):\n    return math.isclose(spent, budget)\n```\n\n**Explanation:**\n`math.isclose()` compares the values by checking if the difference between them is smaller than a relative or absolute tolerance, which is the standard and robust way to compare floating-point numbers in Python.",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.5,
+                "agreement": 0.5,
+                "disputed": true,
+                "reason": "panel split 1/2; tie_break=unresolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": true
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": false,
+          "status": "unresolved",
+          "overall": 0.5,
+          "agreement": 0.5,
+          "self_judged": false,
+          "cost": 0.0008812500000000001,
+          "calls": 3,
+          "input_tokens": 339,
+          "output_tokens": 531,
+          "latency_ms": 3971.0,
+          "tiers_charged": [
+            "standard",
+            "standard",
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 3,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "m05_float_equality",
+            "status": "unresolved",
+            "resolved": false,
+            "overall": 0.5,
+            "threshold": 0.8,
+            "reason": "panel split 1/2; tie_break=unresolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 1.5,
+                "normalized": 0.5,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 1.5,
+                "normalized": 0.5,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 1.5,
+                "normalized": 0.5,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 0.5,
+            "disputed": true,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005472999999999999,
+            "judge_tokens": {
+              "input": 1977,
+              "output": 198
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies floating-point equality as the defect and proposes math.isclose() as the fix. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1009,
+                "output_tokens": 60,
+                "cost": 0.0005472999999999999,
+                "latency_ms": 1145,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies floating-point equality as the defect and proposes math.isclose() as the fix. No false alarms raised.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 0.0,
+                  "correct_fix": 0.0,
+                  "no_false_alarms": 0.0
+                },
+                "overall": 0.0,
+                "resolved": false,
+                "reason": "criterion floor 0.67 not met on correct_fix, identifies_defect, no_false_alarms (overall 0.000)",
+                "notes": "The answer claims a floating-point equality defect, but the success criterion identifies the defect as using exact equality for accumulated floating-point spend, which will essentially never equal the budget exactly. The answer misidentifies the nature of the defect and proposes an incorrect fix using math.isclose, which does not address the core issue of accumulated spend never matching budget exactly due to precision errors in summation. The answer also introduces a false alarm by asserting a floating-point comparison issue where the real issue is about accumulated equality never holding.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 968,
+                "output_tokens": 138,
+                "cost": 0.0,
+                "latency_ms": 3220,
+                "raw": "{\"scores\": {\"identifies_defect\": 0, \"correct_fix\": 0, \"no_false_alarms\": 0}, \"notes\": \"The answer claims a floating-point equality defect, but the success criterion identifies the defect as using exact equality for accumulated floating-point spend, which will essentially never equal the budget exactly. The answer misidentifies the nature of the defect and proposes an incorrect fix using math.isclose, which does not address the core issue of accumulated spend never matching budget exactly due to precision errors in summation. The answer also introduces a false alarm by asserting a floating-point comparison issue where the real issue is about accumulated equality never holding.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h01_late_binding",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h01_late_binding#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00030425,
+              "input_tokens": 131,
+              "output_tokens": 181,
+              "latency_ms": 1435.0,
+              "error": null,
+              "answer_chars": 802,
+              "answer_excerpt": "mit` by passing it as a default argument to the lambda function. This forces the value to be evaluated and stored at the time the lambda is created.\n\n```python\ndef make_validators(limits):\n    validators = []\n    for limit in limits:\n        validators.append(lambda v, limit=limit: v <= limit)\n    return validators\n```",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00030425,
+          "calls": 1,
+          "input_tokens": 131,
+          "output_tokens": 181,
+          "latency_ms": 1435.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h01_late_binding",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005702999999999999,
+            "judge_tokens": {
+              "input": 2064,
+              "output": 123
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the late-binding closure issue and provides the standard default-argument fix. No false alarms or alternative problems mentioned.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1053,
+                "output_tokens": 62,
+                "cost": 0.0005702999999999999,
+                "latency_ms": 1554,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the late-binding closure issue and provides the standard default-argument fix. No false alarms or alternative problems mentioned.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies the late-binding closure defect and provides the proper fix using default arguments. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1011,
+                "output_tokens": 61,
+                "cost": 0.0,
+                "latency_ms": 804,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies the late-binding closure defect and provides the proper fix using default arguments. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h02_check_then_act",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h02_check_then_act#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0005462500000000001,
+              "input_tokens": 151,
+              "output_tokens": 339,
+              "latency_ms": 1946.0,
+              "error": null,
+              "answer_chars": 1496,
+              "answer_excerpt": "eck and the `take` operation in a `with pool_lock:` block, you ensure that no other thread can evaluate the remaining capacity or modify the pool until the current thread has finished its transaction. Alternatively, if the `pool` object itself provides a thread-safe \"atomic reserve\" method, that should be used instead.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0005462500000000001,
+          "calls": 1,
+          "input_tokens": 151,
+          "output_tokens": 339,
+          "latency_ms": 1946.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h02_check_then_act",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006677,
+            "judge_tokens": {
+              "input": 2428,
+              "output": 139
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies the TOCTOU race condition between remaining() and take(). The fix using a lock across both operations is valid. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1230,
+                "output_tokens": 67,
+                "cost": 0.0006677,
+                "latency_ms": 1196,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies the TOCTOU race condition between remaining() and take(). The fix using a lock across both operations is valid. No false alarms raised.\"}\r\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies the TOCTOU race between remaining() and take(), proposes a lock-based fix that makes the check-and-act atomic, and does not assert any additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1198,
+                "output_tokens": 72,
+                "cost": 0.0,
+                "latency_ms": 832,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies the TOCTOU race between remaining() and take(), proposes a lock-based fix that makes the check-and-act atomic, and does not assert any additional defects.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h03_binary_search",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h03_binary_search#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00020600000000000002,
+              "input_tokens": 194,
+              "output_tokens": 105,
+              "latency_ms": 1179.0,
+              "error": null,
+              "answer_chars": 392,
+              "answer_excerpt": "s) - 1` instead of `len(sorted_values)`. This causes the function to fail when the target is greater than all elements in the list (it will return the index of the last element instead of the length of the list) and causes an `IndexError` if the input list is empty.\n\n**Corrected line:**\n`lo, hi = 0, len(sorted_values)`",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00020600000000000002,
+          "calls": 1,
+          "input_tokens": 194,
+          "output_tokens": 105,
+          "latency_ms": 1179.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h03_binary_search",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0005513,
+            "judge_tokens": {
+              "input": 2010,
+              "output": 130
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies hi initialization bug and its effect. Fix is accurate. No false alarms.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1024,
+                "output_tokens": 53,
+                "cost": 0.0005513,
+                "latency_ms": 1125,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies hi initialization bug and its effect. Fix is accurate. No false alarms.\"}"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "The review correctly identifies the defect (hi initialised to len-1 instead of len) and provides the exact fix (hi = len(sorted_values)). It does not assert any additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 986,
+                "output_tokens": 77,
+                "cost": 0.0,
+                "latency_ms": 2168,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"The review correctly identifies the defect (hi initialised to len-1 instead of len) and provides the exact fix (hi = len(sorted_values)). It does not assert any additional defects.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h04_retry_budget",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h04_retry_budget#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.00070725,
+              "input_tokens": 165,
+              "output_tokens": 444,
+              "latency_ms": 2317.0,
+              "error": null,
+              "answer_chars": 1910,
+              "answer_excerpt": " the original `deadline` is left.\n3. **Early exit**: If `remaining` is less than or equal to zero, it prevents unnecessary calls to `send` and raises an error immediately.\n4. **Dynamic timeout**: The `send` function is called with the `remaining` time, ensuring the total execution time respects the original `deadline`.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00070725,
+          "calls": 1,
+          "input_tokens": 165,
+          "output_tokens": 444,
+          "latency_ms": 2317.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h04_retry_budget",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0007263,
+            "judge_tokens": {
+              "input": 2685,
+              "output": 136
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies that the full deadline is reused per retry instead of tracking remaining time. The fix tracks start time, calculates remaining budget, and aborts if expired. No false alarms raised.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1353,
+                "output_tokens": 74,
+                "cost": 0.0007263,
+                "latency_ms": 1135,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies that the full deadline is reused per retry instead of tracking remaining time. The fix tracks start time, calculates remaining budget, and aborts if expired. No false alarms raised.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Answer correctly identifies the static deadline reuse defect and proposes a working fix that tracks remaining time. No extra defects are asserted.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1332,
+                "output_tokens": 62,
+                "cost": 0.0,
+                "latency_ms": 814,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Answer correctly identifies the static deadline reuse defect and proposes a working fix that tracks remaining time. No extra defects are asserted.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "h05_partial_write",
+          "difficulty": "hard",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "h05_partial_write#C1",
+              "requested_tier": "frontier",
+              "charged_tier": "standard",
+              "decision": "downgrade",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "cost": 0.0005902500000000001,
+              "input_tokens": 165,
+              "output_tokens": 366,
+              "latency_ms": 2048.0,
+              "error": null,
+              "answer_chars": 1514,
+              "answer_excerpt": "fsync(f.fileno()) # Force the OS to write to physical storage\n    os.replace(tmp, path)\n```\n\n**Note:** For maximum robustness on some filesystems, it is also recommended to call `fsync` on the **directory** containing the file after the `os.replace()` call to ensure the directory entry update is also persisted to disk.",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "2/2 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7",
+                  "nvidia/nvidia/nemotron-3-super-120b-a12b"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0005902500000000001,
+          "calls": 1,
+          "input_tokens": 165,
+          "output_tokens": 366,
+          "latency_ms": 2048.0,
+          "tiers_charged": [
+            "standard"
+          ],
+          "models": [
+            "gemini-3.1-flash-lite"
+          ],
+          "downgrades": 1,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "h05_partial_write",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.8,
+            "reason": "2/2 judges resolved",
+            "criteria": [
+              {
+                "name": "identifies_defect",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.5
+              },
+              {
+                "name": "correct_fix",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              },
+              {
+                "name": "no_false_alarms",
+                "score": 3.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 2,
+            "judge_failures": 0,
+            "judge_cost": 0.0006938,
+            "judge_tokens": {
+              "input": 2531,
+              "output": 151
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7",
+              "nvidia/nvidia/nemotron-3-super-120b-a12b"
+            ],
+            "answer": {
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "judge_a",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies missing fsync as the root cause of potential truncation. Provides the exact fix (flush + fsync) and mentions directory fsync as an optional robustness note without claiming it as a bug.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1283,
+                "output_tokens": 79,
+                "cost": 0.0006938,
+                "latency_ms": 1308,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync as the root cause of potential truncation. Provides the exact fix (flush + fsync) and mentions directory fsync as an optional robustness note without claiming it as a bug.\"}\n"
+              },
+              {
+                "judge": "judge_b",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "answered_by": {
+                  "provider": "nvidia",
+                  "model": "nvidia/nemotron-3-super-120b-a12b"
+                },
+                "scores": {
+                  "identifies_defect": 3.0,
+                  "correct_fix": 3.0,
+                  "no_false_alarms": 3.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.8",
+                "notes": "Correctly identifies missing fsync before replace as the defect, proposes the proper fix (flush+fsync inside the with block), and does not assert any additional defects.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1248,
+                "output_tokens": 72,
+                "cost": 0.0,
+                "latency_ms": 975,
+                "raw": "{\"scores\": {\"identifies_defect\": 3, \"correct_fix\": 3, \"no_false_alarms\": 3}, \"notes\": \"Correctly identifies missing fsync before replace as the defect, proposes the proper fix (flush+fsync inside the with block), and does not assert any additional defects.\"}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "simulated": false,
+    "cache_stats": {
+      "before": {
+        "hits": 0,
+        "stores": 0,
+        "lookups": 0
+      },
+      "after": {
+        "hits": 0,
+        "stores": 0,
+        "lookups": 0
+      }
+    },
+    "wall_clock_seconds": 604.9780547618866
+  }
+}
