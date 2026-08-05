@@ -1,0 +1,27 @@
+
+p3_denial_of_wallet  (live mode)
+  task      A courier must ferry three sealed packages, A, B, and C, across a river using a boat that holds the courier plus at most one package per trip. Package A and Package B cannot be left alone together with no courier present, and Package B and Package C cannot be left alone together either.
+  budget    0.0015  principal proofs/s15/part3-attacker
+  transport {"base_url": "http://127.0.0.1:8111"}
+
+  ceiling                                                        0.00150000 USD
+  spent                                                          0.00119925
+  admitted calls                                                 6
+  refusals                                                       14
+  loop rounds                                                    20
+  nodes created                                                  20
+  refused nodes                                                  14
+  cost per call                                                  0.00019987
+  uncontrolled bill                                              ~1.9988 over 10000 rounds (extrapolated)
+  call ceiling                                                   15
+  transport failures                                             0
+
+  [PASS] the ceiling held under an unbounded loop                       spent 0.00119925 <= 0.00150000
+  [PASS] admitted calls are bounded by the configured call ceiling      6 <= 15
+  [PASS] the loop kept asking and was refused                           20 rounds, 6 admitted, 14 refused
+  [PASS] a refusal is a visible graph failure, not a silent truncation  14 nodes failed with BudgetRefused
+  [PASS] every provider call that returned is metered                   6 transport calls == 6 charges (0 gateway errors, no tokens to charge)
+  [PASS] the controller, not the loop, is what stopped the spend        spend stopped after 6 of 20 attempts
+
+  ALL CHECKS PASSED -> C:\Raghu\MyLearnings\EAG_V3\S15-01082026\assignment\S15Code\proofs\out\p3_denial_of_wallet_budget_exhaustion.json
+

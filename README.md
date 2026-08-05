@@ -17,6 +17,195 @@ Two things are true no matter what the model does with its tokens:
 
 ---
 
+# Part 3 — Attack Our Own Budget
+
+*Branch: `part3-attack-own-budget`, stacked on `part2-logic-puzzle-policy`. This
+section is the Part 3 submission. Raw evidence (full JSON + console logs for
+both runs below) is committed under
+[`part3_evidence/`](part3_evidence/) — `proofs/out/` itself is gitignored, same
+pattern as Parts 1 and 2.*
+
+## The attack
+
+**Path A**, the generic mechanism the proof harness already ships:
+[`proofs/p3_denial_of_wallet.py`](proofs/p3_denial_of_wallet.py)'s
+`RunawayPlanner` — an adversary that earns one more node from *every* outcome,
+success or failure, forever, and asks for the single most expensive tier in
+the ladder (`frontier`) every single time. It never backs off just because it
+was refused. It runs against the **real live gateway, the real journal, and
+our own Part 2 policy** (`config/tiers.yaml`, `config/budgets.yaml` —
+unchanged from Part 2, no `--config-dir` override needed), seeded with the
+opening of our own `logic_h1` courier puzzle for thematic consistency —
+seeding is cosmetic here, since neither the planner nor the controller ever
+inspects task content; it only ever sends `"<task> (iteration N)"` to a
+"reply briefly" system prompt.
+
+Two live runs were made, same task, same config, same live gateway, differing
+only in `--budget`. That single number turned out to change *which* of two
+independent, real defenses actually fires first — worth showing both rather
+than picking one:
+
+```bash
+uv run python proofs/p3_denial_of_wallet.py \
+  --task "A courier must ferry three sealed packages, A, B, and C, across a river using a boat that holds the courier plus at most one package per trip. Package A and Package B cannot be left alone together with no courier present, and Package B and Package C cannot be left alone together either." \
+  --budget 0.0015 --loop-limit 20 --principal proofs/s15/part3-attacker --label budget_exhaustion
+
+uv run python proofs/p3_denial_of_wallet.py \
+  --task "<same task>" \
+  --budget 0.008 --loop-limit 20 --principal proofs/s15/part3-attacker --label call_ceiling
+```
+
+## Why two runs: worst-case pricing hides the real attack surface
+
+Admission prices the **worst case** before a call is made (input estimated
+from the prompt, output bounded by the tier's `max_tokens` ceiling) — that's
+what makes the projection a real upper bound (documented in the base README's
+"What the meter covers, honestly" section above). For this adversary's short
+"reply briefly" prompts, the *real* answers came back tiny (32–381 output
+tokens) against ceilings of 512–3072, so real spend per call ($0.00012–
+$0.0002) landed **50–100x below** the worst-case number admission actually
+priced it at (frontier's worst case alone is $0.01566/call: 3072 max output
+tokens × $5.00/Mtok + estimated input). Two consequences fell out of that gap,
+live, not hypothesized:
+
+1. At a moderately tight budget ($0.008), real spend never got anywhere near
+   `refuse_at` (0.85) — it stayed at 28.7% pressure the entire run. What
+   actually stopped the loop was the **flat call-count ceiling**
+   (`max_calls_per_run: 15`), a defense that holds by design "even if every
+   price estimate is wrong" (the proof's own docstring, invariant 2).
+2. At a genuinely tight budget ($0.0015), the run never reached the call
+   ceiling at all — it ran out of real, actual money first: even
+   **economy**, the cheapest rung in our ladder, could no longer clear its
+   own worst-case admission check once the remaining balance shrank far
+   enough. This is the more direct "wallet is empty" story.
+
+Neither run is staged or cherry-picked to make a point — both were produced
+by the identical attack script against the identical live controller; the
+budget number is the only knob turned. **A third fact holds across both
+runs, and it's arguably the headline finding of Part 3**: the adversary asked
+for `frontier` — the priciest, least-checked-looking tier — on every single
+one of its 40 attempts across both runs combined, and it was downgraded away
+from frontier **every single time**. Not one of the 21 total admitted calls
+(15 + 6) ever executed at the tier the attacker actually wanted.
+
+## Run 1 — the call-count ceiling fires first (`--budget 0.008`)
+
+| | |
+|---|---|
+| Ceiling | $0.008 |
+| Loop limit (proof's own safety net) | 20 rounds |
+| Spent | $0.00229533 (28.7% pressure) |
+| Admitted calls | **15** — exactly `max_calls_per_run` |
+| Refused | 5 |
+| Tier every admitted call actually ran at | `standard` (never `frontier` — 15/15 downgrades) |
+| Cost per admitted call | $0.00015302 |
+| Uncontrolled bill, extrapolated by the proof itself | **~$1.5302** over 10,000 rounds |
+
+Refusal reason, identical for all 5 refused nodes (`loop_16`…`loop_20`):
+`"run call ceiling reached (15/15)"`. Each of those 5 refusals fired **before
+any provider was contacted** — the admission check itself is the gate, so a
+refused round costs nothing and takes no network round-trip; that's why 20
+rounds of a genuinely relentless adversary still finished quickly against a
+provider with a real per-minute rate limit.
+
+Full evidence:
+[`part3_evidence/p3_denial_of_wallet_call_ceiling.json`](part3_evidence/p3_denial_of_wallet_call_ceiling.json),
+[`part3_evidence/p3_call_ceiling_console.log`](part3_evidence/p3_call_ceiling_console.log).
+
+## Run 2 — real budget exhaustion fires first (`--budget 0.0015`)
+
+| | |
+|---|---|
+| Ceiling | $0.0015 |
+| Loop limit | 20 rounds |
+| Spent | $0.00119925 (**79.95%** pressure) |
+| Admitted calls | 6 |
+| Refused | 14 |
+| Tier every admitted call actually ran at | `economy` (3 `downgrade` decisions, then 3 `branch` decisions — see below) |
+| Cost per admitted call | $0.00019987 |
+| Uncontrolled bill, extrapolated by the proof itself | **~$1.9988** over 10,000 rounds |
+
+The first 3 admitted calls (`loop_1`–`loop_3`) were plain **downgrades**:
+`frontier` didn't fit the run's remaining allowance, `standard` didn't
+either, `economy` did. The next 3 (`loop_4`–`loop_6`) were **branches**: no
+tier fit that specific node's own *allocation* slice, but the run as a whole
+still held room, so the controller re-based the node on the run remainder
+and retried at the cheapest rung rather than refusing outright — the policy
+module's own documented distinction between "this node's slice is too small"
+(re-plan) and "the run itself is out of room" (refuse).
+
+Then the wallet ran dry for real. Refusal reason, identical for all 14
+refused nodes (`loop_7`…`loop_20`):
+
+```
+cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)
+```
+
+Read literally: even `economy`'s own worst-case projected cost ($0.000402)
+no longer fit inside what was left of the run ($0.000301, minus a further
+$0.000075 headroom reserve) — not a spend-ratio threshold tripping, the
+run's real remaining balance was arithmetically too small for the cheapest
+call in the entire ladder. Every one of those 14 refusals is a real,
+individually logged `BudgetRefused` failure on its own graph node — visible
+in the journal, not a silent drop.
+
+Full evidence:
+[`part3_evidence/p3_denial_of_wallet_budget_exhaustion.json`](part3_evidence/p3_denial_of_wallet_budget_exhaustion.json),
+[`part3_evidence/p3_budget_exhaustion_console.log`](part3_evidence/p3_budget_exhaustion_console.log).
+
+## What "uncontrolled" would have cost — and an honest ceiling on that number
+
+`p3_denial_of_wallet.py` computes this itself:
+`cost_per_call × --projection-rounds` (default 10,000), using the *real*
+measured cost of the calls that were actually admitted. That gives ~$1.53
+(Run 1) and ~$2.00 (Run 2) over 10,000 rounds. **Flagged honestly rather
+than left to look bigger than it is**: because every admitted call in both
+runs was downgraded away from the `frontier` tier the adversary actually
+asked for, this extrapolation is anchored to `standard`/`economy` pricing,
+not the request. The adversary's real intent — `frontier`, every round,
+forever — priced at that tier's own worst case ($0.01566/call, 3072 max
+output tokens) extrapolates to **~$156.60 over the same 10,000 rounds**, two
+orders of magnitude larger. Both numbers are real and worth keeping: the
+proof's own figure shows what an uncontrolled loop *of this exact measured
+shape* would have cost; the frontier-worst-case figure shows what the
+adversary was actually reaching for. The controller's real job, and the
+thing both live runs above actually demonstrate, is that neither number was
+ever paid — spend stopped at $0.0023 and $0.0012 respectively.
+
+## What isn't in this evidence, honestly
+
+`p3_denial_of_wallet.py` builds the graph and the journal directly through
+`LiveGraphExecutor`, not through `AgentRuntime.run()` the way `p1`, `p2`, and
+`p4` do — it never calls `s15code.telemetry.export_run`, so **no Jaeger trace
+ID exists for either run above**, unlike Parts 1 and 2. The full ordered
+journal (62 events per run: `run_started`, every `task_started` /
+`task_succeeded` / `task_failed`, every `graph_patched`) is captured in full
+in both evidence JSONs' `detail.journal_events` count and the underlying
+per-node `budget_decisions`/`metered_calls` records — that is the actual
+audit trail Part 3 asks for ("refusals visible, logged, not silently
+dropped"), just not routed through the OTel/Jaeger path this session's other
+parts used.
+
+## Path B — not attempted
+
+Per the assignment's own framing, Path A alone satisfies Part 3 in full; the
+user chose Path A only (not Path B's puzzle-specific adversarial content —
+an unsolvable puzzle, a paradox prompt, or `logic_h2`/`logic_h4` under a
+tight budget) to keep this branch scoped given the 2026-08-08 deadline.
+
+## Reproducing Part 3
+
+```bash
+# From S15Code, with the gateway (glc_v4, :8111) and Jaeger already running:
+uv run pytest -q                                                              # 277/277, unchanged config
+uv run python proofs/p3_denial_of_wallet.py --task "<any task, content is cosmetic>" \
+  --budget 0.0015 --loop-limit 20 --principal proofs/s15/part3-attacker --label budget_exhaustion
+uv run python proofs/p3_denial_of_wallet.py --task "<same task>" \
+  --budget 0.008 --loop-limit 20 --principal proofs/s15/part3-attacker --label call_ceiling
+```
+
+---
+
 # Part 2 — Build a Policy and Measure It
 
 *Branch: `part2-logic-puzzle-policy`, stacked on `part1-reproduce-floor`. This
