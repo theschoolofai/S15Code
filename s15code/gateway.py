@@ -17,10 +17,10 @@ import httpx
 class GatewayClient:
     """A thin chat transport. Per-call request fields come from the caller's tier."""
 
-    #: Request fields a tier may set. Everything else stays the client's business.
     PASSTHROUGH = (
         "provider", "model", "max_tokens", "temperature", "reasoning",
         "auto_route", "cache_system", "response_format", "agent", "session",
+        "tenant", "project", "user",
     )
 
     def __init__(self, base_url: str | None = None, *, client: httpx.AsyncClient | None = None) -> None:
