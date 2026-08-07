@@ -215,16 +215,45 @@ a stale name.
 
 We evaluated the budget-aware agent cascade strategy, always-frontier baseline, and always-cheapest baseline on a custom workload of 15 SQL query generation and debugging tasks.
 
-### 1. SQL Workload Strategy Comparison
+### 1. SQL Workload Strategy Comparison (Part 2)
 - **Always Frontier (Strategy A):** Spent **$0.0583** | Resolved **15/15** | Cost/Resolved: **$0.00389**
 - **Always Cheapest (Strategy B):** Spent **$0.0162** | Resolved **2/15** | Cost/Resolved: **$0.00808**
 - **Budget-Aware Cascade (Strategy C):** Spent **$0.0767** | Resolved **15/15** | Cost/Resolved: **$0.00511**
 
 *Finding:* The always-cheapest strategy suffers from the cheapest trap. Due to low accuracy (13.3%), retrying up to 3 times on the cheap tier costs more per resolved task ($0.00808) than routing directly to the expensive frontier model ($0.00389).
 
-### 2.保护 protect/adversarialзащита Protection
+*Reproduction Command:*
+```bash
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/sql_tasks.jsonl --principal proofs/s15/reviewer
+```
+
+### 2. Adversarial protection & protections (Part 3)
 Under the 200-round runaway loop budget attack with a tight $0.002 limit:
 - **Ceiling protection:** Hard controller stopped calls exactly at the 60 call ceiling, limiting spend to **$0.001585**.
-- **Uncontrolled cost projection:** The runaway loop would have cost **~$0.2642** if unbounded.
+- **Uncontrolled cost projection:** The runaway loop would have cost **~$0.2642** if unbounded (extrapolated over 10,000 rounds).
 - **Trace observability:** Refusals are recorded with `BudgetRefused` events in the journal, translating into OTel telemetry spans.
+
+*Reproduction Command:*
+```bash
+uv run python proofs/p3_denial_of_wallet.py --task "what is the capital of Italy?" --budget 0.002
+```
+
+### 3. OpenTelemetry Span Hierarchy & Cost Attribution
+Every run's journal is exported as a span tree with token usage and cost per span.
+
+**Example Span Hierarchy (from Runaway Loop):**
+```
+span: run (runaway) [s15.cost: 0.001585]
+  ├── span: agent_loop (iteration 1) [s15.cost: 0.000026]
+  │     └── span: plan [s15.cost: 0.0]
+  │           └── span: node (loop_1) [s15.cost: 0.000026]
+  │                 └── span: provider_call [s15.cost: 0.000026, gen_ai.request.model: gemini-3.1-flash-lite]
+  ...
+  │
+  └── span: agent_loop (iteration 61) [s15.cost: 0.0]  <-- Capped and Refused
+        └── span: plan [s15.cost: 0.0]
+              └── span: node (loop_61) [state: failed, error: BudgetRefused]
+```
+*Note:* The final 140 nodes fail immediately with `BudgetRefused` before contacting any provider, ensuring zero additional cost.
+
 
