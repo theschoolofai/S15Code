@@ -139,8 +139,9 @@ ledger can be checked against.
 
 ## 4. The honest limitation
 
-Full catalogue in `LIMITATIONS.md`, with seven trace-derived findings and eight
-environmental ones. **The one submitted for Part 1:**
+Full catalogue in `LIMITATIONS.md`: **ten** trace-derived findings (§1.1–1.10,
+nine OBSERVED and one INFERRED) and **nine** environmental ones (§A–H).
+**The one submitted for Part 1:**
 
 > **The trace cannot distinguish a truncated answer from a complete one.**
 
