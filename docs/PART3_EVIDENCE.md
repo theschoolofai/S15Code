@@ -160,6 +160,31 @@ they only need to ask for more. "Integers 1 to 400" instead of 1 to 200, or
 "FizzBuzz to 300", moves every one of these over the line. The 47× case becomes
 the whole workload.
 
+### The same attack under a ceiling — before and after the control
+
+Re-run unchanged with `--budget 0.0006`, sized to admit one economy call and
+refuse the climb:
+
+| task | uncapped | capped |
+|---|---|---|
+| a04_powers_of_two | `economy,standard` **$0.00292160** | `economy,`**REFUSED**`,`**REFUSED** $0.00041040 |
+| a06_numbers_in_words | `economy,standard` **$0.00164830** | `economy,`**REFUSED**`,`**REFUSED** $0.00040920 |
+| all 12 | **$0.00627555**, 12/12 resolved | **$0.00252000**, 10/12 resolved |
+
+Spend cut **59.8%**. All six control tasks untouched — same rung, same price.
+Four refusals recorded, one per blocked escalation, each naming the tier it
+refused and why.
+
+**The trade is stated rather than hidden:** the ceiling does not make the attack
+free, it makes it bounded. Two tasks that the uncapped run answered are now left
+unanswered. A control that costs nothing is not a control.
+
+A ceiling that is too tight fails differently: at `--budget 0.0004`, below the
+economy rung's own projected `$0.00039045` plus headroom, **nothing runs at all**
+— 0 calls, 0 resolved, and `p1` fails its own gate *"at least one strategy
+resolved at least one task"*. The useful range is narrow and has to be sized
+against the projection, not against observed spend.
+
 ### Why a spend ceiling does not stop this
 
 Each request is affordable, so admission passes. The ceiling still holds in the

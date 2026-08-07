@@ -291,22 +291,36 @@ projected spread together, because the projection is a function of the ceiling.
 
 ## 4. One run's span hierarchy, with cost
 
-Trace `aa402254c5bf1beffcfc8c9bb2201472`, service `s15code-agent`:
+Run `run-0e4227fe8e3a` (evidence run 1), service `s15code-agent`. The trace as
+**fetched back from Jaeger's own query API** is committed at
+[`docs/evidence/jaeger_trace_f3990d82.json`](docs/evidence/jaeger_trace_f3990d82.json)
+— the raw `/api/traces/{id}` response, so it is verifiable without a running
+backend:
 
 ```
-run run-0e4227fe8e3a                                    [run total 0.000555]
-  agent loop 2
-    node answer
-      chat nvidia/nemotron-3-ultra-550b-a55b   cost=0.000555  229in/116out  tier=frontier
-    plan
-  agent loop 1 -> plan, node recall
-  agent loop 3 -> plan
-                                    10 spans, 1 billable
+run run-0e4227fe8e3a                          13007.0ms   [run total 0.000555]
+  agent loop 2                                13007.0ms
+    node answer                               13007.0ms
+      chat nvidia/nemotron-3-ultra-550b-a55b  13007.0ms   cost=0.000555
+                                                          229in/116out  tier=frontier
+    plan                                          0.0ms
+  agent loop 1                                    2.0ms
+    plan                                          0.0ms
+    node recall                                   1.0ms
+  agent loop 3                                    0.0ms
+    plan                                          0.0ms
+                                        10 spans, 1 billable, sum 0.00055500
 ```
 
 Nine of ten spans cost nothing because nine bought nothing. `p4` reconciles the
 billable span against the ledger at **delta 0.000e+00**, and confirms no prompt
 or completion text reached the backend.
+
+*Why the JSON rather than a trace id:* Jaeger all-in-one stores traces in memory
+and forgets them on restart, and `/v1/agent/runs/{id}/trace` mints a **new** trace
+id on every call — three queries of this same run returned three different ids
+(`docs/LIMITATIONS.md` §1.10). A trace id alone is perishable and not canonical;
+the committed response is neither.
 
 ## 5. The adversarial test
 
@@ -325,7 +339,33 @@ short. Every request is individually cheap and would pass any spend ceiling.
 request missed the 512-token cap by **six tokens** — asking for "integers 1 to
 400" makes the attack deterministic.
 
-**Before the control, and after** (`p3`, 60 rounds, $0.0005 ceiling):
+### The same attack, before and after the control
+
+Re-run unchanged under a `$0.0006` per-task ceiling — sized to admit one economy
+call and refuse the climb:
+
+| task | uncapped | capped |
+|---|---|---|
+| a04_powers_of_two | `economy,standard` **$0.00292160** | `economy,`**REFUSED**`,`**REFUSED** $0.00041040 |
+| a06_numbers_in_words | `economy,standard` **$0.00164830** | `economy,`**REFUSED**`,`**REFUSED** $0.00040920 |
+| all 12 tasks | **$0.00627555**, resolved 12/12 | **$0.00252000**, resolved 10/12 |
+
+**Spend cut 59.8%**, and every control task is untouched — still served at the
+economy rung for the same price. Four refusals recorded, each with a reason:
+
+```
+budget refused a standard call for a04_powers_of_two#C2: cheapest tier economy projects ...
+budget refused a frontier call for a04_powers_of_two#C3: ...
+budget refused a standard call for a06_numbers_in_words#C2: ...
+budget refused a frontier call for a06_numbers_in_words#C3: ...
+```
+
+**The trade is real and is not hidden:** the ceiling does not make the attack
+free, it makes it *bounded*, and the price is two tasks that now go unanswered.
+12/12 resolved becomes 10/12.
+
+The shipped runaway-loop attack shows the same control from the other direction
+(`p3`, 60 rounds, $0.0005 ceiling):
 
 ```
 loop rounds 60   admitted 1   refusals 59   spent 0.00036555 / 0.00050000
