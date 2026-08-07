@@ -216,11 +216,36 @@ a stale name.
 # Evidence — a budget-aware routing policy for LLM cost engineering
 
 Measured live 2026-08-06 / 2026-08-07 against `glc_v4` on `127.0.0.1:8111`, with
-the S15Code runtime on `127.0.0.1:8113` and Jaeger v2.20.0. Full working in
-[`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md),
-[`docs/PART2_EVIDENCE.md`](docs/PART2_EVIDENCE.md),
-[`docs/PART3_EVIDENCE.md`](docs/PART3_EVIDENCE.md) and
-[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
+the S15Code runtime on `127.0.0.1:8113` and Jaeger v2.20.0.
+
+## Submission
+
+**Pull request:** [theschoolofai/S15Code#7 — *feat: budget-aware routing policy
+for LLM cost engineering, measured live*](https://github.com/theschoolofai/S15Code/pull/7)
+
+Raised from `mkthoma/agent_economics`, branch
+`feat/cost-engineering-policy-and-evidence`.
+
+The PR adds a 17-task LLM cost-engineering workload, a rebuilt three-rung ladder
+(the shipped frontier rung had been retired by its provider), a second ladder
+config for a two-arm crossover experiment, an adversarial task set, and the
+measured evidence for all three parts. It also reports six defects found in
+S15Code itself while reproducing the floor — including that `p1` defaults to the
+wrong port, silently falls back to a simulated transport, and still reports
+`ALL CHECKS PASSED` with exit code 0.
+
+No secrets, no `.env`, and no user data are included; every commit was swept for
+keys, tokens and bearer headers before being pushed.
+
+### Where everything is
+
+| | |
+|---|---|
+| **Part 1** — reproducing the floor | [§ below](#part-1--reproducing-the-floor) · detail in [`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md) |
+| **Part 2** — the policy, measured | [§2](#2-cost-per-call-vs-cost-per-resolved-task), [§3](#3-break-even-and-where-we-sit), [§6](#6-one-case-the-policy-got-wrong) · detail in [`docs/PART2_EVIDENCE.md`](docs/PART2_EVIDENCE.md) |
+| **Part 3** — attacking the budget | [§5](#5-the-adversarial-test) · detail in [`docs/PART3_EVIDENCE.md`](docs/PART3_EVIDENCE.md) |
+| **Limitations** | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — ten trace-derived, nine environmental |
+| **Raw logs** | [`docs/evidence/`](docs/evidence) — 11 live proof results, 4 run captures, 1 Jaeger trace |
 
 ---
 
