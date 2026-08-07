@@ -50,9 +50,10 @@ models:
   # dial alone it burned all 512 output tokens and returned "" for $0.0002735.
   # Rate corrected from 0.20/0.80 to the 0.50/0.50 Cerebras actually bills,
   # which is what glc_v4's own pricing table reports for it.
-  zai-glm-4.7: {input: 0.50, output: 0.50}
+  zai-glm-4.7: {input: 1.00, output: 2.00}
   # Free tier. MEASURED 47 in / 108 out at 1849 ms with reasoning off.
   nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
+  nvidia/nemotron-3-nano-30b-a3b:free: {input: 0.0, output: 0.0}
   # LADDER rung 3 (frontier), and the most expensive model this gateway reaches.
   # MEASURED: 37 in / 76 out, $0.000682, 2883 ms. Context caps at 8k here.
   openai/gpt-4.1:

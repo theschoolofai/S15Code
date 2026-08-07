@@ -210,3 +210,21 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+## Session 15 Evaluation Findings
+
+We evaluated the budget-aware agent cascade strategy, always-frontier baseline, and always-cheapest baseline on a custom workload of 15 SQL query generation and debugging tasks.
+
+### 1. SQL Workload Strategy Comparison
+- **Always Frontier (Strategy A):** Spent **$0.0583** | Resolved **15/15** | Cost/Resolved: **$0.00389**
+- **Always Cheapest (Strategy B):** Spent **$0.0162** | Resolved **2/15** | Cost/Resolved: **$0.00808**
+- **Budget-Aware Cascade (Strategy C):** Spent **$0.0767** | Resolved **15/15** | Cost/Resolved: **$0.00511**
+
+*Finding:* The always-cheapest strategy suffers from the cheapest trap. Due to low accuracy (13.3%), retrying up to 3 times on the cheap tier costs more per resolved task ($0.00808) than routing directly to the expensive frontier model ($0.00389).
+
+### 2.保护 protect/adversarialзащита Protection
+Under the 200-round runaway loop budget attack with a tight $0.002 limit:
+- **Ceiling protection:** Hard controller stopped calls exactly at the 60 call ceiling, limiting spend to **$0.001585**.
+- **Uncontrolled cost projection:** The runaway loop would have cost **~$0.2642** if unbounded.
+- **Trace observability:** Refusals are recorded with `BudgetRefused` events in the journal, translating into OTel telemetry spans.
+

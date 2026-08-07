@@ -108,8 +108,8 @@ judge:
   panel:
     - name: judge_a
       request:
-        provider: cerebras
-        model: zai-glm-4.7
+        provider: openrouter
+        model: nvidia/nemotron-3-nano-30b-a3b:free
         reasoning: "off"
         max_tokens: 500
         temperature: 0
