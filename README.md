@@ -219,10 +219,10 @@ section refers to lives under `proofs/out/`.
 
 ### Test suites
 
-| suite | command | result |
-|---|---|---|
-| `glc_v4` | `cd glc_v4 && uv run pytest -q` | **447 passed, 9 skipped** (1m 55s) |
-| `S15Code` | `cd .. && uv run pytest -q` | **277 passed, 2 failed** (1m 35s) |
+| suite | command | result | raw log |
+|---|---|---|---|
+| `glc_v4` | `cd glc_v4 && uv run pytest -q` | **447 passed, 9 skipped** (1m 55s) | (console-only; re-run to reproduce) |
+| `S15Code` | `cd .. && uv run pytest -q` | **277 passed, 2 failed** (1m 35s) | [proofs/out/_s15_pytest.log](proofs/out/_s15_pytest.log) |
 
 The two S15Code failures are pre-existing and environment-specific rather than
 regressions:
@@ -253,19 +253,22 @@ uv run python proofs/p4_trace_export.py     --task "<the cyclist task>"      --b
 uv run python proofs/p7_cross_model_ladder.py --task "<the cyclist task>"    --principal "demo/you" --offline --label part1
 ```
 
-| proof | verdict | headline number |
-|---|---|---|
-| `p1_cost_per_task_part1.json` | **PASS**, signature failure mode NOT observed | B resolved 25% of tasks; the trap begins below 8.6% (derived) |
-| `p2_budget_holds_part1.json` | **PASS** across declared/generous/tight/impossible | declared $0.02 → spent $0.00161 on `standard` (1 downgrade) |
-| `p3_denial_of_wallet_part1.json` | **PASS** — the controller, not the loop, stopped the spend | 200 rounds, 2 admitted, 198 refused, spend capped at $0.00194 ≤ $0.002 |
-| `p4_trace_export_part1.json` | **11 of 13 PASS** — 2 backend round-trip claims fail (see limitation) | 10 spans emitted, 6 arrived; three parent pointers came back `None` |
-| `p7_cross_model_ladder_part1.json` | **PASS** — 3 models across 3 providers, downgrade changes the model | 82.04× measured spread ($0.000391 → $0.032096) |
+| proof | verdict | headline number | artefacts |
+|---|---|---|---|
+| `p1_cost_per_task` | **PASS**, signature failure mode NOT observed | B resolved 25% of tasks; the trap begins below 8.6% (derived) | [json](proofs/out/p1_cost_per_task_part1.json) · [log](proofs/out/_p1.log) |
+| `p2_budget_holds` | **PASS** across declared/generous/tight/impossible | declared $0.02 → spent $0.00161 on `standard` (1 downgrade) | [json](proofs/out/p2_budget_holds_part1.json) · [log](proofs/out/_p2.log) |
+| `p3_denial_of_wallet` | **PASS** — the controller, not the loop, stopped the spend | 200 rounds, 2 admitted, 198 refused, spend capped at $0.00194 ≤ $0.002 | [json](proofs/out/p3_denial_of_wallet_part1.json) · [log](proofs/out/_p3.log) |
+| `p4_trace_export` | **11 of 13 PASS** — 2 backend round-trip claims fail (see limitation) | 10 spans emitted, 6 arrived; three parent pointers came back `None` | [json](proofs/out/p4_trace_export_part1.json) · [log](proofs/out/_p4.log) |
+| `p7_cross_model_ladder` | **PASS** — 3 models across 3 providers, downgrade changes the model | 82.04× measured spread ($0.000391 → $0.032096) | [json](proofs/out/p7_cross_model_ladder_part1.json) · [log](proofs/out/_p7.log) |
 
 ### Four runs, captured
 
-Scripted via `proofs/capture_four_runs.py`, which uses the same runtime code
-path as every proof and re-exports each run's journal so a Jaeger trace id is
-returned. Full text and JSON are at `proofs/out/part1_four_runs.{txt,json}`.
+Scripted via [proofs/capture_four_runs.py](proofs/capture_four_runs.py), which
+uses the same runtime code path as every proof and re-exports each run's
+journal so a Jaeger trace id is returned. Artefacts:
+[human-readable](proofs/out/part1_four_runs.txt) ·
+[JSON](proofs/out/part1_four_runs.json) ·
+[raw log](proofs/out/_four_runs.log).
 
 The four scenarios span the four controller states the system can be in:
 admit-at-requested-tier, downgrade under moderate pressure, downgrade under
@@ -377,7 +380,8 @@ uv run python proofs/p1_cost_per_task.py `
 ```
 
 Numbers straight out of
-[proofs/out/p1_cost_per_task_part2.json](proofs/out/p1_cost_per_task_part2.json):
+[proofs/out/p1_cost_per_task_part2.json](proofs/out/p1_cost_per_task_part2.json)
+(raw run log: [proofs/out/_p1_part2.log](proofs/out/_p1_part2.log)):
 
 | strategy | opens on | resolved | calls | cost / call | **cost / resolved task** | total spend |
 |---|---|---:|---:|---:|---:|---:|
@@ -467,6 +471,7 @@ back by id:
   to the budget ledger.
 
 Full dump: [proofs/out/part2_trace_with_costs.json](proofs/out/part2_trace_with_costs.json).
+Raw run log: [proofs/out/_part2_trace.log](proofs/out/_part2_trace.log).
 
 ## Part 3 — attack your own budget
 
@@ -481,7 +486,8 @@ uv run python proofs/p3_denial_of_wallet.py `
 ```
 
 Numbers straight out of
-[proofs/out/p3_denial_of_wallet_part2.json](proofs/out/p3_denial_of_wallet_part2.json):
+[proofs/out/p3_denial_of_wallet_part2.json](proofs/out/p3_denial_of_wallet_part2.json)
+(raw run log: [proofs/out/_p3_part2.log](proofs/out/_p3_part2.log)):
 
 | metric | before control | after control |
 |---|---:|---:|
@@ -566,5 +572,4 @@ enough for the trace round-trip; without it the proofs still pass, only the
 "a real trace lands in Jaeger" claim in `p4` is skipped rather than checked.
 Set `S15_OTEL_EXPORTER_ENDPOINT` unset to silence the exporter entirely.
 
-Every proof artefact lands under [proofs/out/](proofs/out/) and is safe to
-commit — no secrets, no `.env`, no real user data ever leaves the box.
+Every proof artefact lands under [proofs/out/](proofs/out/)
