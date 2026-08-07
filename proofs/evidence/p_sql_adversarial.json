@@ -13,7 +13,7 @@
     "otel_endpoint": null
   },
   "economics": {
-    "directory": "/Users/sahil/Desktop/HACKATHON/S15/S15Code/config",
+    "directory": "S15Code/config",
     "currency": "USD",
     "tier_order": [
       "economy",

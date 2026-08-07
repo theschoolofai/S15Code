@@ -8,14 +8,14 @@
     "warning": "offline numbers are a deterministic simulation, NOT evidence"
   },
   "arguments": {
-    "task": "20 SQL tasks from /Users/sahil/Desktop/HACKATHON/S15/S15Code/proofs/tasks/sql_generation.jsonl",
+    "task": "20 SQL tasks from S15Code/proofs/tasks/sql_generation.jsonl",
     "budget": 0.05,
     "principal": "sql/agent/policy",
     "respond_as": "text",
     "otel_endpoint": null
   },
   "economics": {
-    "directory": "/Users/sahil/Desktop/HACKATHON/S15/S15Code/config",
+    "directory": "S15Code/config",
     "currency": "USD",
     "tier_order": [
       "economy",
@@ -42,7 +42,7 @@
     "A always_frontier": "spend 0.26089600 USD  calls 20  cost/call 0.01304480  resolved 20/20  cost/resolved 0.01304480  tiers frontier",
     "B budget_aware_economy": "spend 0.24235235 USD  calls 47  cost/call 0.00515643  resolved 20/20  cost/resolved 0.01211762  tiers economy,frontier,standard",
     "ladder": "economy < standard < frontier",
-    "tasks": "20 from /Users/sahil/Desktop/HACKATHON/S15/S15Code/proofs/tasks/sql_generation.jsonl",
+    "tasks": "20 from S15Code/proofs/tasks/sql_generation.jsonl",
     "per-task ceiling": "0.05 USD (principal sql/agent/policy)",
     "judge panel": "cerebras/zai-glm-4.7, openrouter/nvidia/nemotron-3-super-120b-a12b:free",
     "wall clock": "555.1s"
