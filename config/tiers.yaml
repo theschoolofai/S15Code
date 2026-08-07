@@ -83,13 +83,11 @@ tiers:
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      provider: cerebras
+      model: zai-glm-4.7
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: zai-glm-4.7
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 

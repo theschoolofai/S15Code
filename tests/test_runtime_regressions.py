@@ -91,7 +91,12 @@ def test_birthday_creates_two_real_calendar_artifacts(app_client, monkeypatch):
         "prompt": "My mom's birthday is 15 May 2026. Remember that and give me a calendar reminder for two weeks before and on the day."}).json()
     artifacts = body["graph"]["nodes"]["reminder"]["result"]["artifacts"]
     assert len(artifacts) == 2
-    assert all(Path(uri.removeprefix("file://")).read_text().startswith("BEGIN:VCALENDAR") for uri in artifacts)
+    def _uri_to_path(uri: str) -> Path:
+        p = uri.removeprefix("file://")
+        if p.startswith("/") and len(p) > 2 and p[2] == ":":
+            p = p[1:]
+        return Path(p)
+    assert all(_uri_to_path(uri).read_text().startswith("BEGIN:VCALENDAR") for uri in artifacts)
 
 
 def test_missing_file_is_safely_attempted_and_failure_reaches_answer(app_client, monkeypatch, tmp_path):
