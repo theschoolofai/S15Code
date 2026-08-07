@@ -1,0 +1,47 @@
+# Custom tier ladder for SQL generation tasks
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 800
+    projected_output_tokens: 300
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 1024
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 1500
+    projected_output_tokens: 600
+
+  frontier:
+    request:
+      provider: github
+      model: openai/gpt-4.1
+      max_tokens: 2048
+      temperature: 0
+    price_model: openai/gpt-4.1
+    projected_input_tokens: 3000
+    projected_output_tokens: 1200
+
+role_tiers:
+  default: standard
+  sql_simple_select: economy
+  sql_aggregation: standard
+  sql_join: standard
+  sql_window_function: frontier
+  sql_cte: frontier
+  sql_subquery: standard
+  sql_dml: economy
+  sql_ddl: economy

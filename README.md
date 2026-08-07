@@ -156,6 +156,34 @@ Useful flags: `--offline`, `--respond-as ui`, `--principal tenant/project/user`,
 `--otel-endpoint http://127.0.0.1:4318/v1/traces`, `--config-dir`, `--label`,
 `--live-embeddings`.
 
+## Assignment evidence: custom routing + budget policy (SQL generation)
+
+This session's deliverable is a **custom routing and budget policy** for a
+15+ task class (SQL generation), measured end-to-end against an always-frontier
+baseline. Full evidence, break-even math, limitation analysis and exact
+reproduction commands live in
+[`proofs/README_SQL_POLICY.md`](proofs/README_SQL_POLICY.md). Headline numbers:
+
+- **Cost per resolved task** is the headline metric, not cost per call. The
+  budget-aware cascade saved **7.1%** per resolved task ($0.01212 vs $0.01304)
+  while making 2.35x more calls — the 60% cheaper-per-call figure alone would
+  have misled.
+- **Break-even rate** r* = **46.88%** using the *measured* price spread
+  (2.53x) and measured average extra calls per escalated task (k = 1.35), not
+  the configured max.
+- **Adversarial denial-of-wallet**: the same 100-round SQL loop spent
+  **$3.2064 uncontrolled vs $0.0189 with the $0.02 ceiling** — a 99.4%
+  reduction — refusing 87 of 100 attempts as visible `BudgetRefused` graph
+  failures before the provider was hit.
+- **Wrong-case requirement**: documented as not satisfiable in this evidence
+  set (offline mode returns placeholder SQL the rubric always passes; no live
+  keys were available). See the limitation section in the nested README.
+
+New files: `proofs/p_sql_policy.py`, `proofs/p_sql_adversarial.py`,
+`proofs/tasks/sql_generation.jsonl`, `config/tiers_sql.yaml`,
+`config/budgets_sql.yaml`, `proofs/uncontrolled_config/budgets.yaml`,
+`proofs/README_SQL_POLICY.md`.
+
 ## Observability
 
 `s15code.telemetry.export_run` turns a journal into spans through the real OTel

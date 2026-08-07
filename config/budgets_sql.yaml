@@ -1,0 +1,22 @@
+# Custom budget policy for SQL generation tasks
+# More generous than default since SQL queries are typically short
+
+default_budget: 0.03
+
+per_principal:
+  # Allow up to $0.10 per user/agent for SQL generation workloads
+  - principal: "sql/agent/*"
+    limit_usd: 0.10
+    period: lifetime
+  - principal: "sql/user/*"
+    limit_usd: 0.05
+    period: lifetime
+
+# Policy thresholds
+policy:
+  downgrade_at: 0.6
+  refuse_at: 0.9
+  headroom_fraction: 0.05
+  reserve_fraction: 0.15
+  max_calls_per_run: 40
+  max_calls_per_node: 4
