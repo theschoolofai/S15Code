@@ -123,7 +123,7 @@ async def test_asking_for_a_rung_calls_that_rungs_model(config):
         with call_site(f"n-{name}", role=f"n-{name}", tier=name):
             out = await gateway.complete("q", "s")
         assert out["tier"] == name
-        assert out["model"] == config.ladder.tier(name).model
+        assert out["model"] == config.ladder.tier(name).request.get("model")
         assert out["provider"] == config.ladder.tier(name).request.get("provider")
 
 
