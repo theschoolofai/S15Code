@@ -29,7 +29,7 @@ There are **six**, not five — the assignment's §15 table omits
 
 | proof | offline | live | note |
 |---|---|---|---|
-| `p1_cost_per_task` | ✅ | ✅ | see `PART2_EVIDENCE.md` |
+| `p1_cost_per_task` | ✅ | ✅ 9/9 | shipped `mixed.jsonl`, below |
 | `p2_budget_holds` | ✅ 5/5 | ✅ 5/5 | four ceilings, downgrade + refusal |
 | `p3_denial_of_wallet` | ✅ 6/6 | ⚠️ 4/6 → ✅ 6/6 | see `PART3_EVIDENCE.md` |
 | `p4_trace_export` | ✅ 11/11 | ⚠️ 12/14 | two timing failures, §5 below |
@@ -53,6 +53,34 @@ three distinct providers; a downgrade changes the **model**, not the token budge
 **The 10× gap between projected and measured spread is the headline.** A price
 page describes token rates; a ledger describes answers. See `PART2_EVIDENCE.md`
 §3, where the ladder is measured to invert entirely.
+
+### p1 — the shipped task set, live
+
+`--tasks proofs/tasks/mixed.jsonl`, single cerebras judge, 9/9 gates, 989 s.
+
+| strategy | spend | calls | cost/call | resolved | cost/resolved |
+|---|---|---|---|---|---|
+| A always-frontier | 0.00532080 | 12 | 0.00044340 | **11/12** | 0.00048371 |
+| B always-cheapest | 0.00247995 | 13 | 0.00019077 | **12/12** | 0.00020666 |
+| C budget-aware | 0.00215475 | 12 | 0.00017956 | **12/12** | 0.00017956 |
+
+`signature failure mode NOT OBSERVED` — B is cheaper on *both* metrics, so there
+is nothing to warn about on this set. That reproduces the session's own published
+result for `mixed.jsonl`, independently and on a rebuilt ladder.
+
+Two things differ from the published reference, and both point the same way as
+Part 2:
+
+* **The frontier rung resolved 11 of 12, the cheapest rung 12 of 12.** The
+  reference records both at 12/12. The frontier's miss is a hard task. Capability
+  is not monotonic along the price ladder — measured here on the shipped set as
+  well as on our own.
+* **The budget-aware cascade never left the economy rung** (`tiers economy`), so
+  it resolved everything on the first attempt and came out cheapest of the three
+  at `$0.00017956` per resolved task — 2.7× cheaper than always-frontier.
+
+Judge meta-cost: 24 calls, `$0.01261360`, **1.27×** the combined answering spend
+of all three strategies, with 27 transport retries and 13 verdicts reused.
 
 ### p6 — the semantic cache, live
 
