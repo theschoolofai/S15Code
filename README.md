@@ -215,11 +215,115 @@ a stale name.
 
 # Evidence — a budget-aware routing policy for LLM cost engineering
 
-Measured live 2026-08-07 against `glc_v4` on `127.0.0.1:8111`. Full working in
+Measured live 2026-08-06 / 2026-08-07 against `glc_v4` on `127.0.0.1:8111`, with
+the S15Code runtime on `127.0.0.1:8113` and Jaeger v2.20.0. Full working in
 [`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md),
 [`docs/PART2_EVIDENCE.md`](docs/PART2_EVIDENCE.md),
 [`docs/PART3_EVIDENCE.md`](docs/PART3_EVIDENCE.md) and
 [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
+
+---
+
+# Part 1 — reproducing the floor
+
+Full detail: [`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md).
+
+## Both suites
+
+| suite | observed | assignment claimed | delta |
+|---|---|---|---|
+| `glc_v4` | **447 passed**, 9 skipped | 445 | +2 |
+| `agent_economics` | **275 passed, 2 failed** | 244 | +31, 2 red |
+
+Both failures are **pre-existing** — they reproduce identically against the
+pristine config extracted from git, so neither is caused by the ladder changes
+here. One is a Windows portability bug (`removeprefix("file://")` on
+`file:///C:/...` yields an invalid path); the other is an A2A gRPC race.
+
+## The proofs
+
+There are **six**, not five — the assignment's §15 table omits
+`p6_cache_savings.py`, which exists and runs. There is no `p5`.
+
+| proof | offline | live |
+|---|---|---|
+| `p1_cost_per_task` | ✅ | ✅ 9/9 |
+| `p2_budget_holds` | ✅ 5/5 | ✅ 5/5 |
+| `p3_denial_of_wallet` | ✅ 6/6 | ⚠️ 4/6 → ✅ 6/6 |
+| `p4_trace_export` | ✅ 11/11 | ⚠️ 12/14 |
+| `p6_cache_savings` | ✅ 4/4 | ✅ 13/13 |
+| `p7_cross_model_ladder` | ✅ 10/10 | ✅ 10/10 |
+
+`p4`'s two failures are a **race, not data loss**: it queries Jaeger with no wait
+after export, catching 8 of 10 spans on one run and 7 of 10 on the next.
+Re-querying seconds later returns all 10 with every parent resolved. The twelve
+substantive gates pass every time, including `span costs sum to the ledger —
+delta 0.000e+00` and `no prompt or completion text reached the backend`.
+`p3`'s first live run is explained in [§5, the adversarial test](#5-the-adversarial-test).
+
+## Four runs, all six artifacts each
+
+Prompt, identical across all four: *"Compare two approaches to bounding agent spend."*
+Ceilings are `p2`'s, derived live from the configured ladder rather than invented.
+Raw captures in `proofs/out/evidence/`.
+
+| # | run | ceiling | tier / model chosen | decision | ledger | trace id |
+|---|---|---|---|---|---|---|
+| 1 | comfortable | 0.02 | frontier / `nemotron-3-ultra-550b` | proceed | spent 0.000555, 229in/116out, 1 call | `aa402254c5bf1beffcfc8c9bb2201472` |
+| 2 | **downgrade** | 0.01353475 | **standard / `gemini-3.5-flash-lite`** | **downgrade** | spent 0.00027810, 377in/66out, 1 call | `8734cc7906b9f93c8ef18c1739c068ee` |
+| 3 | **refusal** | 0.00000056 | — | **refuse** | spent 0, **0 calls, 1 refusal** | `ad1f7ed2fcc084f2569596897c6d8bd0` |
+| 4 | unbudgeted | *(omitted)* | `gemini-3.5-flash-lite`, **`tier=None`** | — | **cost 0, 0 provider calls** | `29e3eb93f42ab3214410efe046d6d987` |
+
+Run 2 is a genuine downgrade — the node asked for `frontier` and was served
+`standard`, a change of **model and provider**. Run 3's refusal receipt:
+
+```json
+{ "node_id": "answer", "action": "refuse", "requested_tier": "frontier",
+  "reason": "cheapest tier economy projects 0.000489, run holds 0.000001 (headroom 0.000000)" }
+```
+
+Ordered event traces and final answers for all four are in
+`proofs/out/evidence/*.json`; one trace is committed in full at
+[`docs/evidence/jaeger_trace_f3990d82.json`](docs/evidence/jaeger_trace_f3990d82.json).
+
+**The budget field is `budget`, not `budget_usd`.** The assignment's §14 example
+uses the latter; `RunBody` sets no `extra="forbid"`, so Pydantic silently drops it
+and returns HTTP 200 with an *unbudgeted* run. Three of these four would have been
+quietly worthless.
+
+## The honest limitation the traces exposed
+
+Full catalogue in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — ten trace-derived
+findings and nine environmental, each marked OBSERVED or INFERRED. The one
+submitted:
+
+> **The trace cannot distinguish a truncated answer from a complete one.**
+
+`gen_ai.response.finish_reasons` is absent from every span. A `provider_call` span
+records input tokens, output tokens, cost and reasoning effort — but never *why*
+generation stopped. A call that hit `max_tokens` and truncated mid-sentence, and
+one that finished cleanly on `end_turn`, are **identical in the trace**: same kind,
+same attributes, same full charge.
+
+Measured on the frontier rung at `max_tokens 512`, three samples:
+
+| dial | output tokens | visible content | hidden reasoning channel |
+|---|---|---|---|
+| unset | 486 / 392 / 459 | 483 / 450 / 499 chars | 2070 / 1540 / 1693 chars |
+| `off` | 95 | 598 chars | 0 |
+
+The unset run peaked at **486 of 512 — twenty-six tokens short of the ceiling.**
+One more verbose sample crosses it and the trace records `output_tokens: 512`, a
+cost, and nothing else.
+
+Not academic: Part 2 measured 18 truncated attempts on the wide ladder, 17 of
+which failed, and Part 3 turned the same blindness into a **20.7× cost
+amplification attack**. The gateway already returns `stop_reason`; the value
+exists and is simply not recorded on the span.
+
+---
+
+# Parts 2 and 3 — the policy
 
 ## 1. The workload and the ladder
 
