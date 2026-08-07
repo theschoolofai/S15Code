@@ -15,6 +15,7 @@ from pathlib import Path
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import RedirectResponse
 
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
@@ -109,6 +110,11 @@ app = FastAPI(title="S15Code — Live Graph, Memory, Semantic Chunking and A2A",
 app.include_router(routes.router)
 app.include_router(a2a_routes.router)
 app.include_router(ui_router)
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/app", status_code=307)
 
 
 @app.get("/healthz")

@@ -43,6 +43,23 @@ def recorded_run() -> dict:
     return RecordedJournal().get_run("recorded_run")
 
 
+async def test_service_root_redirects_to_app():
+    from s15code.main import app
+
+    route = next(route for route in app.routes if getattr(route, "path", None) == "/")
+    response = await route.endpoint()
+    assert response.status_code == 307
+    assert response.headers["location"] == "/app"
+
+
+async def test_app_viewer_reads_utf8_client():
+    from s15code.ui.routes import app_viewer
+
+    response = await app_viewer()
+    assert "<!doctype html>" in response.lower()
+
+
+
 def _reject(comp: dict):
     """Validate a single component in a minimal surface, return first rejection."""
     result = validate_surface({"root": comp["id"], "components": [comp]})

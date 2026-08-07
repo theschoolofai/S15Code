@@ -1,0 +1,76 @@
+# A synthetic IT-ticket triage task class for Part 2. THIS FILE IS DATA.
+
+# 
+
+# Each line is one JSON object: {"id","difficulty","task","expectation"}. Only
+
+# "task" is required. "expectation" is the natural-language success criterion the
+
+# generic rubric judge scores against; it is NOT an answer key the harness
+
+# matches on. "difficulty" is a free label used only to group p1's per-bucket
+
+# report — nothing branches on it.
+
+# 
+
+# **Note on difficulty in offline mode.** The shipped ``SimulatedGateway`` in
+
+# ``proofs/p1_cost_per_task.py`` derives a synthetic per-task "needed tokens"
+
+# count from ``sha256(task)[:8]`` and calls the task resolved iff the tier's
+
+# ``max_tokens`` >= needed. The buckets below are chosen to line up with the
+
+# Part 2 ladder cutoffs (``config/part2/tiers.yaml``): trivial <=1500, moderate
+
+# 1501-2600, hard >2600. That is why "user cannot print" reads as trivial in
+
+# content but lands in the ``hard`` bucket here: this label is the hash bucket,
+
+# not a judgement about the ticket. Live measurements would use natural
+
+# difficulty; the fake mapping only exists so the offline demo has separation.
+
+# 
+
+#   python proofs/p1_cost_per_task.py --tasks proofs/tasks/tickets.jsonl \
+
+#       --config-dir config/part2 --principal you/part2 --offline --label part2
+
+{"id": "tk01_push_dupes", "difficulty": "trivial", "task": "Ticket: the mobile app's push notifications arrive twice for Android users on carrier A, once for iOS, and not at all for Android on carrier B, following the last certificate rotation. Return JSON {category,severity,first_step}.", "expectation": "Categorises as mobile-push / notifications, sets severity to a defensible non-trivial value, and names a concrete first step aimed at the FCM/APNs certificate rotation and per-carrier delivery."}
+
+{"id": "tk02_monitor_dead", "difficulty": "trivial", "task": "Ticket: monitor on desk 42 shows no signal. Return JSON {category,severity,first_step}.", "expectation": "Categorises as hardware/display, sets severity low, and gives a concrete first step such as swapping the cable or checking the input source."}
+
+{"id": "tk03_ingest_drops", "difficulty": "trivial", "task": "Ticket: since a firewall rule change on Tuesday, the analytics ingestion pipeline drops roughly 2% of events, but only ones tagged mobile=true, and only during 10:00-11:00 UTC. There are no error logs on the ingest side. Return JSON {category,severity,first_step}.", "expectation": "Categorises as networking/firewall or data-pipeline, sets severity at least medium, and names a first step that inspects the Tuesday firewall rule against mobile-tagged traffic in that hour."}
+
+{"id": "tk04_encrypt_stuck", "difficulty": "trivial", "task": "Ticket: sales laptop reports drive encryption stuck at 78% for 4 hours, laptop hot. Return JSON {category,severity,first_step}.", "expectation": "Categorises as endpoint/encryption, sets severity medium (heat + stalled encryption), and names a first step such as checking BitLocker status and thermal state before forcing a restart."}
+
+{"id": "tk05_gpu_oom", "difficulty": "trivial", "task": "Ticket: an internal ML training job started OOM-killing overnight after we upgraded the CUDA driver on the GPU pool, but only when three specific jobs run concurrently, and only on the A100 nodes. Return JSON {category,severity,first_step}.", "expectation": "Categorises as infrastructure/GPU, sets severity at least medium, and names a first step that pins the CUDA driver version or reduces concurrency on the A100 nodes."}
+
+{"id": "tk06_gh_seat", "difficulty": "trivial", "task": "Ticket: new starter needs GitHub Enterprise seat provisioned. Return JSON {category,severity,first_step}.", "expectation": "Categorises as access/provisioning, sets severity low, and names a first step of provisioning the seat via the standard onboarding path."}
+
+{"id": "tk07_docker_cpu", "difficulty": "moderate", "task": "Ticket: developer says local Docker desktop uses 100% CPU on idle after last week's update. Return JSON {category,severity,first_step}.", "expectation": "Categorises as endpoint/software, sets severity low-to-medium, and names a first step such as rolling back the Docker Desktop update or inspecting its VM/backing service."}
+
+{"id": "tk08_outlook_mfa", "difficulty": "moderate", "task": "Ticket: Outlook keeps prompting for password after MFA reset. Return JSON {category,severity,first_step}.", "expectation": "Categorises as identity/MFA or email/client, sets severity low, and names a first step of clearing cached credentials or re-registering the Modern Auth session."}
+
+{"id": "tk09_checkout_hang", "difficulty": "moderate", "task": "Ticket: customers on the /checkout page in Safari 17.4 report an intermittent hang for 8-15 seconds; New Relic p95 shows a spike at the same timestamps but only from one region, and rolling back the payment SDK does not remove the spike. Return JSON {category,severity,first_step}.", "expectation": "Categorises as production/payments or edge/CDN, sets severity high (customer-facing checkout), and names a first step focused on the regional path and CDN/edge rather than the payment SDK."}
+
+{"id": "tk10_alert_silent", "difficulty": "moderate", "task": "Ticket: prod alert channel silent for 6h; heartbeat monitor still green. Return JSON {category,severity,first_step}.", "expectation": "Categorises as observability/alerting, sets severity high (silent alerting is dangerous), and names a first step of injecting a synthetic alert to confirm the pipeline is actually delivering."}
+
+{"id": "tk11_zoom_mic", "difficulty": "moderate", "task": "Ticket: Zoom microphone not detected after Windows update. Return JSON {category,severity,first_step}.", "expectation": "Categorises as endpoint/software, sets severity low, and names a first step such as checking Windows microphone privacy settings or reinstalling audio drivers."}
+
+{"id": "tk12_dock_charge", "difficulty": "moderate", "task": "Ticket: laptop battery not charging on dock model D-9. Return JSON {category,severity,first_step}.", "expectation": "Categorises as hardware/dock or power, sets severity low, and names a first step such as testing the dock with a known-good laptop or swapping the PSU."}
+
+{"id": "tk13_share_drive", "difficulty": "hard", "task": "Ticket: user cannot access shared drive S:. Return JSON {category,severity,first_step}.", "expectation": "Categorises as network/file-share or identity/permissions, sets severity low-to-medium, and names a first step that checks the user's group membership and drive-mapping script."}
+
+{"id": "tk14_api_502", "difficulty": "hard", "task": "Ticket: engineer reports intermittent 502 from api.internal on Chrome only, Safari fine. Return JSON {category,severity,first_step}.", "expectation": "Categorises as networking/proxy or browser/session, sets severity medium, and names a first step focused on Chrome-specific headers or a stale service worker rather than the API itself."}
+
+{"id": "tk15_toner_low", "difficulty": "hard", "task": "Ticket: printer PR-07 shows toner low warning, still printing. Return JSON {category,severity,first_step}.", "expectation": "Categorises as consumables/printing, sets severity low, and names a first step of ordering a replacement toner and continuing to print until quality degrades."}
+
+{"id": "tk16_print_dead", "difficulty": "hard", "task": "Ticket: user cannot print to LaserJet-14. Return JSON {category,severity,first_step}.", "expectation": "Categorises as printing/queue, sets severity low, and names a first step such as clearing the print queue and reprovisioning the driver."}
+
+{"id": "tk17_vat_wrong", "difficulty": "hard", "task": "Ticket: a batch of customer invoices generated between 03:12 and 03:47 UTC last night has the wrong VAT rate for the Republic of Ireland, but only when the customer's billing address was updated within 24 hours of invoice generation. Return JSON {category,severity,first_step}.", "expectation": "Categorises as billing/tax or data-consistency, sets severity high (financial correctness), and names a first step that quarantines the affected invoices and inspects the address-change race window."}
+
+{"id": "tk18_2fa_sms", "difficulty": "hard", "task": "Ticket: two-factor SMS not arriving for user on new SIM, other apps OK. Return JSON {category,severity,first_step}.", "expectation": "Categorises as identity/MFA delivery, sets severity low-to-medium (single-user, other channels available), and names a first step such as switching that user to a TOTP authenticator app or checking the carrier's SMS deliverability."}
+

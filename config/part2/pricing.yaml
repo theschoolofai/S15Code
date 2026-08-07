@@ -1,0 +1,21 @@
+# Part 2 pricing. Prices are read from the SHIPPED table — pricing is a
+# market fact, not a policy — so this file re-exports the same rows the
+# top-level `config/pricing.yaml` uses. Kept as its own file so a reviewer can
+# swap it out cleanly per Part 2 without touching the Part 1 config.
+
+currency: USD
+unit_tokens: 1000000
+
+default:
+  input: 1.00
+  output: 5.00
+
+models:
+  gemini-3.1-flash-lite: {input: 0.25, output: 1.50}
+  openai/gpt-oss-120b:   {input: 0.15, output: 0.75}
+  openai/gpt-4.1:        {input: 2.00, output: 8.00}
+  # Panel judges — kept because the shipped evals.yaml points at them.
+  zai-glm-4.7: {input: 0.50, output: 0.50}
+  nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
+  # Fallbacks so `default` never fires for models this workload touches.
+  ollama: {input: 0.0, output: 0.0}

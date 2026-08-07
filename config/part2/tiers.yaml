@@ -1,0 +1,66 @@
+# Part 2 tier ladder — tuned for a short-structured-output task class
+# (IT ticket triage: JSON {category, severity, first_step}).
+#
+# Two changes vs the shipped ladder:
+#
+#  1. `max_tokens` is smaller everywhere. The output is a three-field JSON
+#     object; four thousand tokens of budgeted "worst case" for the answer node
+#     was written for essay-length replies. Right-sizing max_tokens rewrites
+#     what the controller thinks a call could cost, which is what makes the
+#     ceilings in `budgets.yaml` mean the same thing as they mean in dollars.
+#
+#  2. The rung cutoffs are 1500 / 2600 / 4096 tokens. This is the number the
+#     offline SimulatedGateway in p1_cost_per_task.py compares its per-task
+#     hash-derived "needed tokens" against; the tickets.jsonl set was picked so
+#     that six tasks fall in each bucket. Live measurements would not need
+#     bucket calibration — a real model on a real ticket cares about the
+#     content, not sha256 — but under offline these numbers give real
+#     separation between rungs.
+#
+# The three models are unchanged from the shipped ladder because Part 2 is
+# about the POLICY, not about repointing the ladder at different providers —
+# and repointing is one edit here away.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 1500
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 400
+    projected_output_tokens: 200
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 2600
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 400
+    projected_output_tokens: 400
+
+  frontier:
+    request:
+      provider: github
+      model: openai/gpt-4.1
+      max_tokens: 4096
+      temperature: 0
+    price_model: openai/gpt-4.1
+    projected_input_tokens: 400
+    projected_output_tokens: 800
+
+# The answering call in p1 declares `answer_with_evidence`, so THAT is what
+# strategy C's opening rung is derived from when it is set to `role` in evals.
+# Kept at `frontier` here so live comparisons against always-frontier open on
+# the same rung; the cascade downgrades under budget pressure, not by role.
+role_tiers:
+  default: standard
+  answer_with_evidence: frontier

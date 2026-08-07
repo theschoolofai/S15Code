@@ -1,0 +1,48 @@
+# Part 2 budget policy.
+#
+# What is different from the shipped policy, and why:
+#
+#  * default_budget raised to 0.05.  A ticket answer is short, but the
+#    frontier rung on this workload projects a $0.033 worst case at admission
+#    (2600 output tokens on gpt-4.1). A per-task ceiling of $0.02 sits below
+#    that projection, so an always-frontier baseline is silently downgraded to
+#    standard by the very controller under test — which makes A no longer an
+#    always-frontier baseline, only a "requested-frontier" one. $0.05 sits
+#    above frontier's projection so A actually admits on frontier, and the
+#    comparison between A and C is a real one.
+#  * downgrade_at lowered from 0.50 to 0.40.  A structured-output task class
+#    should give ground earlier — the frontier model rarely earns its price on
+#    a three-field JSON when standard would satisfy the same rubric.
+#  * refuse_at kept at 0.90.  The refuse line is where the controller stops
+#    spending; moving it in would leave capacity on the floor.
+#  * headroom_fraction raised from 0.02 to 0.05.  The output tokens for this
+#    class are small, so a call that projects close to the ceiling is far more
+#    likely to actually land close to it. A wider gap costs nothing when the
+#    call is cheap and buys real safety.
+#  * max_calls_per_node lowered from 6 to 3.  A ticket-triage node that has to
+#    call three times to reach a good answer is a signal to stop, not to
+#    retry — the retry-loop trap that p1 measures is what happens when this
+#    number is set too high.
+#  * max_calls_per_run kept at 60.  Denial-of-wallet defence that survives a
+#    bad estimator, unchanged.
+#  * reserve_fraction lowered from 0.20 to 0.10.  Ticket triage is a single
+#    answering call; there is no long upstream chain to protect from starving
+#    the terminal node, so a smaller reserve is truer to the workload.
+
+default_budget: 0.05
+
+reserve_fraction: 0.10
+
+downgrade_at: 0.40
+
+refuse_at: 0.90
+
+headroom_fraction: 0.05
+
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+max_calls_per_run: 60
+max_calls_per_node: 3
+
+principals: {}
