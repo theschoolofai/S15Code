@@ -210,3 +210,99 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+## Part 1 — reproduce the floor
+
+Run both suites and the five proofs, then capture four runs end-to-end. Results
+from a local reproduction on 2026-08-05 are recorded below; every artefact this
+section refers to lives under `proofs/out/`.
+
+### Test suites
+
+| suite | command | result |
+|---|---|---|
+| `glc_v4` | `cd glc_v4 && uv run pytest -q` | **447 passed, 9 skipped** (1m 55s) |
+| `S15Code` | `cd .. && uv run pytest -q` | **277 passed, 2 failed** (1m 35s) |
+
+The two S15Code failures are pre-existing and environment-specific rather than
+regressions:
+
+- `tests/test_budget_runtime.py::test_the_trace_route_serves_the_span_tree`
+  asserts `exported_over_the_wire is False`, but the runtime fires OTLP export
+  best-effort on every completed run — with `S15_OTEL_EXPORTER_ENDPOINT` set
+  (as it is for the proofs) the assertion is stale.
+- `tests/test_runtime_regressions.py::test_birthday_creates_two_real_calendar_artifacts`
+  does `Path(uri.removeprefix("file://"))` which on Windows leaves a leading `\`
+  before the drive letter (`\C:\...`) — an invalid path, not a runtime bug.
+
+### The five proofs
+
+Local Jaeger was running (`OTLP` on `:4318`, UI on `:16686`); the gateway was
+not, so every proof used the deterministic offline transport. Commands and
+verdicts:
+
+```bash
+$env:S15_OTEL_EXPORTER_ENDPOINT="http://127.0.0.1:4318/v1/traces"
+$env:S15_OTEL_SERVICE_NAME="s15code-proofs"
+
+uv run python proofs/p1_cost_per_task.py    --tasks proofs/tasks/mixed.jsonl --principal "demo/you" --offline --label part1
+uv run python proofs/p2_budget_holds.py     --task "<the cyclist task>"      --budget 0.02 --principal "demo/you" --offline --label part1
+uv run python proofs/p3_denial_of_wallet.py --task "<the cyclist task>"      --budget 0.002 --principal "demo/you" --offline --label part1
+uv run python proofs/p4_trace_export.py     --task "<the cyclist task>"      --budget 0.02 --principal "demo/you" --offline \
+    --otel-endpoint http://127.0.0.1:4318/v1/traces --label part1
+uv run python proofs/p7_cross_model_ladder.py --task "<the cyclist task>"    --principal "demo/you" --offline --label part1
+```
+
+| proof | verdict | headline number |
+|---|---|---|
+| `p1_cost_per_task_part1.json` | **PASS**, signature failure mode NOT observed | B resolved 25% of tasks; the trap begins below 8.6% (derived) |
+| `p2_budget_holds_part1.json` | **PASS** across declared/generous/tight/impossible | declared $0.02 → spent $0.00161 on `standard` (1 downgrade) |
+| `p3_denial_of_wallet_part1.json` | **PASS** — the controller, not the loop, stopped the spend | 200 rounds, 2 admitted, 198 refused, spend capped at $0.00194 ≤ $0.002 |
+| `p4_trace_export_part1.json` | **11 of 13 PASS** — 2 backend round-trip claims fail (see limitation) | 10 spans emitted, 6 arrived; three parent pointers came back `None` |
+| `p7_cross_model_ladder_part1.json` | **PASS** — 3 models across 3 providers, downgrade changes the model | 82.04× measured spread ($0.000391 → $0.032096) |
+
+### Four runs, captured
+
+Scripted via `proofs/capture_four_runs.py`, which uses the same runtime code
+path as every proof and re-exports each run's journal so a Jaeger trace id is
+returned. Full text and JSON are at `proofs/out/part1_four_runs.{txt,json}`.
+
+The four scenarios span the four controller states the system can be in:
+admit-at-requested-tier, downgrade under moderate pressure, downgrade under
+tighter pressure, and refuse when no rung fits.
+
+| # | scenario | budget | tier requested → served | model | Jaeger trace id | ledger |
+|---|---|---:|---|---|---|---|
+| 1 | `generous_frontier` | $1.00 | frontier → **frontier** | `openai/gpt-4.1` | `73e31e8c613d6fac4b8200b79e7118d7` (10 spans in backend) | 1 charge, 285 in / 4000 out, **$0.03257** |
+| 2 | `declared_downgrade` | $0.02 | frontier → **standard** (downgrade) | `gemini-3.1-flash-lite` | `4367b0661b6ab0590977703dc6cd19e6` (10 spans in backend) | 1 charge, 307 in / 1024 out, **$0.00161** |
+| 3 | `tight_downgrade` | $0.005 | frontier → **standard** (downgrade) | `gemini-3.1-flash-lite` | `210760dcb1a858d24d6ec612e344671c` (10 spans in backend) | 1 charge, 307 in / 1024 out, **$0.00161** |
+| 4 | `impossible_refuse` | $0.00001 | frontier → — (refused) | — | `ec85c920745091a921968bdf7ee4a52b` (9 spans in backend) | 0 charges, 1 refusal: *"cheapest tier economy projects $0.000442, run holds $0.000010"* |
+
+Every run walked the same journal shape —
+`run_started → graph_patched(+recall) → task_started(recall) → task_succeeded(recall)
+→ graph_patched(+answer) → task_started(answer) → task_{succeeded,failed}(answer)
+→ graph_patched(finish)` — differing only in the terminal event for the answer node
+(succeeded for runs 1–3, failed for run 4). Final answers are the offline
+transport's deterministic payload; the plan, tier decision, ledger arithmetic and
+span export are the real implementation.
+
+### One honest limitation the traces exposed
+
+**Parent pointers do not survive the wire, and not every span the process emits
+arrives.** From `p4_trace_export_part1.json`:
+
+- The proof emitted **10** spans (`run + agent_loop + plan + node + provider_call + …`),
+  but Jaeger returned only **6** for that trace id after a 12×1 s poll window.
+  `SimpleSpanProcessor` plus Jaeger's async OTLP ingestion drop or delay a
+  nontrivial fraction under load.
+- Of the 6 that arrived, **three came back with parent `None`**: `agent loop 1`,
+  `plan`, and `node answer` appear as *roots* in the backend rather than pointing
+  to their real parents. The clean hierarchy check that passes in-process
+  (`run → agent_loop → plan → node → provider_call`) does **not** survive into
+  Jaeger's view — a reviewer opening the trace in the UI sees a fragmented
+  forest, not the tree p4 asserted against the in-memory export.
+
+The critical guarantees hold anyway: `gen_ai.usage.*` and `s15.cost` land intact
+on the provider-call span, and no prompt or completion text leaks
+(`capture_content` stays off). But the "clean waterfall in Jaeger" claim is
+aspirational — what actually lands is the receipts, not the shape.

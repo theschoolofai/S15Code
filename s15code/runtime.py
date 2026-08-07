@@ -1026,11 +1026,23 @@ class AgentRuntime:
                            "model": (node.get("result") or {}).get("model"),
                            "tier": node.get("metadata", {}).get(TIER_KEY)}
                  for node_id, node in snapshot.nodes.items()}
+        events = [event.__dict__ for event in self.graph.events(run_id)]
+        # Fire-and-forget OTel export so every completed run reaches the collector
+        # without a caller having to poll /v1/agent/runs/{id}/trace afterwards.
+        # A missing endpoint means no wire traffic; failures never break the run.
+        try:
+            from s15code.telemetry import export_run
+            export_run({"run_id": run_id, "finished": report.finished,
+                        "nodes": snapshot.nodes, "edges": snapshot.edges, "events": events},
+                       budget=run_budget.snapshot() if run_budget is not None else None,
+                       principal=who)
+        except Exception:
+            pass
         return {"run_id": run_id, "status": "completed" if answer_state == "succeeded" else "failed",
                 "answer": answer.get("answer", ""), "provider": answer.get("provider"),
                 "model": answer.get("model"), "graph": {"finished": report.finished, "nodes": snapshot.nodes,
                 "edges": snapshot.edges}, "trace": {"planner": getattr(planner, "last_selection", {"mode": "deterministic"}),
-                "agents": trace}, "events": [event.__dict__ for event in self.graph.events(run_id)],
+                "agents": trace}, "events": events,
                 "principal": who,
                 "budget": run_budget.snapshot() if run_budget is not None else None,
                 "economics": economics_config.describe() if economics_config is not None else None,
