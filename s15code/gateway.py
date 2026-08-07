@@ -36,12 +36,13 @@ class GatewayClient:
             "temperature": 0,
             "reasoning": "off",
             "agent": "s15_answer",
-            # "gemini" is a logical gateway provider. The gateway expands it to
-            # the independently metered gemini_1..N key pool; S15Code never sees
-            # keys. Defaulting here means an unset env never falls through to the
-            # gateway's own provider order (which may put a heavy model first).
-            "provider": os.getenv("S15_GATEWAY_PROVIDER", "gemini"),
         }
+        # "provider" is only set here when S15_GATEWAY_PROVIDER names one
+        # explicitly. Left unset, the request carries no provider at all, so the
+        # gateway's own LLM_ORDER failover ring picks — glc_v4 owns routing, not
+        # this client. A tier's own request dict (below) still wins either way.
+        if provider := os.getenv("S15_GATEWAY_PROVIDER"):
+            payload["provider"] = provider
         for field, value in (request or {}).items():
             if field in self.PASSTHROUGH:
                 payload[field] = value

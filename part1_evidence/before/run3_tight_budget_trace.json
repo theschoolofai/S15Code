@@ -1,0 +1,442 @@
+﻿{
+    "run_id":  "run-93b8d600dcf2",
+    "endpoint":  "http://127.0.0.1:4318/v1/traces",
+    "service_name":  "s15code",
+    "capture_content":  false,
+    "exported_over_the_wire":  true,
+    "totals":  {
+                   "spans":  17,
+                   "by_kind":  {
+                                   "plan":  5,
+                                   "provider_call":  2,
+                                   "node":  4,
+                                   "agent_loop":  5,
+                                   "run":  1
+                               },
+                   "provider_calls":  2,
+                   "input_tokens":  912,
+                   "output_tokens":  370,
+                   "cost":  0.00041430000000000004,
+                   "trace_ids":  [
+                                     "616bb47a294685c771df75f038e61278"
+                                 ]
+               },
+    "spans":  [
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "cbe51a02333cbd6e",
+                      "parent_span_id":  "95b5d7885cb06760",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916452357888,
+                      "end_time":  1785678916452357888,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "first frontier selected for parallel_search",
+                                         "s15.plan.added":  "search_1,search_2",
+                                         "s15.plan.added_count":  2,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "chat openai/gpt-oss-120b",
+                      "kind":  "provider_call",
+                      "span_id":  "eb3871418fb04d22",
+                      "parent_span_id":  "e34d84ce6aebb13f",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916472937472,
+                      "end_time":  1785678918169937472,
+                      "duration_ns":  1697000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "provider_call",
+                                         "gen_ai.operation.name":  "chat",
+                                         "gen_ai.provider.name":  "groq",
+                                         "gen_ai.request.model":  "openai/gpt-oss-120b",
+                                         "gen_ai.response.model":  "openai/gpt-oss-120b",
+                                         "gen_ai.usage.input_tokens":  488,
+                                         "gen_ai.usage.output_tokens":  206,
+                                         "s15.cost":  0.0002277,
+                                         "s15.currency":  "USD",
+                                         "s15.tier":  "economy",
+                                         "s15.node.id":  "search_1",
+                                         "s15.budget.decision":  "branch",
+                                         "s15.budget.remaining":  8.5699999999999969E-05,
+                                         "s15.cost.projected":  0.0004689,
+                                         "gen_ai.request.reasoning_effort":  "off"
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node search_1",
+                      "kind":  "node",
+                      "span_id":  "e34d84ce6aebb13f",
+                      "parent_span_id":  "95b5d7885cb06760",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916453357824,
+                      "end_time":  1785678918169937472,
+                      "duration_ns":  1716579648,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "researcher",
+                                         "gen_ai.agent.name":  "researcher",
+                                         "s15.node.id":  "search_1",
+                                         "s15.run.id":  "run-93b8d600dcf2",
+                                         "s15.tier":  "economy",
+                                         "s15.node.state":  "succeeded"
+                                     },
+                      "events":  [
+                                     {
+                                         "name":  "budget.decision",
+                                         "attributes":  {
+                                                            "s15.budget.decision":  "branch",
+                                                            "s15.budget.reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy",
+                                                            "s15.tier":  "economy",
+                                                            "s15.tier.requested":  "economy",
+                                                            "s15.budget.projected_cost":  0.0004689
+                                                        }
+                                     }
+                                 ]
+                  },
+                  {
+                      "name":  "chat openai/gpt-oss-120b",
+                      "kind":  "provider_call",
+                      "span_id":  "6ba8da45c9f02eb0",
+                      "parent_span_id":  "22df274362714c38",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916451357952,
+                      "end_time":  1785678917717357952,
+                      "duration_ns":  1266000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "provider_call",
+                                         "gen_ai.operation.name":  "chat",
+                                         "gen_ai.provider.name":  "groq",
+                                         "gen_ai.request.model":  "openai/gpt-oss-120b",
+                                         "gen_ai.response.model":  "openai/gpt-oss-120b",
+                                         "gen_ai.usage.input_tokens":  424,
+                                         "gen_ai.usage.output_tokens":  164,
+                                         "s15.cost":  0.0001866,
+                                         "s15.currency":  "USD",
+                                         "s15.tier":  "economy",
+                                         "s15.node.id":  "search_2",
+                                         "s15.budget.decision":  "branch",
+                                         "s15.budget.remaining":  0.00031340000000000003,
+                                         "s15.cost.projected":  0.0004584,
+                                         "gen_ai.request.reasoning_effort":  "off"
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node search_2",
+                      "kind":  "node",
+                      "span_id":  "22df274362714c38",
+                      "parent_span_id":  "95b5d7885cb06760",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916451357952,
+                      "end_time":  1785678917717357952,
+                      "duration_ns":  1266000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "researcher",
+                                         "gen_ai.agent.name":  "researcher",
+                                         "s15.node.id":  "search_2",
+                                         "s15.run.id":  "run-93b8d600dcf2",
+                                         "s15.tier":  "economy",
+                                         "s15.node.state":  "succeeded"
+                                     },
+                      "events":  [
+                                     {
+                                         "name":  "budget.decision",
+                                         "attributes":  {
+                                                            "s15.budget.decision":  "branch",
+                                                            "s15.budget.reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy",
+                                                            "s15.tier":  "economy",
+                                                            "s15.tier.requested":  "economy",
+                                                            "s15.budget.projected_cost":  0.0004584
+                                                        }
+                                     }
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 1",
+                      "kind":  "agent_loop",
+                      "span_id":  "95b5d7885cb06760",
+                      "parent_span_id":  "18ce051cc8a9a077",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916451357952,
+                      "end_time":  1785678918169937472,
+                      "duration_ns":  1718579520,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  1,
+                                         "s15.loop.trigger_event":  55
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "e14fa5ae9c04ae3f",
+                      "parent_span_id":  "bfd92dce2f4c9251",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916456357888,
+                      "end_time":  1785678916456357888,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "",
+                                         "s15.plan.added":  "",
+                                         "s15.plan.added_count":  0,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 2",
+                      "kind":  "agent_loop",
+                      "span_id":  "bfd92dce2f4c9251",
+                      "parent_span_id":  "18ce051cc8a9a077",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916456357888,
+                      "end_time":  1785678916456357888,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  2,
+                                         "s15.loop.trigger_event":  59
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "d1ce3da192095542",
+                      "parent_span_id":  "739379d1f5867777",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916458357760,
+                      "end_time":  1785678916458357760,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "research evidence landed; specialist synthesis can begin",
+                                         "s15.plan.added":  "distill",
+                                         "s15.plan.added_count":  1,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node distill",
+                      "kind":  "node",
+                      "span_id":  "8c8b1c5f1689d7e6",
+                      "parent_span_id":  "739379d1f5867777",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916459357696,
+                      "end_time":  1785678916460357888,
+                      "duration_ns":  1000192,
+                      "status":  "ERROR",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "distiller",
+                                         "gen_ai.agent.name":  "distiller",
+                                         "s15.node.id":  "distill",
+                                         "s15.run.id":  "run-93b8d600dcf2",
+                                         "s15.tier":  "standard",
+                                         "s15.node.state":  "failed"
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 3",
+                      "kind":  "agent_loop",
+                      "span_id":  "739379d1f5867777",
+                      "parent_span_id":  "18ce051cc8a9a077",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916458357760,
+                      "end_time":  1785678916460357888,
+                      "duration_ns":  2000128,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  3,
+                                         "s15.loop.trigger_event":  61
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "efd761a95e4f6bde",
+                      "parent_span_id":  "3a835520529ec464",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916461357824,
+                      "end_time":  1785678916461357824,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "specialist synthesis completed",
+                                         "s15.plan.added":  "answer",
+                                         "s15.plan.added_count":  1,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node answer",
+                      "kind":  "node",
+                      "span_id":  "9acff7205b7c841a",
+                      "parent_span_id":  "3a835520529ec464",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916462357760,
+                      "end_time":  1785678916463357952,
+                      "duration_ns":  1000192,
+                      "status":  "ERROR",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "answer_with_evidence",
+                                         "gen_ai.agent.name":  "answer_with_evidence",
+                                         "s15.node.id":  "answer",
+                                         "s15.run.id":  "run-93b8d600dcf2",
+                                         "s15.tier":  "frontier",
+                                         "s15.node.state":  "failed"
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 4",
+                      "kind":  "agent_loop",
+                      "span_id":  "3a835520529ec464",
+                      "parent_span_id":  "18ce051cc8a9a077",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916461357824,
+                      "end_time":  1785678916463357952,
+                      "duration_ns":  2000128,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  4,
+                                         "s15.loop.trigger_event":  64
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "4d5892751608f432",
+                      "parent_span_id":  "86a23774d67bfb18",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916464357888,
+                      "end_time":  1785678916464357888,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "answer worker failed; failure retained in journal",
+                                         "s15.plan.added":  "",
+                                         "s15.plan.added_count":  0,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  true
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 5",
+                      "kind":  "agent_loop",
+                      "span_id":  "86a23774d67bfb18",
+                      "parent_span_id":  "18ce051cc8a9a077",
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916464357888,
+                      "end_time":  1785678916464357888,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  5,
+                                         "s15.loop.trigger_event":  67
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "run run-93b8d600dcf2",
+                      "kind":  "run",
+                      "span_id":  "18ce051cc8a9a077",
+                      "parent_span_id":  null,
+                      "trace_id":  "616bb47a294685c771df75f038e61278",
+                      "start_time":  1785678916451357952,
+                      "end_time":  1785678918169937472,
+                      "duration_ns":  1718579520,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "run",
+                                         "s15.run.id":  "run-93b8d600dcf2",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "gen_ai.agent.name":  "s15code",
+                                         "s15.run.finished":  true,
+                                         "s15.journal.events":  14,
+                                         "s15.provider_calls":  2,
+                                         "s15.loops":  5,
+                                         "s15.cost":  0.00041430000000000004
+                                     },
+                      "events":  [
+
+                                 ]
+                  }
+              ]
+}

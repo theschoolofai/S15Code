@@ -70,7 +70,7 @@ from s15code.evals.judge import STATUS_JUDGE_FAILED  # noqa: E402
 from s15code.evals.tasks import EvalTask, by_difficulty  # noqa: E402
 from s15code.gateway import GatewayClient  # noqa: E402
 
-DEFAULT_BASE_URL = os.getenv("GLC_BASE_URL", "http://127.0.0.1:8112")
+DEFAULT_BASE_URL = os.getenv("GLC_BASE_URL", "http://127.0.0.1:8111")
 DEFAULT_TASKS = Path(__file__).resolve().parent / "tasks" / "mixed.jsonl"
 
 #: The role every answering call declares. It is a ROLE, not a task class: the
@@ -343,7 +343,7 @@ async def run_one(
             "latency_ms": charge.get("latency_ms", elapsed),
             "error": error,
             "answer_chars": len(answer),
-            "answer_excerpt": answer[-320:],
+            "answer": answer,
             "verdict": {
                 "status": judged.verdict.status,
                 "resolved": judged.verdict.resolved,

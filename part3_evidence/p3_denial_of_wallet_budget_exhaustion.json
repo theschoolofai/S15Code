@@ -1,0 +1,420 @@
+{
+  "proof": "p3_denial_of_wallet",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "A courier must ferry three sealed packages, A, B, and C, across a river using a boat that holds the courier plus at most one package per trip. Package A and Package B cannot be left alone together with no courier present, and Package B and Package C cannot be left alone together either.",
+    "budget": 0.0015,
+    "principal": "proofs/s15/part3-attacker",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "C:\\Raghu\\MyLearnings\\EAG_V3\\S15-01082026\\assignment\\S15Code\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "llama-3.3-70b-versatile",
+      "frontier": "gemma-4-31b"
+    },
+    "default_budget": 0.025,
+    "thresholds": {
+      "downgrade_at": 0.4,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.05,
+      "reserve_fraction": 0.3,
+      "max_calls_per_run": 15,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "ceiling": "0.00150000 USD",
+    "spent": "0.00119925",
+    "admitted calls": 6,
+    "refusals": 14,
+    "loop rounds": 20,
+    "nodes created": 20,
+    "refused nodes": 14,
+    "cost per call": "0.00019987",
+    "uncontrolled bill": "~1.9988 over 10000 rounds (extrapolated)",
+    "call ceiling": 15,
+    "transport failures": 0
+  },
+  "checks": [
+    {
+      "claim": "the ceiling held under an unbounded loop",
+      "ok": true,
+      "observed": "spent 0.00119925 <= 0.00150000"
+    },
+    {
+      "claim": "admitted calls are bounded by the configured call ceiling",
+      "ok": true,
+      "observed": "6 <= 15"
+    },
+    {
+      "claim": "the loop kept asking and was refused",
+      "ok": true,
+      "observed": "20 rounds, 6 admitted, 14 refused"
+    },
+    {
+      "claim": "a refusal is a visible graph failure, not a silent truncation",
+      "ok": true,
+      "observed": "14 nodes failed with BudgetRefused"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "6 transport calls == 6 charges (0 gateway errors, no tokens to charge)"
+    },
+    {
+      "claim": "the controller, not the loop, is what stopped the spend",
+      "ok": true,
+      "observed": "spend stopped after 6 of 20 attempts"
+    }
+  ],
+  "detail": {
+    "budget": {
+      "run_id": "runaway",
+      "principal": "proofs/s15/part3-attacker",
+      "currency": "USD",
+      "total": 0.0015,
+      "spent": 0.00119925,
+      "remaining": 0.00030075,
+      "pressure": 0.7995,
+      "reserve": 0.00045,
+      "calls": 6,
+      "downgrades": 3,
+      "branches": 3,
+      "refusals": 14,
+      "reservations": {},
+      "by_tier": {
+        "economy": {
+          "calls": 6,
+          "cost": 0.00119925,
+          "input_tokens": 900,
+          "output_tokens": 1419
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "loop_1",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 200,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00017250000000000002,
+          "projected_cost": 0.0004017,
+          "latency_ms": 1219.0,
+          "started_at": 1785955335.1301687,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 2,
+          "node_id": "loop_2",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 381,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00030825000000000004,
+          "projected_cost": 0.0004017,
+          "latency_ms": 2969.0,
+          "started_at": 1785955336.4582906,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 3,
+          "node_id": "loop_3",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 197,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00017025000000000002,
+          "projected_cost": 0.0004017,
+          "latency_ms": 1381.0,
+          "started_at": 1785955340.2699897,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 4,
+          "node_id": "loop_4",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 234,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00019800000000000002,
+          "projected_cost": 0.0004017,
+          "latency_ms": 1519.0,
+          "started_at": 1785955341.7672098,
+          "decision": "branch",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 5,
+          "node_id": "loop_5",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 196,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0001695,
+          "projected_cost": 0.0004017,
+          "latency_ms": 1886.0,
+          "started_at": 1785955343.9797218,
+          "decision": "branch",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 6,
+          "node_id": "loop_6",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 150,
+          "output_tokens": 211,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00018075,
+          "projected_cost": 0.0004017,
+          "latency_ms": 1459.0,
+          "started_at": 1785955346.397964,
+          "decision": "branch",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": [
+        {
+          "node_id": "loop_7",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_8",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_9",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_10",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_11",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_12",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_13",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_14",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_15",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_16",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_17",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_18",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_19",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        },
+        {
+          "node_id": "loop_20",
+          "reason": "cheapest tier economy projects 0.000402, run holds 0.000301 (headroom 0.000075)",
+          "spent": 0.00119925,
+          "remaining": 0.00030075,
+          "pressure": 0.7995,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.0004017,
+          "allowance": 0.0,
+          "ladder_steps": 0
+        }
+      ]
+    },
+    "journal_events": 62,
+    "projection_rounds": 10000,
+    "uncontrolled_bill_extrapolated": 1.99875
+  }
+}

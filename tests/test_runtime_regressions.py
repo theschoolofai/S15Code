@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from urllib.parse import urlparse
+from urllib.request import url2pathname
 
 import s15code.routes as agent_route
 import s15code.runtime as runtime_module
@@ -11,6 +13,18 @@ def _fake_answer(monkeypatch):
     async def answer(_app, prompt, _system):
         return {"text": "grounded answer", "provider": "fake", "model": "fake"}
     monkeypatch.setattr(agent_route, "gateway_text_llm", answer)
+
+
+def _path_from_file_uri(uri: str) -> Path:
+    """A file:// URI back to a filesystem path, correctly on every OS.
+
+    ``Path.as_uri()`` (used to build these) emits ``file:///C:/...`` on
+    Windows (three slashes, then a drive letter) and ``file:///home/...`` on
+    POSIX. A bare ``removeprefix("file://")`` only round-trips on POSIX; it
+    leaves a stray leading slash before a Windows drive letter. ``url2pathname``
+    is the stdlib's own inverse of ``as_uri`` on every platform.
+    """
+    return Path(url2pathname(urlparse(uri).path))
 
 
 def test_search_outcome_expands_into_parallel_fetches(app_client, monkeypatch):
@@ -91,7 +105,7 @@ def test_birthday_creates_two_real_calendar_artifacts(app_client, monkeypatch):
         "prompt": "My mom's birthday is 15 May 2026. Remember that and give me a calendar reminder for two weeks before and on the day."}).json()
     artifacts = body["graph"]["nodes"]["reminder"]["result"]["artifacts"]
     assert len(artifacts) == 2
-    assert all(Path(uri.removeprefix("file://")).read_text().startswith("BEGIN:VCALENDAR") for uri in artifacts)
+    assert all(_path_from_file_uri(uri).read_text().startswith("BEGIN:VCALENDAR") for uri in artifacts)
 
 
 def test_missing_file_is_safely_attempted_and_failure_reaches_answer(app_client, monkeypatch, tmp_path):

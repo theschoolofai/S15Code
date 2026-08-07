@@ -125,15 +125,25 @@ def _entity_list(prompt: str) -> list[str]:
     return [part for part in parts if part]
 
 
-def _research_topic(prompt: str, entities: list[str]) -> str:
-    """The aspect the user is researching, derived from the prompt (data, not a
-    hardcoded template): the prompt with the entity list and the compose verb
-    removed. Used only to build a per-entity search query at runtime."""
+def _research_topic(prompt: str, entities: list[str], keep: str) -> str:
+    """One entity's own search query: the prompt with every OTHER named entity
+    and the compose verb removed, but ``keep`` left exactly where it was.
+
+    Blanking every entity (including ``keep``) and re-appending it at the end
+    was the original approach, and it silently produced a garbled query for any
+    entity that was not already the last word of the prompt: "compare Python and
+    Node.js" turned into "... and and tell me ... Python", losing the phrase
+    ("stable version of Python") that made the query useful in the first place.
+    Keeping the entity in place preserves that phrase; the other entity's gap
+    can still leave a stray "and", which the last step collapses.
+    """
     topic = prompt
     for entity in entities:
-        topic = topic.replace(entity, " ")
+        if entity != keep:
+            topic = topic.replace(entity, " ")
     topic = re.split(r"\b(?:compose|build|create|make|generate|design)\b", topic, maxsplit=1, flags=re.I)[0]
     topic = re.sub(r"[^A-Za-z0-9 ]+", " ", topic)
+    topic = re.sub(r"\b(and)(?:\s+and\b)+", r"\1", topic, flags=re.I)
     return " ".join(topic.split())
 
 
@@ -209,9 +219,8 @@ def _work_intent(prompt: str, respond_as: str = "text") -> tuple[str, list[TaskS
     if wants_ui:
         entities = _entity_list(prompt)
         if len(entities) >= 2:
-            topic = _research_topic(prompt, entities)
             return "compose_research", [TaskSpec(f"search_{i + 1}", "researcher",
-                {"query": f"{topic} {entity}".strip(), "max_results": 3, "subject": entity},
+                {"query": _research_topic(prompt, entities, keep=entity), "max_results": 3, "subject": entity},
                 {"agent": "researcher"}) for i, entity in enumerate(entities)]
         return "compose_answer", [TaskSpec("content", "content", {"query": prompt}, {"agent": "content"})]
 
@@ -221,11 +230,10 @@ def _work_intent(prompt: str, respond_as: str = "text") -> tuple[str, list[TaskS
         r"\b(compare|contrast|find|list|research|look up|profile|profiles|overview|between|versus|vs)\b",
         lower))
     if entities and len(entities) >= 2 and wants_lookup:
-        topic = _research_topic(prompt, entities)
         structured = any(word in lower for word in ("structured", "growing fastest", "fastest", "ranking", "rank"))
         mode = "structured_compare" if structured else "parallel_search"
         return mode, [TaskSpec(f"search_{i + 1}", "researcher",
-            {"query": f"{topic} {entity}".strip(), "max_results": 3, "subject": entity},
+            {"query": _research_topic(prompt, entities, keep=entity), "max_results": 3, "subject": entity},
             {"agent": "researcher"}) for i, entity in enumerate(entities)]
 
     if "family-friendly" in lower and "weather" in lower:

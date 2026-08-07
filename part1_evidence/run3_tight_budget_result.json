@@ -1,0 +1,778 @@
+﻿{
+    "run_id":  "run-50d5a36db2b2",
+    "status":  "failed",
+    "answer":  "",
+    "provider":  null,
+    "model":  null,
+    "graph":  {
+                  "finished":  true,
+                  "nodes":  {
+                                "answer":  {
+                                               "id":  "answer",
+                                               "skill":  "answer_with_evidence",
+                                               "input":  {
+                                                             "query":  "Explain the difference between TCP and UDP in three sentences."
+                                                         },
+                                               "metadata":  {
+                                                                "tier":  "frontier"
+                                                            },
+                                               "state":  "failed",
+                                               "result":  {
+                                                              "error":  "BudgetRefused: budget refused a frontier call for answer: cheapest tier economy projects 0.000585, run holds 0.000131 (headroom 0.000010)"
+                                                          }
+                                           },
+                                "distill":  {
+                                                "id":  "distill",
+                                                "skill":  "distiller",
+                                                "input":  {
+                                                              "query":  "Explain the difference between TCP and UDP in three sentences."
+                                                          },
+                                                "metadata":  {
+                                                                 "agent":  "distiller",
+                                                                 "tier":  "standard"
+                                                             },
+                                                "state":  "failed",
+                                                "result":  {
+                                                               "error":  "BudgetRefused: budget refused a standard call for distill: cheapest tier economy projects 0.000706, run holds 0.000131 (headroom 0.000010)"
+                                                           }
+                                            },
+                                "search_1":  {
+                                                 "id":  "search_1",
+                                                 "skill":  "researcher",
+                                                 "input":  {
+                                                               "query":  "Explain the difference between and in three sentences TCP",
+                                                               "max_results":  3,
+                                                               "subject":  "TCP"
+                                                           },
+                                                 "metadata":  {
+                                                                  "agent":  "researcher",
+                                                                  "tier":  "economy"
+                                                              },
+                                                 "state":  "succeeded",
+                                                 "result":  {
+                                                                "query":  "Explain the difference between and in three sentences TCP",
+                                                                "hits":  [
+                                                                             {
+                                                                                 "title":  "TCP vs. UDP - GeeksforGeeks",
+                                                                                 "url":  "https://www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/",
+                                                                                 "snippet":  "www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/ TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are two core protocols of the Transport Layer of the OSI and TCP /IP models. Both are responsible for end-to-end communication between applications, but they differ significantly in terms of reliability, speed, and use cases. Understanding the difference between TCP and UDP is essential for designing efficient and reliable ..."
+                                                                             },
+                                                                             {
+                                                                                 "title":  "Transmission Control Protocol (TCP) - GeeksforGeeks",
+                                                                                 "url":  "https://www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/",
+                                                                                 "snippet":  "www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/ TCP (Transmission Control Protocol) is a protocol that allows devices to communicate reliably over a network. It ensures that data reaches the destination correctly and in the right order, even if parts of the network are slow or unreliable. It works at the Transport Layer (Layer 4) of the OSI model and is an essential part of the TCP /IP protocol suite used for Internet communication. TCP ..."
+                                                                             },
+                                                                             {
+                                                                                 "title":  "Introduction to TCP and UDP - NetworkLessons.com",
+                                                                                 "url":  "https://networklessons.com/network-fundamentals/introduction-to-tcp-and-udp",
+                                                                                 "snippet":  "networklessons.com/network-fundamentals/introduction-to-tcp-and-udp This lesson explains you the basics of TCP /IP, The 3 way handshake and why it is called a \"reliable\" transport protocol."
+                                                                             }
+                                                                         ],
+                                                                "text":  "TCP (Transmission Control Protocol) provides reliable, connectionâoriented communication by establishing a threeâway handshake, sequencing packets, and retransmitting any lost data, ensuring that the receiver gets the complete data stream in order. UDP (User Datagram Protocol) is connectionâless and sends packets without handshaking, sequencing, or error recovery, so delivery is faster but not guaranteed. Consequently, TCP is used for applications that require accuracy (e.g., web pages, email), while UDP suits latencyâsensitive tasks where occasional loss is acceptable (e.g., video streaming, online gaming).",
+                                                                "provider":  "groq",
+                                                                "model":  "openai/gpt-oss-120b",
+                                                                "agent":  "researcher",
+                                                                "metered_calls":  [
+                                                                                      {
+                                                                                          "sequence":  2,
+                                                                                          "node_id":  "search_1",
+                                                                                          "role":  "researcher",
+                                                                                          "tier":  "economy",
+                                                                                          "provider":  "groq",
+                                                                                          "model":  "openai/gpt-oss-120b",
+                                                                                          "input_tokens":  488,
+                                                                                          "output_tokens":  149,
+                                                                                          "cache_read_tokens":  0,
+                                                                                          "cache_write_tokens":  0,
+                                                                                          "cost":  0.00018495,
+                                                                                          "projected_cost":  0.0004689,
+                                                                                          "latency_ms":  1157.0,
+                                                                                          "started_at":  1785687683.5484889,
+                                                                                          "decision":  "branch",
+                                                                                          "requested_tier":  "economy",
+                                                                                          "requested_model":  "openai/gpt-oss-120b",
+                                                                                          "reasoning":  "off",
+                                                                                          "budget_remaining":  0.00013144999999999997,
+                                                                                          "budget_pressure":  0.7371000000000001
+                                                                                      }
+                                                                                  ],
+                                                                "budget_decisions":  [
+                                                                                         {
+                                                                                             "action":  "branch",
+                                                                                             "node_id":  "search_1",
+                                                                                             "requested_tier":  "economy",
+                                                                                             "tier":  "economy",
+                                                                                             "model":  "openai/gpt-oss-120b",
+                                                                                             "projected_cost":  0.0004689,
+                                                                                             "allowance":  0.0005,
+                                                                                             "remaining":  0.0005,
+                                                                                             "pressure":  0.0,
+                                                                                             "ladder_steps":  0,
+                                                                                             "reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy"
+                                                                                         }
+                                                                                     ]
+                                                            }
+                                             },
+                                "search_2":  {
+                                                 "id":  "search_2",
+                                                 "skill":  "researcher",
+                                                 "input":  {
+                                                               "query":  "Explain the difference between and in three sentences UDP",
+                                                               "max_results":  3,
+                                                               "subject":  "UDP"
+                                                           },
+                                                 "metadata":  {
+                                                                  "agent":  "researcher",
+                                                                  "tier":  "economy"
+                                                              },
+                                                 "state":  "succeeded",
+                                                 "result":  {
+                                                                "query":  "Explain the difference between and in three sentences UDP",
+                                                                "hits":  [
+                                                                             {
+                                                                                 "title":  "TCP vs. UDP - GeeksforGeeks",
+                                                                                 "url":  "https://www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/",
+                                                                                 "snippet":  "www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/ Understanding the difference between TCP and UDP is essential for designing efficient and reliable networked systems. Transmission Control Protocol (TCP) TCP is a reliable, connection-oriented transport protocol that ensures accurate and ordered data delivery."
+                                                                             },
+                                                                             {
+                                                                                 "title":  "Introduction to TCP and UDP - NetworkLessons.com",
+                                                                                 "url":  "https://networklessons.com/network-fundamentals/introduction-to-tcp-and-udp",
+                                                                                 "snippet":  "networklessons.com/network-fundamentals/introduction-to-tcp-and-udp This lesson explains you the basics of TCP/IP, The 3 way handshake and why it is called a \"reliable\" transport protocol."
+                                                                             },
+                                                                             {
+                                                                                 "title":  "Explain the difference between TCP and UDP. - Telecom Trainer",
+                                                                                 "url":  "https://www.telecomtrainer.com/explain-the-difference-between-tcp-and-udp/",
+                                                                                 "snippet":  "www.telecomtrainer.com/explain-the-difference-between-tcp-and-udp/ TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are two of the most widely used transport layer protocols in computer networking. They operate at the transport layer of the OSI model and provide reliable communication between applications over a network. Here\u0027s a detailed technical explanation of the differences"
+                                                                             }
+                                                                         ],
+                                                                "text":  "TCP (Transmission Control Protocol) is a connectionâoriented, reliable transport protocol that establishes a handshake before data transfer, guarantees ordered delivery, and performs error checking and retransmission of lost packetsã1â snippetã. UDP (User Datagram Protocol) is connectionâless and unreliable; it sends datagrams without establishing a session, provides no ordering or retransmission, and thus has lower overhead and latencyã2â snippetã. Consequently, TCP is suited for applications needing accuracy (e.g., web pages, file transfers), while UDP is preferred for timeâsensitive services where speed outweighs occasional loss (e.g., streaming, online gaming)ã3â snippetã.",
+                                                                "provider":  "groq",
+                                                                "model":  "openai/gpt-oss-120b",
+                                                                "agent":  "researcher",
+                                                                "metered_calls":  [
+                                                                                      {
+                                                                                          "sequence":  1,
+                                                                                          "node_id":  "search_2",
+                                                                                          "role":  "researcher",
+                                                                                          "tier":  "economy",
+                                                                                          "provider":  "groq",
+                                                                                          "model":  "openai/gpt-oss-120b",
+                                                                                          "input_tokens":  424,
+                                                                                          "output_tokens":  160,
+                                                                                          "cache_read_tokens":  0,
+                                                                                          "cache_write_tokens":  0,
+                                                                                          "cost":  0.00018360000000000002,
+                                                                                          "projected_cost":  0.0004584,
+                                                                                          "latency_ms":  1462.0,
+                                                                                          "started_at":  1785687683.4274335,
+                                                                                          "decision":  "branch",
+                                                                                          "requested_tier":  "economy",
+                                                                                          "requested_model":  "openai/gpt-oss-120b",
+                                                                                          "reasoning":  "off",
+                                                                                          "budget_remaining":  0.0003164,
+                                                                                          "budget_pressure":  0.3672
+                                                                                      }
+                                                                                  ],
+                                                                "budget_decisions":  [
+                                                                                         {
+                                                                                             "action":  "branch",
+                                                                                             "node_id":  "search_2",
+                                                                                             "requested_tier":  "economy",
+                                                                                             "tier":  "economy",
+                                                                                             "model":  "openai/gpt-oss-120b",
+                                                                                             "projected_cost":  0.0004584,
+                                                                                             "allowance":  0.0005,
+                                                                                             "remaining":  0.0005,
+                                                                                             "pressure":  0.0,
+                                                                                             "ladder_steps":  0,
+                                                                                             "reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy"
+                                                                                         }
+                                                                                     ]
+                                                            }
+                                             }
+                            },
+                  "edges":  [
+                                [
+                                    "search_1",
+                                    "answer"
+                                ],
+                                [
+                                    "search_1",
+                                    "distill"
+                                ],
+                                [
+                                    "search_2",
+                                    "answer"
+                                ],
+                                [
+                                    "search_2",
+                                    "distill"
+                                ]
+                            ]
+              },
+    "trace":  {
+                  "planner":  {
+                                  "mode":  "deterministic"
+                              },
+                  "agents":  {
+                                 "answer":  {
+                                                "agent":  "answer_with_evidence",
+                                                "skill":  "answer_with_evidence",
+                                                "state":  "failed",
+                                                "provider":  null,
+                                                "model":  null,
+                                                "tier":  "frontier"
+                                            },
+                                 "distill":  {
+                                                 "agent":  "distiller",
+                                                 "skill":  "distiller",
+                                                 "state":  "failed",
+                                                 "provider":  null,
+                                                 "model":  null,
+                                                 "tier":  "standard"
+                                             },
+                                 "search_1":  {
+                                                  "agent":  "researcher",
+                                                  "skill":  "researcher",
+                                                  "state":  "succeeded",
+                                                  "provider":  "groq",
+                                                  "model":  "openai/gpt-oss-120b",
+                                                  "tier":  "economy"
+                                              },
+                                 "search_2":  {
+                                                  "agent":  "researcher",
+                                                  "skill":  "researcher",
+                                                  "state":  "succeeded",
+                                                  "provider":  "groq",
+                                                  "model":  "openai/gpt-oss-120b",
+                                                  "tier":  "economy"
+                                              }
+                             }
+              },
+    "events":  [
+                   {
+                       "sequence":  115,
+                       "kind":  "run_started",
+                       "node_id":  null,
+                       "payload":  {
+
+                                   }
+                   },
+                   {
+                       "sequence":  116,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  115,
+                                       "reason":  "first frontier selected for parallel_search",
+                                       "add":  [
+                                                   "search_1",
+                                                   "search_2"
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  117,
+                       "kind":  "task_started",
+                       "node_id":  "search_1",
+                       "payload":  {
+                                       "skill":  "researcher",
+                                       "agent":  "researcher"
+                                   }
+                   },
+                   {
+                       "sequence":  118,
+                       "kind":  "task_started",
+                       "node_id":  "search_2",
+                       "payload":  {
+                                       "skill":  "researcher",
+                                       "agent":  "researcher"
+                                   }
+                   },
+                   {
+                       "sequence":  119,
+                       "kind":  "task_succeeded",
+                       "node_id":  "search_2",
+                       "payload":  {
+                                       "query":  "Explain the difference between and in three sentences UDP",
+                                       "hits":  [
+                                                    {
+                                                        "title":  "TCP vs. UDP - GeeksforGeeks",
+                                                        "url":  "https://www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/",
+                                                        "snippet":  "www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/ Understanding the difference between TCP and UDP is essential for designing efficient and reliable networked systems. Transmission Control Protocol (TCP) TCP is a reliable, connection-oriented transport protocol that ensures accurate and ordered data delivery."
+                                                    },
+                                                    {
+                                                        "title":  "Introduction to TCP and UDP - NetworkLessons.com",
+                                                        "url":  "https://networklessons.com/network-fundamentals/introduction-to-tcp-and-udp",
+                                                        "snippet":  "networklessons.com/network-fundamentals/introduction-to-tcp-and-udp This lesson explains you the basics of TCP/IP, The 3 way handshake and why it is called a \"reliable\" transport protocol."
+                                                    },
+                                                    {
+                                                        "title":  "Explain the difference between TCP and UDP. - Telecom Trainer",
+                                                        "url":  "https://www.telecomtrainer.com/explain-the-difference-between-tcp-and-udp/",
+                                                        "snippet":  "www.telecomtrainer.com/explain-the-difference-between-tcp-and-udp/ TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are two of the most widely used transport layer protocols in computer networking. They operate at the transport layer of the OSI model and provide reliable communication between applications over a network. Here\u0027s a detailed technical explanation of the differences"
+                                                    }
+                                                ],
+                                       "text":  "TCP (Transmission Control Protocol) is a connectionâoriented, reliable transport protocol that establishes a handshake before data transfer, guarantees ordered delivery, and performs error checking and retransmission of lost packetsã1â snippetã. UDP (User Datagram Protocol) is connectionâless and unreliable; it sends datagrams without establishing a session, provides no ordering or retransmission, and thus has lower overhead and latencyã2â snippetã. Consequently, TCP is suited for applications needing accuracy (e.g., web pages, file transfers), while UDP is preferred for timeâsensitive services where speed outweighs occasional loss (e.g., streaming, online gaming)ã3â snippetã.",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "agent":  "researcher",
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  1,
+                                                                 "node_id":  "search_2",
+                                                                 "role":  "researcher",
+                                                                 "tier":  "economy",
+                                                                 "provider":  "groq",
+                                                                 "model":  "openai/gpt-oss-120b",
+                                                                 "input_tokens":  424,
+                                                                 "output_tokens":  160,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.00018360000000000002,
+                                                                 "projected_cost":  0.0004584,
+                                                                 "latency_ms":  1462.0,
+                                                                 "started_at":  1785687683.4274335,
+                                                                 "decision":  "branch",
+                                                                 "requested_tier":  "economy",
+                                                                 "requested_model":  "openai/gpt-oss-120b",
+                                                                 "reasoning":  "off",
+                                                                 "budget_remaining":  0.0003164,
+                                                                 "budget_pressure":  0.3672
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "branch",
+                                                                    "node_id":  "search_2",
+                                                                    "requested_tier":  "economy",
+                                                                    "tier":  "economy",
+                                                                    "model":  "openai/gpt-oss-120b",
+                                                                    "projected_cost":  0.0004584,
+                                                                    "allowance":  0.0005,
+                                                                    "remaining":  0.0005,
+                                                                    "pressure":  0.0,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  120,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  119,
+                                       "reason":  "",
+                                       "add":  [
+
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  121,
+                       "kind":  "task_succeeded",
+                       "node_id":  "search_1",
+                       "payload":  {
+                                       "query":  "Explain the difference between and in three sentences TCP",
+                                       "hits":  [
+                                                    {
+                                                        "title":  "TCP vs. UDP - GeeksforGeeks",
+                                                        "url":  "https://www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/",
+                                                        "snippet":  "www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/ TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are two core protocols of the Transport Layer of the OSI and TCP /IP models. Both are responsible for end-to-end communication between applications, but they differ significantly in terms of reliability, speed, and use cases. Understanding the difference between TCP and UDP is essential for designing efficient and reliable ..."
+                                                    },
+                                                    {
+                                                        "title":  "Transmission Control Protocol (TCP) - GeeksforGeeks",
+                                                        "url":  "https://www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/",
+                                                        "snippet":  "www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/ TCP (Transmission Control Protocol) is a protocol that allows devices to communicate reliably over a network. It ensures that data reaches the destination correctly and in the right order, even if parts of the network are slow or unreliable. It works at the Transport Layer (Layer 4) of the OSI model and is an essential part of the TCP /IP protocol suite used for Internet communication. TCP ..."
+                                                    },
+                                                    {
+                                                        "title":  "Introduction to TCP and UDP - NetworkLessons.com",
+                                                        "url":  "https://networklessons.com/network-fundamentals/introduction-to-tcp-and-udp",
+                                                        "snippet":  "networklessons.com/network-fundamentals/introduction-to-tcp-and-udp This lesson explains you the basics of TCP /IP, The 3 way handshake and why it is called a \"reliable\" transport protocol."
+                                                    }
+                                                ],
+                                       "text":  "TCP (Transmission Control Protocol) provides reliable, connectionâoriented communication by establishing a threeâway handshake, sequencing packets, and retransmitting any lost data, ensuring that the receiver gets the complete data stream in order. UDP (User Datagram Protocol) is connectionâless and sends packets without handshaking, sequencing, or error recovery, so delivery is faster but not guaranteed. Consequently, TCP is used for applications that require accuracy (e.g., web pages, email), while UDP suits latencyâsensitive tasks where occasional loss is acceptable (e.g., video streaming, online gaming).",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "agent":  "researcher",
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  2,
+                                                                 "node_id":  "search_1",
+                                                                 "role":  "researcher",
+                                                                 "tier":  "economy",
+                                                                 "provider":  "groq",
+                                                                 "model":  "openai/gpt-oss-120b",
+                                                                 "input_tokens":  488,
+                                                                 "output_tokens":  149,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.00018495,
+                                                                 "projected_cost":  0.0004689,
+                                                                 "latency_ms":  1157.0,
+                                                                 "started_at":  1785687683.5484889,
+                                                                 "decision":  "branch",
+                                                                 "requested_tier":  "economy",
+                                                                 "requested_model":  "openai/gpt-oss-120b",
+                                                                 "reasoning":  "off",
+                                                                 "budget_remaining":  0.00013144999999999997,
+                                                                 "budget_pressure":  0.7371000000000001
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "branch",
+                                                                    "node_id":  "search_1",
+                                                                    "requested_tier":  "economy",
+                                                                    "tier":  "economy",
+                                                                    "model":  "openai/gpt-oss-120b",
+                                                                    "projected_cost":  0.0004689,
+                                                                    "allowance":  0.0005,
+                                                                    "remaining":  0.0005,
+                                                                    "pressure":  0.0,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "no tier fits the 0.000200 node allocation, but the run still holds 0.000500: re-allocate the frontier and take economy"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  122,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  121,
+                                       "reason":  "research evidence landed; specialist synthesis can begin",
+                                       "add":  [
+                                                   "distill"
+                                               ],
+                                       "connect":  [
+                                                       [
+                                                           "search_1",
+                                                           "distill"
+                                                       ],
+                                                       [
+                                                           "search_2",
+                                                           "distill"
+                                                       ]
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  123,
+                       "kind":  "task_started",
+                       "node_id":  "distill",
+                       "payload":  {
+                                       "skill":  "distiller",
+                                       "agent":  "distiller"
+                                   }
+                   },
+                   {
+                       "sequence":  124,
+                       "kind":  "task_failed",
+                       "node_id":  "distill",
+                       "payload":  {
+                                       "error":  "BudgetRefused: budget refused a standard call for distill: cheapest tier economy projects 0.000706, run holds 0.000131 (headroom 0.000010)"
+                                   }
+                   },
+                   {
+                       "sequence":  125,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  124,
+                                       "reason":  "specialist synthesis completed",
+                                       "add":  [
+                                                   "answer"
+                                               ],
+                                       "connect":  [
+                                                       [
+                                                           "search_1",
+                                                           "answer"
+                                                       ],
+                                                       [
+                                                           "search_2",
+                                                           "answer"
+                                                       ]
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  126,
+                       "kind":  "task_started",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "skill":  "answer_with_evidence",
+                                       "agent":  "answer_with_evidence"
+                                   }
+                   },
+                   {
+                       "sequence":  127,
+                       "kind":  "task_failed",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "error":  "BudgetRefused: budget refused a frontier call for answer: cheapest tier economy projects 0.000585, run holds 0.000131 (headroom 0.000010)"
+                                   }
+                   },
+                   {
+                       "sequence":  128,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  127,
+                                       "reason":  "answer worker failed; failure retained in journal",
+                                       "add":  [
+
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  true
+                                   }
+                   }
+               ],
+    "principal":  "acme/s15-part1/rraghu214",
+    "budget":  {
+                   "run_id":  "run-50d5a36db2b2",
+                   "principal":  "acme/s15-part1/rraghu214",
+                   "currency":  "USD",
+                   "total":  0.0005,
+                   "spent":  0.00036855000000000004,
+                   "remaining":  0.00013144999999999997,
+                   "pressure":  0.7371000000000001,
+                   "reserve":  0.0001,
+                   "calls":  2,
+                   "downgrades":  0,
+                   "branches":  2,
+                   "refusals":  2,
+                   "reservations":  {
+
+                                    },
+                   "by_tier":  {
+                                   "economy":  {
+                                                   "calls":  2,
+                                                   "cost":  0.00036855000000000004,
+                                                   "input_tokens":  912,
+                                                   "output_tokens":  309
+                                               }
+                               },
+                   "charges":  [
+                                   {
+                                       "sequence":  1,
+                                       "node_id":  "search_2",
+                                       "role":  "researcher",
+                                       "tier":  "economy",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "input_tokens":  424,
+                                       "output_tokens":  160,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.00018360000000000002,
+                                       "projected_cost":  0.0004584,
+                                       "latency_ms":  1462.0,
+                                       "started_at":  1785687683.4274335,
+                                       "decision":  "branch",
+                                       "requested_tier":  "economy"
+                                   },
+                                   {
+                                       "sequence":  2,
+                                       "node_id":  "search_1",
+                                       "role":  "researcher",
+                                       "tier":  "economy",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "input_tokens":  488,
+                                       "output_tokens":  149,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.00018495,
+                                       "projected_cost":  0.0004689,
+                                       "latency_ms":  1157.0,
+                                       "started_at":  1785687683.5484889,
+                                       "decision":  "branch",
+                                       "requested_tier":  "economy"
+                                   }
+                               ],
+                   "refusal_log":  [
+                                       {
+                                           "node_id":  "distill",
+                                           "reason":  "cheapest tier economy projects 0.000706, run holds 0.000131 (headroom 0.000010)",
+                                           "spent":  0.00036855000000000004,
+                                           "remaining":  0.00013144999999999997,
+                                           "pressure":  0.7371000000000001,
+                                           "action":  "refuse",
+                                           "requested_tier":  "standard",
+                                           "tier":  null,
+                                           "model":  null,
+                                           "projected_cost":  0.00070635,
+                                           "allowance":  3.1449999999999965E-05,
+                                           "ladder_steps":  0
+                                       },
+                                       {
+                                           "node_id":  "answer",
+                                           "reason":  "cheapest tier economy projects 0.000585, run holds 0.000131 (headroom 0.000010)",
+                                           "spent":  0.00036855000000000004,
+                                           "remaining":  0.00013144999999999997,
+                                           "pressure":  0.7371000000000001,
+                                           "action":  "refuse",
+                                           "requested_tier":  "frontier",
+                                           "tier":  null,
+                                           "model":  null,
+                                           "projected_cost":  0.00058455,
+                                           "allowance":  3.1449999999999965E-05,
+                                           "ladder_steps":  0
+                                       }
+                                   ]
+               },
+    "economics":  {
+                      "directory":  "C:\\Raghu\\MyLearnings\\EAG_V3\\S15-01082026\\assignment\\S15Code\\config",
+                      "currency":  "USD",
+                      "tier_order":  [
+                                         "economy",
+                                         "standard",
+                                         "frontier"
+                                     ],
+                      "default_tier":  "standard",
+                      "tier_models":  {
+                                          "economy":  "openai/gpt-oss-120b",
+                                          "standard":  "gemini-3.1-flash-lite",
+                                          "frontier":  "deepseek-ai/deepseek-v4-flash"
+                                      },
+                      "default_budget":  0.05,
+                      "thresholds":  {
+                                         "downgrade_at":  0.5,
+                                         "refuse_at":  0.9,
+                                         "headroom_fraction":  0.02,
+                                         "reserve_fraction":  0.2,
+                                         "max_calls_per_run":  60,
+                                         "max_calls_per_node":  6
+                                     }
+                  },
+    "allocations":  [
+                        {
+                            "trigger_event":  115,
+                            "frontier":  [
+                                             "search_1",
+                                             "search_2"
+                                         ],
+                            "per_node":  {
+                                             "search_1":  0.0002,
+                                             "search_2":  0.0002
+                                         },
+                            "remaining":  0.0005,
+                            "tiers":  {
+                                          "search_1":  "economy",
+                                          "search_2":  "economy"
+                                      }
+                        },
+                        {
+                            "trigger_event":  119,
+                            "frontier":  [
+                                             "search_1"
+                                         ],
+                            "per_node":  {
+                                             "search_1":  0.0002164
+                                         },
+                            "remaining":  0.0003164,
+                            "tiers":  {
+
+                                      }
+                        },
+                        {
+                            "trigger_event":  121,
+                            "frontier":  [
+                                             "distill"
+                                         ],
+                            "per_node":  {
+                                             "distill":  3.1449999999999965E-05
+                                         },
+                            "remaining":  0.00013144999999999997,
+                            "tiers":  {
+                                          "distill":  "standard"
+                                      }
+                        },
+                        {
+                            "trigger_event":  124,
+                            "frontier":  [
+                                             "answer"
+                                         ],
+                            "per_node":  {
+                                             "answer":  3.1449999999999965E-05
+                                         },
+                            "remaining":  0.00013144999999999997,
+                            "tiers":  {
+                                          "answer":  "frontier"
+                                      }
+                        },
+                        {
+                            "trigger_event":  127,
+                            "frontier":  [
+
+                                         ],
+                            "per_node":  {
+
+                                         },
+                            "remaining":  0.00013144999999999997,
+                            "tiers":  {
+
+                                      }
+                        }
+                    ]
+}

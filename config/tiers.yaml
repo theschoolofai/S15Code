@@ -11,45 +11,58 @@
 order: [economy, standard, frontier]
 default_tier: standard
 
-# ── The ladder is CROSS-MODEL ────────────────────────────────────────────────
-# The first version of this file varied reasoning effort and the output ceiling
-# on ONE model. The arithmetic worked — output is billed 6x input, so capping
-# max_tokens does cap spend — but it made "model routing" only half-true: every
-# rung of the ladder was the same model, so a downgrade could never be a change
-# of model, only a change of how hard that one model was allowed to think.
+# ── PART 2's OWN LADDER — deliberately not a relabel of the shipped one ─────
+# The shipped ladder (part1-reproduce-floor) is groq / gemini / github(->nvidia
+# temp). This one was built independently for the logic-puzzle workload,
+# measured against the live gateway on 2026-08-03, one candidate model at a
+# time, before any rung was written down here:
 #
-# Each rung below is a DIFFERENT model on a DIFFERENT provider, and the three
-# were measured against glc_v4 on 2026-07-30 before being written down. One
-# identical 3-sentence prompt, max_tokens 512, temperature 0, reasoning off:
+#   rung      provider   model                    $/Mtok in/out  latency  answered
+#   economy   groq       openai/gpt-oss-120b      0.15 / 0.75    0.74 s   yes (needs reasoning off)
+#   standard  groq       llama-3.3-70b-versatile  0.59 / 0.79    1.12 s   yes (no reasoning dial)
+#   frontier  cerebras   gemma-4-31b              1.00 / 5.00*   1.47 s   yes (no reasoning dial)
 #
-#   rung      provider    model                    $/Mtok in/out  latency  answered
-#   economy   groq        openai/gpt-oss-120b      0.15 / 0.75    0.74 s   yes
-#   standard  gemini      gemini-3.1-flash-lite    0.25 / 1.50    1.24 s   yes
-#   frontier  github      openai/gpt-4.1           2.00 / 8.00    2.88 s   yes
+# Only the economy rung's MODEL is shared with the shipped ladder (gpt-oss-120b
+# survived independent re-testing as simply the cheapest live-reachable, clean
+# model across every provider tried — cerebras and openrouter's other
+# candidates either 404'd (no entitlement, or a ":free" model that now redirects
+# to its paid slug) or turned out to be the evals.yaml judge panel's own model).
+# standard and frontier are both models the shipped ladder never used at all.
 #
-# Input rate, output rate and latency all rise monotonically along the ladder,
-# which is what makes "one rung down" unambiguous. Projected worst-case cost per
-# call (the number admission actually uses) is $0.000564 / $0.002161 / $0.044768
-# — a 79x spread across the ladder, where the same-model ladder managed 5x.
+# Two live candidates were ruled out for this ladder, not guessed away:
 #
-# Two facts worth keeping, both learned the hard way:
+#   `gemini/gemini-3.1-flash-lite` (the shipped ladder's own standard rung,
+#   0.25 / 1.50) is mathematically INCOMPATIBLE with llama-3.3-70b-versatile in
+#   the same ladder: flash-lite is cheaper on input (0.25 < 0.59) but pricier on
+#   output (1.50 > 0.79) than llama-3.3-70b-versatile — neither ordering can
+#   make both rates rise together, the exact monotonic-pricing trap
+#   part1-reproduce-floor's own lessons called out. One or the other had to go;
+#   llama-3.3-70b-versatile was kept because it is a genuinely new model choice,
+#   not a repeat of the shipped standard rung.
 #
-#   `reasoning: "off"` is not decoration on the cheap rung. gpt-oss-120b thinks
-#   by default: at max_tokens 128 with the dial left alone it spent all 128
-#   output tokens in its reasoning channel and returned content "" — a fully
-#   billed non-answer. The same call with the dial off returned a 570-character
-#   answer in 117 tokens. glc_v4's providers.py now translates "off" into the
-#   dialect each server understands; the tier only has to ask.
+#   `nvidia` was avoided entirely for this ladder's answering rungs, on purpose.
+#   part1-reproduce-floor measured nvidia's free endpoint failing roughly 1-in-3
+#   calls (HTTP 529 "temporarily overloaded"), with glc_v4's own backoff then
+#   benching the provider for several seconds — a real risk of cascading
+#   failures across the ~45-90 live calls one full 15-puzzle x 3-strategy p1 run
+#   makes. cerebras was picked for frontier specifically because it is a THIRD,
+#   previously-unused provider that sidesteps both known failure modes in this
+#   assignment: github's service-wide outage and nvidia's flakiness.
 #
-#   The cheapest rung is deliberately NOT free. This gateway can also reach
-#   ollama/gemma4:31b and openrouter's nvidia/nemotron-3-super-120b-a12b:free at
-#   $0.00/Mtok, and either would be a legitimate rung — but a rung that costs
-#   nothing cannot be exhausted by a dollar ceiling, so "refuse at exhaustion"
-#   stops being expressible in dollars and falls entirely to max_calls_per_run.
-#   A free rung wants a call-count budget, not a money budget. Local weights are
-#   also slow: gemma4:31b took 39.6 s (and 86.4 s under load) for the same
-#   prompt the frontier rung answered in 2.9 s, so the cheapest rung on a price
-#   ladder is not the cheapest rung on a latency ladder.
+# *`gemma-4-31b` is a Cerebras PREVIEW model with no published commercial price
+# list (unlike gpt-oss-120b and llama-3.3-70b-versatile, whose rates above are
+# Groq's real published per-token pricing, carried over unchanged). Its row in
+# pricing.yaml is an ASSUMED placeholder — deliberately set equal to this
+# file's own `default` row (1.00 / 5.00), the same honest-disclosure pattern
+# part1-reproduce-floor used for its own temporary frontier substitute. Every
+# provider used here (groq, cerebras) is a confirmed free-tier key: none of
+# these dollar figures reflect real spend, only the notional commercial rate
+# the assignment's cost accounting is built to reason about.
+#
+# Input rate and output rate both rise monotonically economy -> standard ->
+# frontier, checked on BOTH axes independently (0.15 < 0.59 < 1.00 on input;
+# 0.75 < 0.79 < 5.00 on output) — the invariant test_cross_model_ladder.py
+# actually enforces.
 
 tiers:
   economy:
@@ -66,32 +79,36 @@ tiers:
     # request model when omitted.
     price_model: openai/gpt-oss-120b
     # What the estimator assumes before the call returns, in tokens. Real usage
-    # replaces this the moment the response lands.
-    projected_input_tokens: 1200
-    projected_output_tokens: 400
+    # replaces this the moment the response lands. Puzzle answers run longer
+    # than the plain factual prompts the shipped ladder's projections assumed.
+    projected_input_tokens: 800
+    projected_output_tokens: 500
 
   standard:
+    # llama-3.3-70b-versatile carries no `reasoning` hint in glc_v4/providers.py
+    # (REASONING_MODEL_HINTS), so the gateway never attempts to send a
+    # reasoning dial to it — confirmed live: it answered cleanly at full length
+    # with the field simply omitted.
     request:
-      provider: gemini
-      model: gemini-3.1-flash-lite
-      reasoning: "off"
-      max_tokens: 1024
+      provider: groq
+      model: llama-3.3-70b-versatile
+      max_tokens: 2048
       temperature: 0
-    price_model: gemini-3.1-flash-lite
-    projected_input_tokens: 2500
-    projected_output_tokens: 800
+    price_model: llama-3.3-70b-versatile
+    projected_input_tokens: 1000
+    projected_output_tokens: 700
 
   frontier:
+    # gemma-4-31b also carries no reasoning hint — confirmed live, answered in
+    # full at reasonable length with no dial sent and no truncation.
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
-      max_tokens: 4096
+      provider: cerebras
+      model: gemma-4-31b
+      max_tokens: 3072
       temperature: 0
-    price_model: openai/gpt-4.1
-    projected_input_tokens: 6000
-    projected_output_tokens: 2000
+    price_model: gemma-4-31b
+    projected_input_tokens: 1500
+    projected_output_tokens: 1000
 
 # Which tier a graph ROLE asks for. Keys are the runtime's own skill/role names
 # (never task content), so a node "declares the tier it needs" by declaring its

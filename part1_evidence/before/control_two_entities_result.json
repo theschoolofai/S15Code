@@ -1,0 +1,919 @@
+﻿{
+    "run_id":  "run-b6f0a8c49b78",
+    "status":  "completed",
+    "answer":  "Based on the available evidence, I cannot compare the latest stable versions of Python and Node.js or determine which was released more recently. The provided search results did not return specific data regarding the latest stable versions or their release dates [source: graph://run-b6f0a8c49b78/distill].",
+    "provider":  "cerebras",
+    "model":  "zai-glm-4.7",
+    "graph":  {
+                  "finished":  true,
+                  "nodes":  {
+                                "answer":  {
+                                               "id":  "answer",
+                                               "skill":  "answer_with_evidence",
+                                               "input":  {
+                                                             "query":  "Compare the latest stable versions of Python and Node.js, and tell me which was released more recently."
+                                                         },
+                                               "metadata":  {
+                                                                "tier":  "frontier"
+                                                            },
+                                               "state":  "succeeded",
+                                               "result":  {
+                                                              "answer":  "Based on the available evidence, I cannot compare the latest stable versions of Python and Node.js or determine which was released more recently. The provided search results did not return specific data regarding the latest stable versions or their release dates [source: graph://run-b6f0a8c49b78/distill].",
+                                                              "provider":  "cerebras",
+                                                              "model":  "zai-glm-4.7",
+                                                              "evidence_count":  1,
+                                                              "metered_calls":  [
+                                                                                    {
+                                                                                        "sequence":  4,
+                                                                                        "node_id":  "answer",
+                                                                                        "role":  "answer_with_evidence",
+                                                                                        "tier":  "frontier",
+                                                                                        "provider":  "cerebras",
+                                                                                        "model":  "zai-glm-4.7",
+                                                                                        "input_tokens":  291,
+                                                                                        "output_tokens":  64,
+                                                                                        "cache_read_tokens":  128,
+                                                                                        "cache_write_tokens":  0,
+                                                                                        "cost":  0.00018389999999999997,
+                                                                                        "projected_cost":  0.002277,
+                                                                                        "latency_ms":  1009.0,
+                                                                                        "started_at":  1785680778.1838634,
+                                                                                        "decision":  "proceed",
+                                                                                        "requested_tier":  "frontier",
+                                                                                        "requested_model":  "zai-glm-4.7",
+                                                                                        "reasoning":  null,
+                                                                                        "budget_remaining":  0.0492707,
+                                                                                        "budget_pressure":  0.014586
+                                                                                    }
+                                                                                ],
+                                                              "budget_decisions":  [
+                                                                                       {
+                                                                                           "action":  "proceed",
+                                                                                           "node_id":  "answer",
+                                                                                           "requested_tier":  "frontier",
+                                                                                           "tier":  "frontier",
+                                                                                           "model":  "zai-glm-4.7",
+                                                                                           "projected_cost":  0.002277,
+                                                                                           "allowance":  0.0394546,
+                                                                                           "remaining":  0.0494546,
+                                                                                           "pressure":  0.010908,
+                                                                                           "ladder_steps":  0,
+                                                                                           "reason":  "requested tier fits the node allowance"
+                                                                                       }
+                                                                                   ]
+                                                          }
+                                           },
+                                "distill":  {
+                                                "id":  "distill",
+                                                "skill":  "distiller",
+                                                "input":  {
+                                                              "query":  "Compare the latest stable versions of Python and Node.js, and tell me which was released more recently."
+                                                          },
+                                                "metadata":  {
+                                                                 "agent":  "distiller",
+                                                                 "tier":  "standard"
+                                                             },
+                                                "state":  "succeeded",
+                                                "result":  {
+                                                               "text":  "The provided search results did not return specific data regarding the latest stable versions or release dates for Python and Node.js. Consequently, I am unable to perform the requested comparison or determine which was released more recently based on the available evidence.",
+                                                               "provider":  "gemini_1",
+                                                               "model":  "gemini-3.1-flash-lite",
+                                                               "agent":  "distiller",
+                                                               "metered_calls":  [
+                                                                                     {
+                                                                                         "sequence":  3,
+                                                                                         "node_id":  "distill",
+                                                                                         "role":  "distiller",
+                                                                                         "tier":  "standard",
+                                                                                         "provider":  "gemini_1",
+                                                                                         "model":  "gemini-3.1-flash-lite",
+                                                                                         "input_tokens":  1068,
+                                                                                         "output_tokens":  47,
+                                                                                         "cache_read_tokens":  0,
+                                                                                         "cache_write_tokens":  0,
+                                                                                         "cost":  0.0003375,
+                                                                                         "projected_cost":  0.0017615,
+                                                                                         "latency_ms":  1608.0,
+                                                                                         "started_at":  1785680774.3303318,
+                                                                                         "decision":  "proceed",
+                                                                                         "requested_tier":  "standard",
+                                                                                         "requested_model":  "gemini-3.1-flash-lite",
+                                                                                         "reasoning":  "off",
+                                                                                         "budget_remaining":  0.0494546,
+                                                                                         "budget_pressure":  0.010908
+                                                                                     }
+                                                                                 ],
+                                                               "budget_decisions":  [
+                                                                                        {
+                                                                                            "action":  "proceed",
+                                                                                            "node_id":  "distill",
+                                                                                            "requested_tier":  "standard",
+                                                                                            "tier":  "standard",
+                                                                                            "model":  "gemini-3.1-flash-lite",
+                                                                                            "projected_cost":  0.0017615,
+                                                                                            "allowance":  0.039792100000000004,
+                                                                                            "remaining":  0.049792100000000006,
+                                                                                            "pressure":  0.004158,
+                                                                                            "ladder_steps":  0,
+                                                                                            "reason":  "requested tier fits the node allowance"
+                                                                                        }
+                                                                                    ]
+                                                           }
+                                            },
+                                "search_1":  {
+                                                 "id":  "search_1",
+                                                 "skill":  "researcher",
+                                                 "input":  {
+                                                               "query":  "Compare the latest stable versions of and and tell me which was released more recently Python",
+                                                               "max_results":  3,
+                                                               "subject":  "Python"
+                                                           },
+                                                 "metadata":  {
+                                                                  "agent":  "researcher",
+                                                                  "tier":  "economy"
+                                                              },
+                                                 "state":  "succeeded",
+                                                 "result":  {
+                                                                "query":  "Compare the latest stable versions of and and tell me which was released more recently Python",
+                                                                "hits":  [
+
+                                                                         ],
+                                                                "text":  "Iâm sorry, but I donât have enough information to answer your question. Could you please clarify which two technologies or software packages youâd like me to compare?",
+                                                                "provider":  "groq",
+                                                                "model":  "openai/gpt-oss-120b",
+                                                                "agent":  "researcher",
+                                                                "metered_calls":  [
+                                                                                      {
+                                                                                          "sequence":  1,
+                                                                                          "node_id":  "search_1",
+                                                                                          "role":  "researcher",
+                                                                                          "tier":  "economy",
+                                                                                          "provider":  "groq",
+                                                                                          "model":  "openai/gpt-oss-120b",
+                                                                                          "input_tokens":  120,
+                                                                                          "output_tokens":  101,
+                                                                                          "cache_read_tokens":  0,
+                                                                                          "cache_write_tokens":  0,
+                                                                                          "cost":  9.375E-05,
+                                                                                          "projected_cost":  0.00039405,
+                                                                                          "latency_ms":  1112.0,
+                                                                                          "started_at":  1785680770.8338692,
+                                                                                          "decision":  "proceed",
+                                                                                          "requested_tier":  "economy",
+                                                                                          "requested_model":  "openai/gpt-oss-120b",
+                                                                                          "reasoning":  "off",
+                                                                                          "budget_remaining":  0.049906250000000006,
+                                                                                          "budget_pressure":  0.001875
+                                                                                      }
+                                                                                  ],
+                                                                "budget_decisions":  [
+                                                                                         {
+                                                                                             "action":  "proceed",
+                                                                                             "node_id":  "search_1",
+                                                                                             "requested_tier":  "economy",
+                                                                                             "tier":  "economy",
+                                                                                             "model":  "openai/gpt-oss-120b",
+                                                                                             "projected_cost":  0.00039405,
+                                                                                             "allowance":  0.02,
+                                                                                             "remaining":  0.05,
+                                                                                             "pressure":  0.0,
+                                                                                             "ladder_steps":  0,
+                                                                                             "reason":  "requested tier fits the node allowance"
+                                                                                         }
+                                                                                     ]
+                                                            }
+                                             },
+                                "search_2":  {
+                                                 "id":  "search_2",
+                                                 "skill":  "researcher",
+                                                 "input":  {
+                                                               "query":  "Compare the latest stable versions of and and tell me which was released more recently Node.js",
+                                                               "max_results":  3,
+                                                               "subject":  "Node.js"
+                                                           },
+                                                 "metadata":  {
+                                                                  "agent":  "researcher",
+                                                                  "tier":  "economy"
+                                                              },
+                                                 "state":  "succeeded",
+                                                 "result":  {
+                                                                "query":  "Compare the latest stable versions of and and tell me which was released more recently Node.js",
+                                                                "hits":  [
+
+                                                                         ],
+                                                                "text":  "Iâm sorry, but I donât have any search results to work from for this question, so I canât provide a comparison of the latest stable versions or their release dates. If you can supply the relevant evidence or clarify the items youâd like compared, Iâll be happy to help.",
+                                                                "provider":  "groq",
+                                                                "model":  "openai/gpt-oss-120b",
+                                                                "agent":  "researcher",
+                                                                "metered_calls":  [
+                                                                                      {
+                                                                                          "sequence":  2,
+                                                                                          "node_id":  "search_2",
+                                                                                          "role":  "researcher",
+                                                                                          "tier":  "economy",
+                                                                                          "provider":  "groq",
+                                                                                          "model":  "openai/gpt-oss-120b",
+                                                                                          "input_tokens":  121,
+                                                                                          "output_tokens":  128,
+                                                                                          "cache_read_tokens":  0,
+                                                                                          "cache_write_tokens":  0,
+                                                                                          "cost":  0.00011415000000000001,
+                                                                                          "projected_cost":  0.00039405,
+                                                                                          "latency_ms":  1375.0,
+                                                                                          "started_at":  1785680770.8479195,
+                                                                                          "decision":  "proceed",
+                                                                                          "requested_tier":  "economy",
+                                                                                          "requested_model":  "openai/gpt-oss-120b",
+                                                                                          "reasoning":  "off",
+                                                                                          "budget_remaining":  0.049792100000000006,
+                                                                                          "budget_pressure":  0.004158
+                                                                                      }
+                                                                                  ],
+                                                                "budget_decisions":  [
+                                                                                         {
+                                                                                             "action":  "proceed",
+                                                                                             "node_id":  "search_2",
+                                                                                             "requested_tier":  "economy",
+                                                                                             "tier":  "economy",
+                                                                                             "model":  "openai/gpt-oss-120b",
+                                                                                             "projected_cost":  0.00039405,
+                                                                                             "allowance":  0.02,
+                                                                                             "remaining":  0.05,
+                                                                                             "pressure":  0.0,
+                                                                                             "ladder_steps":  0,
+                                                                                             "reason":  "requested tier fits the node allowance"
+                                                                                         }
+                                                                                     ]
+                                                            }
+                                             }
+                            },
+                  "edges":  [
+                                [
+                                    "distill",
+                                    "answer"
+                                ],
+                                [
+                                    "search_1",
+                                    "answer"
+                                ],
+                                [
+                                    "search_1",
+                                    "distill"
+                                ],
+                                [
+                                    "search_2",
+                                    "answer"
+                                ],
+                                [
+                                    "search_2",
+                                    "distill"
+                                ]
+                            ]
+              },
+    "trace":  {
+                  "planner":  {
+                                  "mode":  "deterministic"
+                              },
+                  "agents":  {
+                                 "answer":  {
+                                                "agent":  "answer_with_evidence",
+                                                "skill":  "answer_with_evidence",
+                                                "state":  "succeeded",
+                                                "provider":  "cerebras",
+                                                "model":  "zai-glm-4.7",
+                                                "tier":  "frontier"
+                                            },
+                                 "distill":  {
+                                                 "agent":  "distiller",
+                                                 "skill":  "distiller",
+                                                 "state":  "succeeded",
+                                                 "provider":  "gemini_1",
+                                                 "model":  "gemini-3.1-flash-lite",
+                                                 "tier":  "standard"
+                                             },
+                                 "search_1":  {
+                                                  "agent":  "researcher",
+                                                  "skill":  "researcher",
+                                                  "state":  "succeeded",
+                                                  "provider":  "groq",
+                                                  "model":  "openai/gpt-oss-120b",
+                                                  "tier":  "economy"
+                                              },
+                                 "search_2":  {
+                                                  "agent":  "researcher",
+                                                  "skill":  "researcher",
+                                                  "state":  "succeeded",
+                                                  "provider":  "groq",
+                                                  "model":  "openai/gpt-oss-120b",
+                                                  "tier":  "economy"
+                                              }
+                             }
+              },
+    "events":  [
+                   {
+                       "sequence":  85,
+                       "kind":  "run_started",
+                       "node_id":  null,
+                       "payload":  {
+
+                                   }
+                   },
+                   {
+                       "sequence":  86,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  85,
+                                       "reason":  "first frontier selected for parallel_search",
+                                       "add":  [
+                                                   "search_1",
+                                                   "search_2"
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  87,
+                       "kind":  "task_started",
+                       "node_id":  "search_1",
+                       "payload":  {
+                                       "skill":  "researcher",
+                                       "agent":  "researcher"
+                                   }
+                   },
+                   {
+                       "sequence":  88,
+                       "kind":  "task_started",
+                       "node_id":  "search_2",
+                       "payload":  {
+                                       "skill":  "researcher",
+                                       "agent":  "researcher"
+                                   }
+                   },
+                   {
+                       "sequence":  89,
+                       "kind":  "task_succeeded",
+                       "node_id":  "search_1",
+                       "payload":  {
+                                       "query":  "Compare the latest stable versions of and and tell me which was released more recently Python",
+                                       "hits":  [
+
+                                                ],
+                                       "text":  "Iâm sorry, but I donât have enough information to answer your question. Could you please clarify which two technologies or software packages youâd like me to compare?",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "agent":  "researcher",
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  1,
+                                                                 "node_id":  "search_1",
+                                                                 "role":  "researcher",
+                                                                 "tier":  "economy",
+                                                                 "provider":  "groq",
+                                                                 "model":  "openai/gpt-oss-120b",
+                                                                 "input_tokens":  120,
+                                                                 "output_tokens":  101,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  9.375E-05,
+                                                                 "projected_cost":  0.00039405,
+                                                                 "latency_ms":  1112.0,
+                                                                 "started_at":  1785680770.8338692,
+                                                                 "decision":  "proceed",
+                                                                 "requested_tier":  "economy",
+                                                                 "requested_model":  "openai/gpt-oss-120b",
+                                                                 "reasoning":  "off",
+                                                                 "budget_remaining":  0.049906250000000006,
+                                                                 "budget_pressure":  0.001875
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "proceed",
+                                                                    "node_id":  "search_1",
+                                                                    "requested_tier":  "economy",
+                                                                    "tier":  "economy",
+                                                                    "model":  "openai/gpt-oss-120b",
+                                                                    "projected_cost":  0.00039405,
+                                                                    "allowance":  0.02,
+                                                                    "remaining":  0.05,
+                                                                    "pressure":  0.0,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "requested tier fits the node allowance"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  90,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  89,
+                                       "reason":  "",
+                                       "add":  [
+
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  91,
+                       "kind":  "task_succeeded",
+                       "node_id":  "search_2",
+                       "payload":  {
+                                       "query":  "Compare the latest stable versions of and and tell me which was released more recently Node.js",
+                                       "hits":  [
+
+                                                ],
+                                       "text":  "Iâm sorry, but I donât have any search results to work from for this question, so I canât provide a comparison of the latest stable versions or their release dates. If you can supply the relevant evidence or clarify the items youâd like compared, Iâll be happy to help.",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "agent":  "researcher",
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  2,
+                                                                 "node_id":  "search_2",
+                                                                 "role":  "researcher",
+                                                                 "tier":  "economy",
+                                                                 "provider":  "groq",
+                                                                 "model":  "openai/gpt-oss-120b",
+                                                                 "input_tokens":  121,
+                                                                 "output_tokens":  128,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.00011415000000000001,
+                                                                 "projected_cost":  0.00039405,
+                                                                 "latency_ms":  1375.0,
+                                                                 "started_at":  1785680770.8479195,
+                                                                 "decision":  "proceed",
+                                                                 "requested_tier":  "economy",
+                                                                 "requested_model":  "openai/gpt-oss-120b",
+                                                                 "reasoning":  "off",
+                                                                 "budget_remaining":  0.049792100000000006,
+                                                                 "budget_pressure":  0.004158
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "proceed",
+                                                                    "node_id":  "search_2",
+                                                                    "requested_tier":  "economy",
+                                                                    "tier":  "economy",
+                                                                    "model":  "openai/gpt-oss-120b",
+                                                                    "projected_cost":  0.00039405,
+                                                                    "allowance":  0.02,
+                                                                    "remaining":  0.05,
+                                                                    "pressure":  0.0,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "requested tier fits the node allowance"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  92,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  91,
+                                       "reason":  "research evidence landed; specialist synthesis can begin",
+                                       "add":  [
+                                                   "distill"
+                                               ],
+                                       "connect":  [
+                                                       [
+                                                           "search_1",
+                                                           "distill"
+                                                       ],
+                                                       [
+                                                           "search_2",
+                                                           "distill"
+                                                       ]
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  93,
+                       "kind":  "task_started",
+                       "node_id":  "distill",
+                       "payload":  {
+                                       "skill":  "distiller",
+                                       "agent":  "distiller"
+                                   }
+                   },
+                   {
+                       "sequence":  94,
+                       "kind":  "task_succeeded",
+                       "node_id":  "distill",
+                       "payload":  {
+                                       "text":  "The provided search results did not return specific data regarding the latest stable versions or release dates for Python and Node.js. Consequently, I am unable to perform the requested comparison or determine which was released more recently based on the available evidence.",
+                                       "provider":  "gemini_1",
+                                       "model":  "gemini-3.1-flash-lite",
+                                       "agent":  "distiller",
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  3,
+                                                                 "node_id":  "distill",
+                                                                 "role":  "distiller",
+                                                                 "tier":  "standard",
+                                                                 "provider":  "gemini_1",
+                                                                 "model":  "gemini-3.1-flash-lite",
+                                                                 "input_tokens":  1068,
+                                                                 "output_tokens":  47,
+                                                                 "cache_read_tokens":  0,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.0003375,
+                                                                 "projected_cost":  0.0017615,
+                                                                 "latency_ms":  1608.0,
+                                                                 "started_at":  1785680774.3303318,
+                                                                 "decision":  "proceed",
+                                                                 "requested_tier":  "standard",
+                                                                 "requested_model":  "gemini-3.1-flash-lite",
+                                                                 "reasoning":  "off",
+                                                                 "budget_remaining":  0.0494546,
+                                                                 "budget_pressure":  0.010908
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "proceed",
+                                                                    "node_id":  "distill",
+                                                                    "requested_tier":  "standard",
+                                                                    "tier":  "standard",
+                                                                    "model":  "gemini-3.1-flash-lite",
+                                                                    "projected_cost":  0.0017615,
+                                                                    "allowance":  0.039792100000000004,
+                                                                    "remaining":  0.049792100000000006,
+                                                                    "pressure":  0.004158,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "requested tier fits the node allowance"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  95,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  94,
+                                       "reason":  "specialist synthesis completed",
+                                       "add":  [
+                                                   "answer"
+                                               ],
+                                       "connect":  [
+                                                       [
+                                                           "distill",
+                                                           "answer"
+                                                       ],
+                                                       [
+                                                           "search_1",
+                                                           "answer"
+                                                       ],
+                                                       [
+                                                           "search_2",
+                                                           "answer"
+                                                       ]
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  false
+                                   }
+                   },
+                   {
+                       "sequence":  96,
+                       "kind":  "task_started",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "skill":  "answer_with_evidence",
+                                       "agent":  "answer_with_evidence"
+                                   }
+                   },
+                   {
+                       "sequence":  97,
+                       "kind":  "task_succeeded",
+                       "node_id":  "answer",
+                       "payload":  {
+                                       "answer":  "Based on the available evidence, I cannot compare the latest stable versions of Python and Node.js or determine which was released more recently. The provided search results did not return specific data regarding the latest stable versions or their release dates [source: graph://run-b6f0a8c49b78/distill].",
+                                       "provider":  "cerebras",
+                                       "model":  "zai-glm-4.7",
+                                       "evidence_count":  1,
+                                       "metered_calls":  [
+                                                             {
+                                                                 "sequence":  4,
+                                                                 "node_id":  "answer",
+                                                                 "role":  "answer_with_evidence",
+                                                                 "tier":  "frontier",
+                                                                 "provider":  "cerebras",
+                                                                 "model":  "zai-glm-4.7",
+                                                                 "input_tokens":  291,
+                                                                 "output_tokens":  64,
+                                                                 "cache_read_tokens":  128,
+                                                                 "cache_write_tokens":  0,
+                                                                 "cost":  0.00018389999999999997,
+                                                                 "projected_cost":  0.002277,
+                                                                 "latency_ms":  1009.0,
+                                                                 "started_at":  1785680778.1838634,
+                                                                 "decision":  "proceed",
+                                                                 "requested_tier":  "frontier",
+                                                                 "requested_model":  "zai-glm-4.7",
+                                                                 "reasoning":  null,
+                                                                 "budget_remaining":  0.0492707,
+                                                                 "budget_pressure":  0.014586
+                                                             }
+                                                         ],
+                                       "budget_decisions":  [
+                                                                {
+                                                                    "action":  "proceed",
+                                                                    "node_id":  "answer",
+                                                                    "requested_tier":  "frontier",
+                                                                    "tier":  "frontier",
+                                                                    "model":  "zai-glm-4.7",
+                                                                    "projected_cost":  0.002277,
+                                                                    "allowance":  0.0394546,
+                                                                    "remaining":  0.0494546,
+                                                                    "pressure":  0.010908,
+                                                                    "ladder_steps":  0,
+                                                                    "reason":  "requested tier fits the node allowance"
+                                                                }
+                                                            ]
+                                   }
+                   },
+                   {
+                       "sequence":  98,
+                       "kind":  "graph_patched",
+                       "node_id":  null,
+                       "payload":  {
+                                       "trigger_event":  97,
+                                       "reason":  "grounded answer produced",
+                                       "add":  [
+
+                                               ],
+                                       "connect":  [
+
+                                                   ],
+                                       "cancel":  [
+
+                                                  ],
+                                       "wait":  [
+
+                                                ],
+                                       "resume":  [
+
+                                                  ],
+                                       "finish":  true
+                                   }
+                   }
+               ],
+    "principal":  "acme/s15-part1/rraghu214",
+    "budget":  {
+                   "run_id":  "run-b6f0a8c49b78",
+                   "principal":  "acme/s15-part1/rraghu214",
+                   "currency":  "USD",
+                   "total":  0.05,
+                   "spent":  0.0007293,
+                   "remaining":  0.0492707,
+                   "pressure":  0.014586,
+                   "reserve":  0.010000000000000002,
+                   "calls":  4,
+                   "downgrades":  0,
+                   "branches":  0,
+                   "refusals":  0,
+                   "reservations":  {
+
+                                    },
+                   "by_tier":  {
+                                   "economy":  {
+                                                   "calls":  2,
+                                                   "cost":  0.0002079,
+                                                   "input_tokens":  241,
+                                                   "output_tokens":  229
+                                               },
+                                   "standard":  {
+                                                    "calls":  1,
+                                                    "cost":  0.0003375,
+                                                    "input_tokens":  1068,
+                                                    "output_tokens":  47
+                                                },
+                                   "frontier":  {
+                                                    "calls":  1,
+                                                    "cost":  0.00018389999999999997,
+                                                    "input_tokens":  291,
+                                                    "output_tokens":  64
+                                                }
+                               },
+                   "charges":  [
+                                   {
+                                       "sequence":  1,
+                                       "node_id":  "search_1",
+                                       "role":  "researcher",
+                                       "tier":  "economy",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "input_tokens":  120,
+                                       "output_tokens":  101,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  9.375E-05,
+                                       "projected_cost":  0.00039405,
+                                       "latency_ms":  1112.0,
+                                       "started_at":  1785680770.8338692,
+                                       "decision":  "proceed",
+                                       "requested_tier":  "economy"
+                                   },
+                                   {
+                                       "sequence":  2,
+                                       "node_id":  "search_2",
+                                       "role":  "researcher",
+                                       "tier":  "economy",
+                                       "provider":  "groq",
+                                       "model":  "openai/gpt-oss-120b",
+                                       "input_tokens":  121,
+                                       "output_tokens":  128,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.00011415000000000001,
+                                       "projected_cost":  0.00039405,
+                                       "latency_ms":  1375.0,
+                                       "started_at":  1785680770.8479195,
+                                       "decision":  "proceed",
+                                       "requested_tier":  "economy"
+                                   },
+                                   {
+                                       "sequence":  3,
+                                       "node_id":  "distill",
+                                       "role":  "distiller",
+                                       "tier":  "standard",
+                                       "provider":  "gemini_1",
+                                       "model":  "gemini-3.1-flash-lite",
+                                       "input_tokens":  1068,
+                                       "output_tokens":  47,
+                                       "cache_read_tokens":  0,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.0003375,
+                                       "projected_cost":  0.0017615,
+                                       "latency_ms":  1608.0,
+                                       "started_at":  1785680774.3303318,
+                                       "decision":  "proceed",
+                                       "requested_tier":  "standard"
+                                   },
+                                   {
+                                       "sequence":  4,
+                                       "node_id":  "answer",
+                                       "role":  "answer_with_evidence",
+                                       "tier":  "frontier",
+                                       "provider":  "cerebras",
+                                       "model":  "zai-glm-4.7",
+                                       "input_tokens":  291,
+                                       "output_tokens":  64,
+                                       "cache_read_tokens":  128,
+                                       "cache_write_tokens":  0,
+                                       "cost":  0.00018389999999999997,
+                                       "projected_cost":  0.002277,
+                                       "latency_ms":  1009.0,
+                                       "started_at":  1785680778.1838634,
+                                       "decision":  "proceed",
+                                       "requested_tier":  "frontier"
+                                   }
+                               ],
+                   "refusal_log":  [
+
+                                   ]
+               },
+    "economics":  {
+                      "directory":  "C:\\Raghu\\MyLearnings\\EAG_V3\\S15-01082026\\assignment\\S15Code\\config",
+                      "currency":  "USD",
+                      "tier_order":  [
+                                         "economy",
+                                         "standard",
+                                         "frontier"
+                                     ],
+                      "default_tier":  "standard",
+                      "tier_models":  {
+                                          "economy":  "openai/gpt-oss-120b",
+                                          "standard":  "gemini-3.1-flash-lite",
+                                          "frontier":  "zai-glm-4.7"
+                                      },
+                      "default_budget":  0.05,
+                      "thresholds":  {
+                                         "downgrade_at":  0.5,
+                                         "refuse_at":  0.9,
+                                         "headroom_fraction":  0.02,
+                                         "reserve_fraction":  0.2,
+                                         "max_calls_per_run":  60,
+                                         "max_calls_per_node":  6
+                                     }
+                  },
+    "allocations":  [
+                        {
+                            "trigger_event":  85,
+                            "frontier":  [
+                                             "search_1",
+                                             "search_2"
+                                         ],
+                            "per_node":  {
+                                             "search_1":  0.02,
+                                             "search_2":  0.02
+                                         },
+                            "remaining":  0.05,
+                            "tiers":  {
+                                          "search_1":  "economy",
+                                          "search_2":  "economy"
+                                      }
+                        },
+                        {
+                            "trigger_event":  89,
+                            "frontier":  [
+                                             "search_2"
+                                         ],
+                            "per_node":  {
+                                             "search_2":  0.039906250000000004
+                                         },
+                            "remaining":  0.049906250000000006,
+                            "tiers":  {
+
+                                      }
+                        },
+                        {
+                            "trigger_event":  91,
+                            "frontier":  [
+                                             "distill"
+                                         ],
+                            "per_node":  {
+                                             "distill":  0.039792100000000004
+                                         },
+                            "remaining":  0.049792100000000006,
+                            "tiers":  {
+                                          "distill":  "standard"
+                                      }
+                        },
+                        {
+                            "trigger_event":  94,
+                            "frontier":  [
+                                             "answer"
+                                         ],
+                            "per_node":  {
+                                             "answer":  0.0394546
+                                         },
+                            "remaining":  0.0494546,
+                            "tiers":  {
+                                          "answer":  "frontier"
+                                      }
+                        },
+                        {
+                            "trigger_event":  97,
+                            "frontier":  [
+
+                                         ],
+                            "per_node":  {
+
+                                         },
+                            "remaining":  0.0492707,
+                            "tiers":  {
+
+                                      }
+                        }
+                    ]
+}

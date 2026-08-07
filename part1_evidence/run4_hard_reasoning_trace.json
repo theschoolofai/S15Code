@@ -1,0 +1,267 @@
+﻿{
+    "run_id":  "run-5d64151d752a",
+    "endpoint":  "http://127.0.0.1:4318/v1/traces",
+    "service_name":  "s15code",
+    "capture_content":  false,
+    "exported_over_the_wire":  true,
+    "totals":  {
+                   "spans":  10,
+                   "by_kind":  {
+                                   "plan":  3,
+                                   "node":  2,
+                                   "agent_loop":  3,
+                                   "provider_call":  1,
+                                   "run":  1
+                               },
+                   "provider_calls":  1,
+                   "input_tokens":  628,
+                   "output_tokens":  95,
+                   "cost":  0.001103,
+                   "trace_ids":  [
+                                     "33bf1a7a44e4beaceb5c80855c51befe"
+                                 ]
+               },
+    "spans":  [
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "283bcb4b2c4adec0",
+                      "parent_span_id":  "7c0be7a0e1038698",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702630242048,
+                      "end_time":  1785687702630242048,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "first frontier selected for memory",
+                                         "s15.plan.added":  "recall",
+                                         "s15.plan.added_count":  1,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node recall",
+                      "kind":  "node",
+                      "span_id":  "f360636397d0ff6b",
+                      "parent_span_id":  "7c0be7a0e1038698",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702631242240,
+                      "end_time":  1785687702632242176,
+                      "duration_ns":  999936,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "memory_recall",
+                                         "gen_ai.agent.name":  "memory_recall",
+                                         "s15.node.id":  "recall",
+                                         "s15.run.id":  "run-5d64151d752a",
+                                         "s15.tier":  "economy",
+                                         "s15.node.state":  "succeeded"
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 1",
+                      "kind":  "agent_loop",
+                      "span_id":  "7c0be7a0e1038698",
+                      "parent_span_id":  "e5a6431dd25f9ed9",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702630242048,
+                      "end_time":  1785687702632242176,
+                      "duration_ns":  2000128,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  1,
+                                         "s15.loop.trigger_event":  129
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "7f6abb6c2d46e7b7",
+                      "parent_span_id":  "2b7200b60e36f627",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702633242112,
+                      "end_time":  1785687702633242112,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "authorized retrieval completed",
+                                         "s15.plan.added":  "answer",
+                                         "s15.plan.added_count":  1,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  false
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "chat deepseek-ai/deepseek-v4-flash",
+                      "kind":  "provider_call",
+                      "span_id":  "7b227889f55838cc",
+                      "parent_span_id":  "d4c2e75f69758a0e",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702629242112,
+                      "end_time":  1785687708304242112,
+                      "duration_ns":  5675000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "provider_call",
+                                         "gen_ai.operation.name":  "chat",
+                                         "gen_ai.provider.name":  "nvidia",
+                                         "gen_ai.request.model":  "deepseek-ai/deepseek-v4-flash",
+                                         "gen_ai.response.model":  "deepseek-ai/deepseek-v4-flash",
+                                         "gen_ai.usage.input_tokens":  628,
+                                         "gen_ai.usage.output_tokens":  95,
+                                         "s15.cost":  0.001103,
+                                         "s15.currency":  "USD",
+                                         "s15.tier":  "frontier",
+                                         "s15.node.id":  "answer",
+                                         "s15.budget.decision":  "proceed",
+                                         "s15.budget.remaining":  0.048897,
+                                         "s15.cost.projected":  0.021381
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "node answer",
+                      "kind":  "node",
+                      "span_id":  "d4c2e75f69758a0e",
+                      "parent_span_id":  "2b7200b60e36f627",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702629242112,
+                      "end_time":  1785687708304242112,
+                      "duration_ns":  5675000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "node",
+                                         "gen_ai.operation.name":  "execute_tool",
+                                         "gen_ai.tool.name":  "answer_with_evidence",
+                                         "gen_ai.agent.name":  "answer_with_evidence",
+                                         "s15.node.id":  "answer",
+                                         "s15.run.id":  "run-5d64151d752a",
+                                         "s15.tier":  "frontier",
+                                         "s15.node.state":  "succeeded"
+                                     },
+                      "events":  [
+                                     {
+                                         "name":  "budget.decision",
+                                         "attributes":  {
+                                                            "s15.budget.decision":  "proceed",
+                                                            "s15.budget.reason":  "requested tier fits the node allowance",
+                                                            "s15.tier":  "frontier",
+                                                            "s15.tier.requested":  "frontier",
+                                                            "s15.budget.projected_cost":  0.021381
+                                                        }
+                                     }
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 2",
+                      "kind":  "agent_loop",
+                      "span_id":  "2b7200b60e36f627",
+                      "parent_span_id":  "e5a6431dd25f9ed9",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702629242112,
+                      "end_time":  1785687708304242112,
+                      "duration_ns":  5675000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  2,
+                                         "s15.loop.trigger_event":  132
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "plan",
+                      "kind":  "plan",
+                      "span_id":  "5f17c2290b7fd332",
+                      "parent_span_id":  "a0826d8bf5d79bae",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702636242176,
+                      "end_time":  1785687702636242176,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "plan",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.plan.reason":  "grounded answer produced",
+                                         "s15.plan.added":  "",
+                                         "s15.plan.added_count":  0,
+                                         "s15.plan.cancelled":  "",
+                                         "s15.plan.finish":  true
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "agent loop 3",
+                      "kind":  "agent_loop",
+                      "span_id":  "a0826d8bf5d79bae",
+                      "parent_span_id":  "e5a6431dd25f9ed9",
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702636242176,
+                      "end_time":  1785687702636242176,
+                      "duration_ns":  0,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "agent_loop",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "s15.loop.round":  3,
+                                         "s15.loop.trigger_event":  135
+                                     },
+                      "events":  [
+
+                                 ]
+                  },
+                  {
+                      "name":  "run run-5d64151d752a",
+                      "kind":  "run",
+                      "span_id":  "e5a6431dd25f9ed9",
+                      "parent_span_id":  null,
+                      "trace_id":  "33bf1a7a44e4beaceb5c80855c51befe",
+                      "start_time":  1785687702629242112,
+                      "end_time":  1785687708304242112,
+                      "duration_ns":  5675000000,
+                      "status":  "UNSET",
+                      "attributes":  {
+                                         "s15.span.kind":  "run",
+                                         "s15.run.id":  "run-5d64151d752a",
+                                         "gen_ai.operation.name":  "invoke_agent",
+                                         "gen_ai.agent.name":  "s15code",
+                                         "s15.run.finished":  true,
+                                         "s15.journal.events":  8,
+                                         "s15.provider_calls":  1,
+                                         "s15.loops":  3,
+                                         "s15.cost":  0.001103
+                                     },
+                      "events":  [
+
+                                 ]
+                  }
+              ]
+}
