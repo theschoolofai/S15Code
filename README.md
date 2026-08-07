@@ -1,5 +1,24 @@
 # S15Code — the budget-aware agent runtime
 
+> ### 📄 Assignment submission
+>
+> **Pull request → [theschoolofai/S15Code#7](https://github.com/theschoolofai/S15Code/pull/7)**
+>
+> A budget-aware routing policy for an LLM cost-engineering workload, measured
+> live. Jump straight to the results:
+>
+> | | |
+> |---|---|
+> | **Submission summary + PR link** | [→ Submission](#submission) |
+> | **Part 1** — reproducing the floor | [→ Part 1](#part-1--reproducing-the-floor) |
+> | **Part 2** — cost per call vs cost per resolved task | [→ §2](#2-cost-per-call-vs-cost-per-resolved-task) · [break-even →  §3](#3-break-even-and-where-we-sit) · [what it got wrong → §6](#6-one-case-the-policy-got-wrong) |
+> | **Part 3** — the adversarial test | [→ §5](#5-the-adversarial-test) |
+> | **Raw logs** | [→ `docs/evidence/`](docs/evidence) |
+>
+> Everything below this box is the original S15Code documentation, unchanged.
+
+---
+
 Session 15 of EAGV3. Hand a run a **ceiling** and a **principal**, and the agent
 plans against them: every node declares the capability tier it needs, the
 allowance is re-divided across the live frontier on every planning round, and a
