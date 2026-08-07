@@ -1,5 +1,24 @@
 # S15Code — the budget-aware agent runtime
 
+> ### 📄 Assignment submission
+>
+> **Pull request → [theschoolofai/S15Code#7](https://github.com/theschoolofai/S15Code/pull/7)**
+>
+> A budget-aware routing policy for an LLM cost-engineering workload, measured
+> live. Jump straight to the results:
+>
+> | | |
+> |---|---|
+> | **Submission summary + PR link** | [→ Submission](#submission) |
+> | **Part 1** — reproducing the floor | [→ Part 1](#part-1--reproducing-the-floor) |
+> | **Part 2** — cost per call vs cost per resolved task | [→ §2](#2-cost-per-call-vs-cost-per-resolved-task) · [break-even →  §3](#3-break-even-and-where-we-sit) · [what it got wrong → §6](#6-one-case-the-policy-got-wrong) |
+> | **Part 3** — the adversarial test | [→ §5](#5-the-adversarial-test) |
+> | **Raw logs** | [→ `docs/evidence/`](docs/evidence) |
+>
+> Everything below this box is the original S15Code documentation, unchanged.
+
+---
+
 Session 15 of EAGV3. Hand a run a **ceiling** and a **principal**, and the agent
 plans against them: every node declares the capability tier it needs, the
 allowance is re-divided across the live frontier on every planning round, and a
@@ -210,3 +229,364 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+---
+
+# Evidence — a budget-aware routing policy for LLM cost engineering
+
+Measured live 2026-08-06 / 2026-08-07 against `glc_v4` on `127.0.0.1:8111`, with
+the S15Code runtime on `127.0.0.1:8113` and Jaeger v2.20.0.
+
+## Submission
+
+**Pull request:** [theschoolofai/S15Code#7 — *feat: budget-aware routing policy
+for LLM cost engineering, measured live*](https://github.com/theschoolofai/S15Code/pull/7)
+
+Raised from `mkthoma/agent_economics`, branch
+`feat/cost-engineering-policy-and-evidence`.
+
+The PR adds a 17-task LLM cost-engineering workload, a rebuilt three-rung ladder
+(the shipped frontier rung had been retired by its provider), a second ladder
+config for a two-arm crossover experiment, an adversarial task set, and the
+measured evidence for all three parts. It also reports six defects found in
+S15Code itself while reproducing the floor — including that `p1` defaults to the
+wrong port, silently falls back to a simulated transport, and still reports
+`ALL CHECKS PASSED` with exit code 0.
+
+No secrets, no `.env`, and no user data are included; every commit was swept for
+keys, tokens and bearer headers before being pushed.
+
+### Where everything is
+
+| | |
+|---|---|
+| **Part 1** — reproducing the floor | [§ below](#part-1--reproducing-the-floor) · detail in [`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md) |
+| **Part 2** — the policy, measured | [§2](#2-cost-per-call-vs-cost-per-resolved-task), [§3](#3-break-even-and-where-we-sit), [§6](#6-one-case-the-policy-got-wrong) · detail in [`docs/PART2_EVIDENCE.md`](docs/PART2_EVIDENCE.md) |
+| **Part 3** — attacking the budget | [§5](#5-the-adversarial-test) · detail in [`docs/PART3_EVIDENCE.md`](docs/PART3_EVIDENCE.md) |
+| **Limitations** | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — ten trace-derived, nine environmental |
+| **Raw logs** | [`docs/evidence/`](docs/evidence) — 11 live proof results, 4 run captures, 1 Jaeger trace |
+
+---
+
+# Part 1 — reproducing the floor
+
+Full detail: [`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md).
+
+## Both suites
+
+| suite | observed | assignment claimed | delta |
+|---|---|---|---|
+| `glc_v4` | **447 passed**, 9 skipped | 445 | +2 |
+| `agent_economics` | **275 passed, 2 failed** | 244 | +31, 2 red |
+
+Both failures are **pre-existing** — they reproduce identically against the
+pristine config extracted from git, so neither is caused by the ladder changes
+here. One is a Windows portability bug (`removeprefix("file://")` on
+`file:///C:/...` yields an invalid path); the other is an A2A gRPC race.
+
+## The proofs
+
+There are **six**, not five — the assignment's §15 table omits
+`p6_cache_savings.py`, which exists and runs. There is no `p5`.
+
+| proof | offline | live |
+|---|---|---|
+| `p1_cost_per_task` | ✅ | ✅ 9/9 |
+| `p2_budget_holds` | ✅ 5/5 | ✅ 5/5 |
+| `p3_denial_of_wallet` | ✅ 6/6 | ⚠️ 4/6 → ✅ 6/6 |
+| `p4_trace_export` | ✅ 11/11 | ⚠️ 12/14 |
+| `p6_cache_savings` | ✅ 4/4 | ✅ 13/13 |
+| `p7_cross_model_ladder` | ✅ 10/10 | ✅ 10/10 |
+
+`p4`'s two failures are a **race, not data loss**: it queries Jaeger with no wait
+after export, catching 8 of 10 spans on one run and 7 of 10 on the next.
+Re-querying seconds later returns all 10 with every parent resolved. The twelve
+substantive gates pass every time, including `span costs sum to the ledger —
+delta 0.000e+00` and `no prompt or completion text reached the backend`.
+`p3`'s first live run is explained in [§5, the adversarial test](#5-the-adversarial-test).
+
+## Four runs, all six artifacts each
+
+Prompt, identical across all four: *"Compare two approaches to bounding agent spend."*
+Ceilings are `p2`'s, derived live from the configured ladder rather than invented.
+Raw captures in `proofs/out/evidence/`.
+
+| # | run | ceiling | tier / model chosen | decision | ledger | trace id |
+|---|---|---|---|---|---|---|
+| 1 | comfortable | 0.02 | frontier / `nemotron-3-ultra-550b` | proceed | spent 0.000555, 229in/116out, 1 call | `aa402254c5bf1beffcfc8c9bb2201472` |
+| 2 | **downgrade** | 0.01353475 | **standard / `gemini-3.5-flash-lite`** | **downgrade** | spent 0.00027810, 377in/66out, 1 call | `8734cc7906b9f93c8ef18c1739c068ee` |
+| 3 | **refusal** | 0.00000056 | — | **refuse** | spent 0, **0 calls, 1 refusal** | `ad1f7ed2fcc084f2569596897c6d8bd0` |
+| 4 | unbudgeted | *(omitted)* | `gemini-3.5-flash-lite`, **`tier=None`** | — | **cost 0, 0 provider calls** | `29e3eb93f42ab3214410efe046d6d987` |
+
+Run 2 is a genuine downgrade — the node asked for `frontier` and was served
+`standard`, a change of **model and provider**. Run 3's refusal receipt:
+
+```json
+{ "node_id": "answer", "action": "refuse", "requested_tier": "frontier",
+  "reason": "cheapest tier economy projects 0.000489, run holds 0.000001 (headroom 0.000000)" }
+```
+
+Ordered event traces and final answers for all four are in
+`proofs/out/evidence/*.json`; one trace is committed in full at
+[`docs/evidence/jaeger_trace_f3990d82.json`](docs/evidence/jaeger_trace_f3990d82.json).
+
+**The budget field is `budget`, not `budget_usd`.** The assignment's §14 example
+uses the latter; `RunBody` sets no `extra="forbid"`, so Pydantic silently drops it
+and returns HTTP 200 with an *unbudgeted* run. Three of these four would have been
+quietly worthless.
+
+## The honest limitation the traces exposed
+
+Full catalogue in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — ten trace-derived
+findings and nine environmental, each marked OBSERVED or INFERRED. The one
+submitted:
+
+> **The trace cannot distinguish a truncated answer from a complete one.**
+
+`gen_ai.response.finish_reasons` is absent from every span. A `provider_call` span
+records input tokens, output tokens, cost and reasoning effort — but never *why*
+generation stopped. A call that hit `max_tokens` and truncated mid-sentence, and
+one that finished cleanly on `end_turn`, are **identical in the trace**: same kind,
+same attributes, same full charge.
+
+Measured on the frontier rung at `max_tokens 512`, three samples:
+
+| dial | output tokens | visible content | hidden reasoning channel |
+|---|---|---|---|
+| unset | 486 / 392 / 459 | 483 / 450 / 499 chars | 2070 / 1540 / 1693 chars |
+| `off` | 95 | 598 chars | 0 |
+
+The unset run peaked at **486 of 512 — twenty-six tokens short of the ceiling.**
+One more verbose sample crosses it and the trace records `output_tokens: 512`, a
+cost, and nothing else.
+
+Not academic: Part 2 measured 18 truncated attempts on the wide ladder, 17 of
+which failed, and Part 3 turned the same blindness into a **20.7× cost
+amplification attack**. The gateway already returns `stop_reason`; the value
+exists and is simply not recorded on the span.
+
+---
+
+# Parts 2 and 3 — the policy
+
+## 1. The workload and the ladder
+
+`proofs/tasks/llm_cost_engineering.jsonl` — 17 tasks (4 trivial / 5 moderate /
+8 hard) in LLM and cloud cost engineering. Every answer is a number checkable by
+hand, so the rubric's heaviest criterion rests on arithmetic rather than taste.
+All 17 expectations were independently recomputed before any measurement, and
+each names the plausible wrong answer: unweighted rate averaging, cache reads
+treated as free, retries multiplying calls, cost-per-call versus
+cost-per-resolved-task.
+
+| rung | provider | model | $/Mtok in/out |
+|---|---|---|---|
+| economy | groq | `openai/gpt-oss-120b` | 0.15 / 0.75 |
+| standard | gemini | `gemini-3.5-flash-lite` | 0.30 / 2.50 |
+| frontier | nvidia | `nvidia/nemotron-3-ultra-550b-a55b` | 0.60 / 3.60 |
+
+The shipped frontier rung `github/openai/gpt-4.1` was **retired on 2026-07-30 —
+the same day `tiers.yaml` recorded its measurement**. Verified dead: 17 model IDs
+across 7 vendors all return HTTP 410, as does the catalog endpoint and a request
+naming no model at all.
+
+## 2. Cost per call vs cost per resolved task
+
+Two arms, identical but for the token ceiling. Same tasks, models, prices, judge.
+
+**Wide ladder** (`config/`, economy ceiling 512):
+
+| strategy | spend | calls | cost/call | resolved | cost/resolved |
+|---|---|---|---|---|---|
+| A always-frontier *(baseline)* | 0.00509460 | 17 | 0.00029968 | 10/17 | 0.00050946 |
+| B always-cheapest | 0.00914595 | 27 | 0.00033874 | 14/17 | **0.00065328** |
+| C budget-aware | 0.01086335 | 21 | 0.00051730 | 17/17 | 0.00063902 |
+
+**Narrow ladder** (`config_narrow/`, all ceilings 1024):
+
+| strategy | spend | calls | cost/call | resolved | cost/resolved |
+|---|---|---|---|---|---|
+| A always-frontier *(baseline)* | 0.00674340 | 17 | 0.00039667 | 10/17 | 0.00067434 |
+| B always-cheapest | 0.00710205 | 19 | 0.00037379 | 16/17 | **0.00044388** |
+| C budget-aware | 0.01154775 | 19 | 0.00060778 | 17/17 | 0.00067928 |
+
+**The signature failure mode was observed** — wide arm, B vs C: cost per call
+**−34.5%** while cost per resolved task rose **+2.2%**. Change the denominator and
+the ranking reverses.
+
+**The measured ladder is inverted.** Projected 32.5× with frontier dearest;
+measured, frontier costs *less per call* than economy (0.00029968 vs 0.00033874),
+because economy writes 7.3× more output tokens (407.6 vs 55.6 mean).
+
+## 3. Break-even, and where we sit
+
+`r* = k / (C/c − 1 + k)`, k = 3.
+
+| arm | comparison | B rate | r\* | headroom |
+|---|---|---|---|---|
+| wide | B vs A | 0.824 | 0.8562 | **−0.0326** |
+| wide | B vs C | 0.824 | 0.7719 | +0.0516 |
+| narrow | B vs A | 0.941 | 0.7886 | +0.1525 |
+
+In the wide arm the cheap rung sat **3.3 points below** break-even, which is why
+it lost. What moved it was not price — it was **truncation**: raising the economy
+ceiling 512→1024 cut truncated attempts from **18 to 4** and lifted resolution
+82.4% → 94.1%. Strategy A is the control at 10/17 in *both* arms, since it writes
+5–24 output tokens and never nears a ceiling.
+
+*Confound, stated plainly:* equalising `max_tokens` changed the ceiling and the
+projected spread together, because the projection is a function of the ceiling.
+
+## 4. One run's span hierarchy, with cost
+
+Run `run-0e4227fe8e3a` (evidence run 1), service `s15code-agent`. The trace as
+**fetched back from Jaeger's own query API** is committed at
+[`docs/evidence/jaeger_trace_f3990d82.json`](docs/evidence/jaeger_trace_f3990d82.json)
+— the raw `/api/traces/{id}` response, so it is verifiable without a running
+backend:
+
+```
+run run-0e4227fe8e3a                          13007.0ms   [run total 0.000555]
+  agent loop 2                                13007.0ms
+    node answer                               13007.0ms
+      chat nvidia/nemotron-3-ultra-550b-a55b  13007.0ms   cost=0.000555
+                                                          229in/116out  tier=frontier
+    plan                                          0.0ms
+  agent loop 1                                    2.0ms
+    plan                                          0.0ms
+    node recall                                   1.0ms
+  agent loop 3                                    0.0ms
+    plan                                          0.0ms
+                                        10 spans, 1 billable, sum 0.00055500
+```
+
+Nine of ten spans cost nothing because nine bought nothing. `p4` reconciles the
+billable span against the ledger at **delta 0.000e+00**, and confirms no prompt
+or completion text reached the backend.
+
+*Why the JSON rather than a trace id:* Jaeger all-in-one stores traces in memory
+and forgets them on restart, and `/v1/agent/runs/{id}/trace` mints a **new** trace
+id on every call — three queries of this same run returned three different ids
+(`docs/LIMITATIONS.md` §1.10). A trace id alone is perishable and not canonical;
+the committed response is neither.
+
+## 5. The adversarial test
+
+`proofs/tasks/verbosity_attack.jsonl` — six requests whose **correct** answers are
+long, paired with six controls from the same domain that are equally easy but
+short. Every request is individually cheap and would pass any spend ceiling.
+
+| group | n | mean/request | vs control |
+|---|---|---|---|
+| control | 6 | $0.00004825 | 1.00× |
+| attack, no escalation | 4 | $0.00035404 | 7.34× — verbosity alone |
+| attack, escalated | 2 | $0.00228495 | **47.36×** — verbosity + ladder climb |
+
+**20.7× amplification per request**, all 12 resolved. The escalation multiplier of
+**6.45×** independently reproduces the 7.0× measured on `c06` in Part 2. One
+request missed the 512-token cap by **six tokens** — asking for "integers 1 to
+400" makes the attack deterministic.
+
+### The same attack, before and after the control
+
+Re-run unchanged under a `$0.0006` per-task ceiling — sized to admit one economy
+call and refuse the climb:
+
+| task | uncapped | capped |
+|---|---|---|
+| a04_powers_of_two | `economy,standard` **$0.00292160** | `economy,`**REFUSED**`,`**REFUSED** $0.00041040 |
+| a06_numbers_in_words | `economy,standard` **$0.00164830** | `economy,`**REFUSED**`,`**REFUSED** $0.00040920 |
+| all 12 tasks | **$0.00627555**, resolved 12/12 | **$0.00252000**, resolved 10/12 |
+
+**Spend cut 59.8%**, and every control task is untouched — still served at the
+economy rung for the same price. Four refusals recorded, each with a reason:
+
+```
+budget refused a standard call for a04_powers_of_two#C2: cheapest tier economy projects ...
+budget refused a frontier call for a04_powers_of_two#C3: ...
+budget refused a standard call for a06_numbers_in_words#C2: ...
+budget refused a frontier call for a06_numbers_in_words#C3: ...
+```
+
+**The trade is real and is not hidden:** the ceiling does not make the attack
+free, it makes it *bounded*, and the price is two tasks that now go unanswered.
+12/12 resolved becomes 10/12.
+
+The shipped runaway-loop attack shows the same control from the other direction
+(`p3`, 60 rounds, $0.0005 ceiling):
+
+```
+loop rounds 60   admitted 1   refusals 59   spent 0.00036555 / 0.00050000
+[PASS] the loop kept asking and was refused
+[PASS] a refusal is a visible graph failure    59 nodes failed with BudgetRefused
+```
+
+The refusal is visible in the run's `budget.refusal_log` and as a failed graph
+node — but **not** in the gateway's `/v1/refusals` (which recorded **0** while S15
+recorded 59; the two controllers sit at different layers), and **not** in the
+trace: a refused run emits 9 spans where an admitted one emits 10, differing by
+exactly the `provider_call` span.
+
+## 6. One case the policy got wrong
+
+`c06_cache_discount`:
+
+```
+B  economy   251 out   $0.00022155   RESOLVED   overall 1.0
+C  economy   512 out   $0.00041730   FAILED     overall 0.5   <- truncated at the cap
+C  standard  432 out   $0.00112770   RESOLVED   overall 1.0
+   C total   $0.00154500  =  7.0x what B spent, for the same final answer
+```
+
+Same model, same prompt, temperature 0 — one run wrote 251 tokens and finished,
+the other ran to exactly 512 and was cut off. The cascade read the truncation as a
+quality failure and escalated. **A rung whose ceiling truncates a correct answer
+will be escalated past, and output length at temperature 0 is not deterministic —
+so this is a coin flip priced at 7×.**
+
+Reported beside `c11_break_even_rate`, where the same rule climbed all three rungs
+at 2.8× and reached an answer B never did. A cascade cannot tell the two cases
+apart at the moment it decides.
+
+Also measured: **capability is not monotonic.** The frontier rung resolved 1 of 5
+moderate tasks where economy resolved 5 of 5. Its errors are arithmetic slips in
+5–24 output tokens (`0.018360` for `0.018346`; `$3.30` for `$4.30`). The cause is
+this policy's own `reasoning: "off"`, set to avoid the invisible-token billing
+bug — it also removed the model's scratchpad. **The dial that stops you paying for
+invisible tokens is the same dial that costs you correctness on multi-step work.**
+
+Every frontier miss scored exactly **0.6667** — 4 on all four generic criteria, 0
+on `meets_expectation`. Precisely the case the 0.5 per-criterion floor exists to
+catch.
+
+## 7. Reproduce from a fresh checkout
+
+```bash
+git clone <this fork> && cd agent_economics && uv sync
+cp .env.example .env          # GLC_BASE_URL, S15_PORT, sandbox root; no provider keys
+cd ../glc_v4 && uv sync && cp .env.example .env   # provider keys live here
+uv run glc serve                                  # :8111
+
+cd ../agent_economics
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/llm_cost_engineering.jsonl \
+  --principal you/p2-wide --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --label wide
+
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/llm_cost_engineering.jsonl \
+  --principal you/p2-narrow --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --config-dir ./config_narrow --label narrow
+
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/verbosity_attack.jsonl \
+  --strategies C --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --principal you/p3-attack --label attack
+
+uv run python proofs/p3_denial_of_wallet.py --task "Compare two approaches to bounding agent spend." \
+  --budget 0.0005 --principal you/p3-tight --base-url http://127.0.0.1:8111 \
+  --loop-limit 60 --label live-tight
+```
+
+**`--base-url` is mandatory.** `p1` defaults to port 8112 while the gateway serves
+8111, and no proof loads `.env`, so `GLC_BASE_URL` is never read on that path. On
+an unreachable gateway `p1` falls back to a simulated transport and still reports
+`ALL CHECKS PASSED` with exit 0 — check the `(live mode)` line before believing
+any number. See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) §G.

@@ -1,0 +1,187 @@
+{
+  "proof": "p3_denial_of_wallet",
+  "ok": false,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "Compare two approaches to bounding agent spend.",
+    "budget": 0.002,
+    "principal": "you/p3-live",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "C:\\Users\\akenn\\GitHub\\agent_observability_economics\\agent_economics\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.5-flash-lite",
+      "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "ceiling": "0.00200000 USD",
+    "spent": "0.00123345",
+    "admitted calls": 4,
+    "refusals": 0,
+    "loop rounds": 200,
+    "nodes created": 200,
+    "refused nodes": 0,
+    "cost per call": "0.00030836",
+    "uncontrolled bill": "~3.0836 over 10000 rounds (extrapolated)",
+    "call ceiling": 60,
+    "transport failures": 196
+  },
+  "checks": [
+    {
+      "claim": "the ceiling held under an unbounded loop",
+      "ok": true,
+      "observed": "spent 0.00123345 <= 0.00200000"
+    },
+    {
+      "claim": "admitted calls are bounded by the configured call ceiling",
+      "ok": true,
+      "observed": "4 <= 60"
+    },
+    {
+      "claim": "the loop kept asking and was refused",
+      "ok": false,
+      "observed": "200 rounds, 4 admitted, 0 refused"
+    },
+    {
+      "claim": "a refusal is a visible graph failure, not a silent truncation",
+      "ok": false,
+      "observed": "0 nodes failed with BudgetRefused"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "4 transport calls == 4 charges (196 gateway errors, no tokens to charge)"
+    },
+    {
+      "claim": "the controller, not the loop, is what stopped the spend",
+      "ok": true,
+      "observed": "spend stopped after 4 of 200 attempts"
+    }
+  ],
+  "detail": {
+    "budget": {
+      "run_id": "runaway",
+      "principal": "you/p3-live",
+      "currency": "USD",
+      "total": 0.002,
+      "spent": 0.00123345,
+      "remaining": 0.00076655,
+      "pressure": 0.6167250000000001,
+      "reserve": 0.0004,
+      "calls": 4,
+      "downgrades": 4,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "economy": {
+          "calls": 4,
+          "cost": 0.00123345,
+          "input_tokens": 388,
+          "output_tokens": 1567
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "loop_1",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 97,
+          "output_tokens": 415,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0003258,
+          "projected_cost": 0.0003891,
+          "latency_ms": 1195.0,
+          "started_at": 1786095807.6782417,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 2,
+          "node_id": "loop_2",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 97,
+          "output_tokens": 420,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00032955,
+          "projected_cost": 0.0003891,
+          "latency_ms": 1255.0,
+          "started_at": 1786095808.9312978,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 3,
+          "node_id": "loop_6",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 97,
+          "output_tokens": 382,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00030105,
+          "projected_cost": 0.0003891,
+          "latency_ms": 1170.0,
+          "started_at": 1786095811.9140463,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        },
+        {
+          "sequence": 4,
+          "node_id": "loop_143",
+          "role": "content",
+          "tier": "economy",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 97,
+          "output_tokens": 350,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00027705,
+          "projected_cost": 0.00038925,
+          "latency_ms": 1082.0,
+          "started_at": 1786095818.3942814,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "journal_events": 602,
+    "projection_rounds": 10000,
+    "uncontrolled_bill_extrapolated": 3.083625
+  }
+}

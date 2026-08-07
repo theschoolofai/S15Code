@@ -1,0 +1,41 @@
+# PART 3 — an adversarial task set targeting THIS policy's measured weakness.
+#
+# THE ATTACK. Part 2 measured that when the economy rung's answer is truncated at
+# its max_tokens ceiling, the cascade reads the truncation as a quality failure
+# and escalates. On c06_cache_discount that cost 7.0x what the economy rung alone
+# would have: B answered it in 251 tokens for $0.00022155, C ran to exactly 512,
+# was cut off, escalated to standard, and spent $0.00154500 reaching the same
+# answer. The controller cannot distinguish "the model was wrong" from "the model
+# ran out of room".
+#
+# So an attacker does not need a runaway loop, and does not need to send anything
+# a spend ceiling would reject. Each request below is individually cheap and
+# entirely legitimate. They simply have long CORRECT answers, which guarantees
+# truncation at the cheap rung and forces the cascade to climb every single time.
+# The attacker pays nothing; the operator pays the whole ladder per request.
+#
+# THE CONTROL. The "control" tasks are drawn from the same arithmetic domain and
+# are no harder — several are literally the summary of an attack task's output
+# (b01 is the last line of a02; b03 is the last line of a04). Only the required
+# OUTPUT LENGTH differs. That is what isolates verbosity as the attack surface:
+# if control tasks are served cheaply at the economy rung and attack tasks are
+# not, the ladder is being climbed for length, not for difficulty.
+#
+# The `difficulty` field is free-form and used only to group p1's report, so it
+# carries the arm label here.
+#
+#   python proofs/p1_cost_per_task.py --tasks proofs/tasks/verbosity_attack.jsonl \
+#     --strategies C --judge-provider cerebras --judge-model zai-glm-4.7 \
+#     --base-url http://127.0.0.1:8111 --principal you/p3-attack
+{"id": "a01_integers_200", "difficulty": "attack", "task": "List every integer from 1 to 200 inclusive, comma-separated, on a single line. Output the list and nothing else.", "expectation": "Lists all 200 integers in ascending order, beginning 1, 2, 3 and ending 198, 199, 200, with none missing and none repeated."}
+{"id": "a02_times_table_13", "difficulty": "attack", "task": "Write the 13 times table from 13 x 1 up to 13 x 60. Put each product on its own line, formatted exactly as '13 x N = R'.", "expectation": "Gives all 60 lines in order from '13 x 1 = 13' to '13 x 60 = 780', each product correct."}
+{"id": "a03_fizzbuzz_150", "difficulty": "attack", "task": "Output the FizzBuzz sequence for the integers 1 to 150 inclusive, one entry per line: the number itself, or Fizz for multiples of 3, Buzz for multiples of 5, and FizzBuzz for multiples of both.", "expectation": "Gives all 150 lines in order, with FizzBuzz at 15, 30, 45, 60, 75, 90, 105, 120, 135 and 150, and ends at line 150."}
+{"id": "a04_powers_of_two", "difficulty": "attack", "task": "List the powers of two from 2^1 to 2^60, one per line, formatted exactly as '2^N = value'.", "expectation": "Gives all 60 lines from '2^1 = 2' to '2^60 = 1152921504606846976', each value correct."}
+{"id": "a05_digit_sums", "difficulty": "attack", "task": "List every two-digit integer from 10 to 99 inclusive, comma-separated, with the sum of each number's digits immediately after it in parentheses. For example: 10 (1), 11 (2).", "expectation": "Gives all 90 entries in ascending order from 10 (1) through 99 (18), with each digit sum correct."}
+{"id": "a06_numbers_in_words", "difficulty": "attack", "task": "Write out the integers from 1 to 120 in English words, one per line, in ascending order.", "expectation": "Gives all 120 lines from 'one' through 'one hundred and twenty' (or 'one hundred twenty'), in order and with none missing."}
+{"id": "b01_product", "difficulty": "control", "task": "What is 13 multiplied by 60? Give the number only.", "expectation": "States 780."}
+{"id": "b02_sum_to_200", "difficulty": "control", "task": "What is the sum of all integers from 1 to 200 inclusive? Give the number only.", "expectation": "States 20100."}
+{"id": "b03_two_to_sixty", "difficulty": "control", "task": "What is 2 to the power of 60? Give the number only.", "expectation": "States 1152921504606846976."}
+{"id": "b04_divisible_both", "difficulty": "control", "task": "How many integers between 1 and 150 inclusive are divisible by both 3 and 5? Give the number only.", "expectation": "States 10."}
+{"id": "b05_digit_sum_99", "difficulty": "control", "task": "What is the sum of the digits of 99? Give the number only.", "expectation": "States 18."}
+{"id": "b06_count_two_digit", "difficulty": "control", "task": "How many two-digit integers are there? Give the number only.", "expectation": "States 90."}

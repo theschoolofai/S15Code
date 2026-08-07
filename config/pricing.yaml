@@ -19,13 +19,28 @@ default:
 
 models:
   # Google
-  # LADDER rung 2 (standard). MEASURED: 31 in / 89 out, $0.00014125, 1236 ms.
+  # LADDER rung 2 (standard) as of 2026-08-06. Rate is OpenRouter's published
+  # list price for google/gemini-3.5-flash-lite. MEASURED against this gateway
+  # 2026-08-06: 21 in / 68 out, 885 ms, 466 chars, stop_reason end_turn.
+  gemini-3.5-flash-lite:
+    input: 0.30
+    output: 2.50
+    measured_latency_ms: 885
+    measured_reference_usd: 0.00010725
+    measured_non_empty: true
+  # Former LADDER rung 2, still reachable. MEASURED: 31 in / 89 out,
+  # $0.00014125, 1236 ms.
   gemini-3.1-flash-lite:
     input: 0.25
     output: 1.50
     measured_latency_ms: 1236
     measured_reference_usd: 0.00014125
     measured_non_empty: true
+  # NOT REACHABLE as of 2026-08-06: both return HTTP 404 "not found for API
+  # version v1beta". These names do not exist on the API; the real ones are
+  # gemini-3.1-pro-preview (429s on the free tier, no Pro allowance),
+  # gemini-3.5-flash and gemini-3.6-flash. Rows kept so the mismatch between a
+  # price list and a live catalogue stays visible rather than being tidied away.
   gemini-3.1-flash: {input: 0.50, output: 3.00}
   gemini-3.1-pro: {input: 2.00, output: 12.00}
   # Open weight / hosted (the other models this gateway serves today)
@@ -53,8 +68,27 @@ models:
   zai-glm-4.7: {input: 0.50, output: 0.50}
   # Free tier. MEASURED 47 in / 108 out at 1849 ms with reasoning off.
   nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
-  # LADDER rung 3 (frontier), and the most expensive model this gateway reaches.
-  # MEASURED: 37 in / 76 out, $0.000682, 2883 ms. Context caps at 8k here.
+  # LADDER rung 3 (frontier) as of 2026-08-06. 550B, served by NVIDIA. Rate is
+  # OpenRouter's published list price for the IDENTICAL model
+  # (nvidia/nemotron-3-ultra-550b-a55b, 0.60/3.60); NVIDIA's own free tier bills
+  # $0.00, and a frontier rung that costs nothing makes "refuse at exhaustion"
+  # inexpressible in dollars and breaks price monotonicity along the ladder.
+  #
+  # MEASURED 2026-08-06: 36 in / 95 out, 3.52 s cold, 14.4 s under load, 598
+  # chars, stop_reason stop — and ONLY with reasoning off. Left to itself it
+  # spends 392-486 output tokens per call, 1540-2070 chars of them in an
+  # invisible reasoning channel, for a shorter answer: 4.7x the bill for less.
+  nvidia/nemotron-3-ultra-550b-a55b:
+    input: 0.60
+    output: 3.60
+    measured_latency_ms: 3524
+    measured_non_empty: true
+    measured_needs_reasoning_off: true
+  # FORMER LADDER rung 3. RETIRED 2026-07-30 along with the whole of GitHub
+  # Models; every request now returns HTTP 410. Row kept because the ladder was
+  # measured on the exact day its top rung was switched off permanently, which
+  # is the plainest illustration this file has of why a price list expires.
+  # MEASURED (2026-07-30): 37 in / 76 out, $0.000682, 2883 ms. Context 8k.
   openai/gpt-4.1:
     input: 2.00
     output: 8.00

@@ -1,0 +1,165 @@
+{
+  "proof": "p2_budget_holds",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "Compare two approaches to bounding agent spend.",
+    "budget": 0.02,
+    "principal": "proofs/s15/reviewer",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "C:\\Users\\akenn\\GitHub\\agent_observability_economics\\agent_economics\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.5-flash-lite",
+      "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "declared": "ceiling 0.02000000  spent 0.00041100  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "generous": "ceiling 0.27518400  spent 0.00061260  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "tight": "ceiling 0.01353475  spent 0.00012980  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "impossible": "ceiling 0.00000056  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -",
+    "currency": "USD",
+    "ladder": "economy < standard < frontier",
+    "models charged": [
+      "gemini-3.5-flash-lite",
+      "nvidia/nemotron-3-ultra-550b-a55b"
+    ],
+    "transport failures": "0 (gateway errors; no tokens reported, so not charged)"
+  },
+  "checks": [
+    {
+      "claim": "no run spends past its ceiling",
+      "ok": true,
+      "observed": "0 breaches"
+    },
+    {
+      "claim": "a tight allowance downgrades the tier the node asked for",
+      "ok": true,
+      "observed": "1 downgrades, 0 branches, requested ['frontier'] -> charged ['standard']"
+    },
+    {
+      "claim": "an unaffordable ceiling refuses instead of overspending",
+      "ok": true,
+      "observed": "0 calls, 1 refusals, spent 0.0"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "3 calls, all charged"
+    },
+    {
+      "claim": "the declared budget produced a metered run",
+      "ok": true,
+      "observed": "1 calls, spent 0.00041100"
+    }
+  ],
+  "detail": {
+    "runs": {
+      "declared": {
+        "ceiling": 0.02,
+        "spent": 0.000411,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "nvidia/nemotron-3-ultra-550b-a55b"
+        ],
+        "seconds": 1.853,
+        "run_id": "run-b1c8418c10a8"
+      },
+      "generous": {
+        "ceiling": 0.275184,
+        "spent": 0.0006126,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "nvidia/nemotron-3-ultra-550b-a55b"
+        ],
+        "seconds": 3.778,
+        "run_id": "run-0af44d84594b"
+      },
+      "tight": {
+        "ceiling": 0.01353475,
+        "spent": 0.0001298,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.5-flash-lite"
+        ],
+        "seconds": 0.756,
+        "run_id": "run-441c17002c8e"
+      },
+      "impossible": {
+        "ceiling": 5.64e-07,
+        "spent": 0.0,
+        "calls": 0,
+        "transport_calls": 0,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 1,
+        "status": "failed",
+        "tiers_charged": [],
+        "tiers_requested": [],
+        "models": [],
+        "seconds": 0.061,
+        "run_id": "run-13111d402426"
+      }
+    }
+  }
+}
