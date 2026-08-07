@@ -210,3 +210,195 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+---
+
+# Evidence — a budget-aware routing policy for LLM cost engineering
+
+Measured live 2026-08-07 against `glc_v4` on `127.0.0.1:8111`. Full working in
+[`docs/PART1_EVIDENCE.md`](docs/PART1_EVIDENCE.md),
+[`docs/PART2_EVIDENCE.md`](docs/PART2_EVIDENCE.md),
+[`docs/PART3_EVIDENCE.md`](docs/PART3_EVIDENCE.md) and
+[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
+
+## 1. The workload and the ladder
+
+`proofs/tasks/llm_cost_engineering.jsonl` — 17 tasks (4 trivial / 5 moderate /
+8 hard) in LLM and cloud cost engineering. Every answer is a number checkable by
+hand, so the rubric's heaviest criterion rests on arithmetic rather than taste.
+All 17 expectations were independently recomputed before any measurement, and
+each names the plausible wrong answer: unweighted rate averaging, cache reads
+treated as free, retries multiplying calls, cost-per-call versus
+cost-per-resolved-task.
+
+| rung | provider | model | $/Mtok in/out |
+|---|---|---|---|
+| economy | groq | `openai/gpt-oss-120b` | 0.15 / 0.75 |
+| standard | gemini | `gemini-3.5-flash-lite` | 0.30 / 2.50 |
+| frontier | nvidia | `nvidia/nemotron-3-ultra-550b-a55b` | 0.60 / 3.60 |
+
+The shipped frontier rung `github/openai/gpt-4.1` was **retired on 2026-07-30 —
+the same day `tiers.yaml` recorded its measurement**. Verified dead: 17 model IDs
+across 7 vendors all return HTTP 410, as does the catalog endpoint and a request
+naming no model at all.
+
+## 2. Cost per call vs cost per resolved task
+
+Two arms, identical but for the token ceiling. Same tasks, models, prices, judge.
+
+**Wide ladder** (`config/`, economy ceiling 512):
+
+| strategy | spend | calls | cost/call | resolved | cost/resolved |
+|---|---|---|---|---|---|
+| A always-frontier *(baseline)* | 0.00509460 | 17 | 0.00029968 | 10/17 | 0.00050946 |
+| B always-cheapest | 0.00914595 | 27 | 0.00033874 | 14/17 | **0.00065328** |
+| C budget-aware | 0.01086335 | 21 | 0.00051730 | 17/17 | 0.00063902 |
+
+**Narrow ladder** (`config_narrow/`, all ceilings 1024):
+
+| strategy | spend | calls | cost/call | resolved | cost/resolved |
+|---|---|---|---|---|---|
+| A always-frontier *(baseline)* | 0.00674340 | 17 | 0.00039667 | 10/17 | 0.00067434 |
+| B always-cheapest | 0.00710205 | 19 | 0.00037379 | 16/17 | **0.00044388** |
+| C budget-aware | 0.01154775 | 19 | 0.00060778 | 17/17 | 0.00067928 |
+
+**The signature failure mode was observed** — wide arm, B vs C: cost per call
+**−34.5%** while cost per resolved task rose **+2.2%**. Change the denominator and
+the ranking reverses.
+
+**The measured ladder is inverted.** Projected 32.5× with frontier dearest;
+measured, frontier costs *less per call* than economy (0.00029968 vs 0.00033874),
+because economy writes 7.3× more output tokens (407.6 vs 55.6 mean).
+
+## 3. Break-even, and where we sit
+
+`r* = k / (C/c − 1 + k)`, k = 3.
+
+| arm | comparison | B rate | r\* | headroom |
+|---|---|---|---|---|
+| wide | B vs A | 0.824 | 0.8562 | **−0.0326** |
+| wide | B vs C | 0.824 | 0.7719 | +0.0516 |
+| narrow | B vs A | 0.941 | 0.7886 | +0.1525 |
+
+In the wide arm the cheap rung sat **3.3 points below** break-even, which is why
+it lost. What moved it was not price — it was **truncation**: raising the economy
+ceiling 512→1024 cut truncated attempts from **18 to 4** and lifted resolution
+82.4% → 94.1%. Strategy A is the control at 10/17 in *both* arms, since it writes
+5–24 output tokens and never nears a ceiling.
+
+*Confound, stated plainly:* equalising `max_tokens` changed the ceiling and the
+projected spread together, because the projection is a function of the ceiling.
+
+## 4. One run's span hierarchy, with cost
+
+Trace `aa402254c5bf1beffcfc8c9bb2201472`, service `s15code-agent`:
+
+```
+run run-0e4227fe8e3a                                    [run total 0.000555]
+  agent loop 2
+    node answer
+      chat nvidia/nemotron-3-ultra-550b-a55b   cost=0.000555  229in/116out  tier=frontier
+    plan
+  agent loop 1 -> plan, node recall
+  agent loop 3 -> plan
+                                    10 spans, 1 billable
+```
+
+Nine of ten spans cost nothing because nine bought nothing. `p4` reconciles the
+billable span against the ledger at **delta 0.000e+00**, and confirms no prompt
+or completion text reached the backend.
+
+## 5. The adversarial test
+
+`proofs/tasks/verbosity_attack.jsonl` — six requests whose **correct** answers are
+long, paired with six controls from the same domain that are equally easy but
+short. Every request is individually cheap and would pass any spend ceiling.
+
+| group | n | mean/request | vs control |
+|---|---|---|---|
+| control | 6 | $0.00004825 | 1.00× |
+| attack, no escalation | 4 | $0.00035404 | 7.34× — verbosity alone |
+| attack, escalated | 2 | $0.00228495 | **47.36×** — verbosity + ladder climb |
+
+**20.7× amplification per request**, all 12 resolved. The escalation multiplier of
+**6.45×** independently reproduces the 7.0× measured on `c06` in Part 2. One
+request missed the 512-token cap by **six tokens** — asking for "integers 1 to
+400" makes the attack deterministic.
+
+**Before the control, and after** (`p3`, 60 rounds, $0.0005 ceiling):
+
+```
+loop rounds 60   admitted 1   refusals 59   spent 0.00036555 / 0.00050000
+[PASS] the loop kept asking and was refused
+[PASS] a refusal is a visible graph failure    59 nodes failed with BudgetRefused
+```
+
+The refusal is visible in the run's `budget.refusal_log` and as a failed graph
+node — but **not** in the gateway's `/v1/refusals` (which recorded **0** while S15
+recorded 59; the two controllers sit at different layers), and **not** in the
+trace: a refused run emits 9 spans where an admitted one emits 10, differing by
+exactly the `provider_call` span.
+
+## 6. One case the policy got wrong
+
+`c06_cache_discount`:
+
+```
+B  economy   251 out   $0.00022155   RESOLVED   overall 1.0
+C  economy   512 out   $0.00041730   FAILED     overall 0.5   <- truncated at the cap
+C  standard  432 out   $0.00112770   RESOLVED   overall 1.0
+   C total   $0.00154500  =  7.0x what B spent, for the same final answer
+```
+
+Same model, same prompt, temperature 0 — one run wrote 251 tokens and finished,
+the other ran to exactly 512 and was cut off. The cascade read the truncation as a
+quality failure and escalated. **A rung whose ceiling truncates a correct answer
+will be escalated past, and output length at temperature 0 is not deterministic —
+so this is a coin flip priced at 7×.**
+
+Reported beside `c11_break_even_rate`, where the same rule climbed all three rungs
+at 2.8× and reached an answer B never did. A cascade cannot tell the two cases
+apart at the moment it decides.
+
+Also measured: **capability is not monotonic.** The frontier rung resolved 1 of 5
+moderate tasks where economy resolved 5 of 5. Its errors are arithmetic slips in
+5–24 output tokens (`0.018360` for `0.018346`; `$3.30` for `$4.30`). The cause is
+this policy's own `reasoning: "off"`, set to avoid the invisible-token billing
+bug — it also removed the model's scratchpad. **The dial that stops you paying for
+invisible tokens is the same dial that costs you correctness on multi-step work.**
+
+Every frontier miss scored exactly **0.6667** — 4 on all four generic criteria, 0
+on `meets_expectation`. Precisely the case the 0.5 per-criterion floor exists to
+catch.
+
+## 7. Reproduce from a fresh checkout
+
+```bash
+git clone <this fork> && cd agent_economics && uv sync
+cp .env.example .env          # GLC_BASE_URL, S15_PORT, sandbox root; no provider keys
+cd ../glc_v4 && uv sync && cp .env.example .env   # provider keys live here
+uv run glc serve                                  # :8111
+
+cd ../agent_economics
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/llm_cost_engineering.jsonl \
+  --principal you/p2-wide --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --label wide
+
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/llm_cost_engineering.jsonl \
+  --principal you/p2-narrow --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --config-dir ./config_narrow --label narrow
+
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/verbosity_attack.jsonl \
+  --strategies C --judge-provider cerebras --judge-model zai-glm-4.7 \
+  --base-url http://127.0.0.1:8111 --principal you/p3-attack --label attack
+
+uv run python proofs/p3_denial_of_wallet.py --task "Compare two approaches to bounding agent spend." \
+  --budget 0.0005 --principal you/p3-tight --base-url http://127.0.0.1:8111 \
+  --loop-limit 60 --label live-tight
+```
+
+**`--base-url` is mandatory.** `p1` defaults to port 8112 while the gateway serves
+8111, and no proof loads `.env`, so `GLC_BASE_URL` is never read on that path. On
+an unreachable gateway `p1` falls back to a simulated transport and still reports
+`ALL CHECKS PASSED` with exit 0 — check the `(live mode)` line before believing
+any number. See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) §G.

@@ -22,15 +22,43 @@ default_tier: standard
 # were measured against glc_v4 on 2026-07-30 before being written down. One
 # identical 3-sentence prompt, max_tokens 512, temperature 0, reasoning off:
 #
-#   rung      provider    model                    $/Mtok in/out  latency  answered
-#   economy   groq        openai/gpt-oss-120b      0.15 / 0.75    0.74 s   yes
-#   standard  gemini      gemini-3.1-flash-lite    0.25 / 1.50    1.24 s   yes
-#   frontier  github      openai/gpt-4.1           2.00 / 8.00    2.88 s   yes
+#   rung      provider    model                          $/Mtok in/out latency answered
+#   economy   groq        openai/gpt-oss-120b            0.15 / 0.75   0.76 s  yes
+#   standard  gemini      gemini-3.5-flash-lite          0.30 / 2.50   0.89 s  yes
+#   frontier  nvidia      nvidia/nemotron-3-ultra-550b   0.60 / 3.60   3.52 s  yes
 #
 # Input rate, output rate and latency all rise monotonically along the ladder,
 # which is what makes "one rung down" unambiguous. Projected worst-case cost per
-# call (the number admission actually uses) is $0.000564 / $0.002161 / $0.044768
-# — a 79x spread across the ladder, where the same-model ladder managed 5x.
+# call (the number admission actually uses) is $0.000564 / $0.003310 / $0.018346
+# — a 32.5x spread across the ladder, where the same-model ladder managed 5x.
+#
+# ── Why this ladder is not the one measured on 2026-07-30 ────────────────────
+# The frontier rung was `github / openai/gpt-4.1` at 2.00/8.00, measured 2.88 s.
+# GitHub Models was RETIRED on 2026-07-30 — the same day this file recorded its
+# measurement — after brownouts on 16 and 23 July. Verified dead on 2026-08-06:
+# every request returns HTTP 410 `github_models_retirement_brownout`, including
+# the /catalog/models endpoint and requests naming no model at all. 17 model IDs
+# across 7 vendors were tried; a deliberately invalid ID returned 410 rather
+# than 404, which proves the endpoint short-circuits before model resolution.
+#
+# The rung was repointed to NVIDIA on 2026-08-06. Prices below are OpenRouter's
+# published rates for the IDENTICAL models, since NVIDIA's free tier bills $0
+# and a free rung cannot be exhausted by a dollar ceiling. Note the resulting
+# mixed provenance: the economy row keeps its original 0.15/0.75 basis.
+#
+# Rejected frontier candidates, all measured 2026-08-06 on the same prompt:
+#   z-ai/glm-5.2                    correct, but 121-156 s per call — and a
+#                                   ONE-WORD answer still took 121 s, so it is
+#                                   queue depth, not cold start or generation.
+#   deepseek-ai/deepseek-v4-flash   correct, 144 s.
+#   deepseek-ai/deepseek-v4-pro     182 s then an EMPTY error — the same trap
+#                                   pricing.yaml recorded on 2026-07-30, still
+#                                   live a week later. It also tripped the
+#                                   breaker and benched all of nvidia for 600 s,
+#                                   so the very next probe (llama-3.3-70b) was
+#                                   refused without ever being attempted.
+#   nvidia/nemotron-4-340b-instruct 404 — listed in the catalog, not deployed.
+#   meta/llama-3.1-405b-instruct    not in the catalog at all (largest is 70B).
 #
 # Two facts worth keeping, both learned the hard way:
 #
@@ -73,23 +101,43 @@ tiers:
   standard:
     request:
       provider: gemini
-      model: gemini-3.1-flash-lite
+      # Moved off gemini-3.1-flash-lite on 2026-08-06: same capability class,
+      # but 3.5 carries the more generous per-minute and per-day allowances.
+      # Measured 21 in / 68 out, 885 ms, 466 chars.
+      model: gemini-3.5-flash-lite
+      # Sent, but the gateway reports reasoning_applied=False for this model —
+      # it appears to have no thinking channel to switch off. Harmless to ask.
       reasoning: "off"
       max_tokens: 1024
       temperature: 0
-    price_model: gemini-3.1-flash-lite
+    price_model: gemini-3.5-flash-lite
     projected_input_tokens: 2500
     projected_output_tokens: 800
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      provider: nvidia
+      # Repointed from github/openai/gpt-4.1 on 2026-08-06; see the header for
+      # why. Measured 36 in / 95 out, 3.52 s cold and 14.4 s under load, 598
+      # chars. NVIDIA prioritises its own Nemotron: third-party models on the
+      # same key (glm-5.2, deepseek-v4-flash) queue for 2+ minutes, this does
+      # not. Note NVIDIA's free tier also returns 503 "Worker local total
+      # request limit reached (32/32)" under concurrency — a transport failure,
+      # not a verdict, and one p1's answer path does not currently retry.
+      model: nvidia/nemotron-3-ultra-550b-a55b
+      # NOT optional, and not decoration. Measured 2026-08-06 at max_tokens 512
+      # across three samples: with the dial UNSET this model spent 392-486
+      # output tokens per call, of which 1540-2070 characters went to an
+      # invisible reasoning channel, for a 450-499 char answer. With the dial
+      # off: 95 output tokens, 598 chars, reasoning channel empty. That is 4.7x
+      # the output tokens for a worse answer — and the unset run peaked 26
+      # tokens short of the 512 ceiling, so one more verbose sample truncates or
+      # returns "" at full price. This is the session's own empty-string bug,
+      # reproduced on a model that did not exist when it was first written.
+      reasoning: "off"
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: nvidia/nemotron-3-ultra-550b-a55b
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 
