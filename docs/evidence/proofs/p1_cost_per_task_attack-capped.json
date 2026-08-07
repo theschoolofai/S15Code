@@ -1,0 +1,2163 @@
+{
+  "proof": "p1_cost_per_task",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "12 tasks from proofs/tasks/verbosity_attack.jsonl",
+    "budget": 0.0006,
+    "principal": "you/p3-attack-capped",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "C:\\Users\\akenn\\GitHub\\agent_observability_economics\\agent_economics\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.5-flash-lite",
+      "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "C budget_aware": "spend 0.00252000 USD  calls 12  cost/call 0.00021000  resolved 10/12  cost/resolved 0.00025200  tiers economy",
+    "C resolved by difficulty": "{\"attack\": 4, \"control\": 6}  of {\"attack\": 6, \"control\": 6}",
+    "ladder": "economy < standard < frontier",
+    "tasks": "12 from proofs/tasks/verbosity_attack.jsonl  {'attack': ['a01_integers_200', 'a02_times_table_13', 'a03_fizzbuzz_150', 'a04_powers_of_two', 'a05_digit_sums', 'a06_numbers_in_words'], 'control': ['b01_product', 'b02_sum_to_200', 'b03_two_to_sixty', 'b04_divisible_both', 'b05_digit_sum_99', 'b06_count_two_digit']}",
+    "per-task ceiling": "0.0006 USD (principal you/p3-attack-capped)",
+    "judge panel": "cerebras/zai-glm-4.7",
+    "judge bar": "overall >= 0.75, min criterion 0.5, tie_break score",
+    "judge meta-cost": "12 calls, 0.00718770 USD, 0 unusable, 15 transport retries, 0 verdicts reused",
+    "signature failure mode": "NOT OBSERVED \u2014 {}",
+    "wall clock": "510.9s",
+    "where the strategies disagreed": "no task split the strategies"
+  },
+  "checks": [
+    {
+      "claim": "every strategy attempted every task in the file",
+      "ok": true,
+      "observed": "1 strategies x 12 tasks"
+    },
+    {
+      "claim": "every answering provider call that returned is metered",
+      "ok": true,
+      "observed": "12 transport calls, 12 ledger charges, 0 transport failures (no tokens reported, so not charged)"
+    },
+    {
+      "claim": "no verdict was unparseable (an unparseable judge is a JUDGE failure)",
+      "ok": true,
+      "observed": "0 tasks ended with status=judge_failed, 0 unusable judge samples"
+    },
+    {
+      "claim": "an empty or errored answer never counted as resolved",
+      "ok": true,
+      "observed": "0 such rows"
+    },
+    {
+      "claim": "no answer was graded by its own model",
+      "ok": true,
+      "observed": "judges ['zai-glm-4.7'] vs ladder ['gemini-3.5-flash-lite', 'nvidia/nemotron-3-ultra-550b-a55b', 'openai/gpt-oss-120b']"
+    },
+    {
+      "claim": "at least one strategy resolved at least one task, so cost/resolved is defined",
+      "ok": true,
+      "observed": "10 resolved rows across 1 strategies"
+    },
+    {
+      "claim": "the configured ladder separates cost per call at all",
+      "ok": true,
+      "observed": "projected top 0.01834560 > bottom 0.00056400"
+    },
+    {
+      "claim": "every model that answered has its own row in pricing.yaml",
+      "ok": true,
+      "observed": "all priced"
+    },
+    {
+      "claim": "no semantic-cache hit served one strategy another's answer",
+      "ok": true,
+      "observed": {
+        "before": {
+          "hits": 14,
+          "stores": 98,
+          "lookups": 114
+        },
+        "after": {
+          "hits": 14,
+          "stores": 98,
+          "lookups": 114
+        }
+      }
+    }
+  ],
+  "detail": {
+    "divergences": {},
+    "finding": {
+      "observed": null,
+      "reason": "strategy B did not run; nothing to compare"
+    },
+    "summaries": {
+      "C": {
+        "strategy": "C",
+        "name": "budget_aware",
+        "description": "opens on the cheapest rung (economy), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict",
+        "start_tier": "economy",
+        "max_attempts": 3,
+        "escalates": true,
+        "tasks": 12,
+        "spend": 0.00252,
+        "calls": 12,
+        "attempts": 16,
+        "cost_per_call": 0.00021,
+        "cost_per_task": 0.00021,
+        "resolved": 10,
+        "unresolved": 2,
+        "judge_failed": 0,
+        "cost_per_resolved_task": 0.000252,
+        "resolution_rate": 0.8333333333333334,
+        "tokens": 5012,
+        "tokens_per_resolved_task": 501.2,
+        "latency_ms": 10211.0,
+        "errors": 4,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 4,
+        "tiers_charged": [
+          "economy"
+        ],
+        "models": [
+          "openai/gpt-oss-120b"
+        ],
+        "resolved_by_difficulty": {
+          "attack": 4,
+          "control": 6
+        }
+      }
+    },
+    "strategies": {
+      "A": {
+        "key": "A",
+        "name": "always_frontier",
+        "start_tier": "frontier",
+        "attempts": 1,
+        "escalate": false,
+        "description": "every task once on the top rung (frontier)"
+      },
+      "B": {
+        "key": "B",
+        "name": "always_cheapest",
+        "start_tier": "economy",
+        "attempts": 3,
+        "escalate": false,
+        "description": "every task on the bottom rung (economy), retried up to 3 times on an unresolved verdict"
+      },
+      "C": {
+        "key": "C",
+        "name": "budget_aware",
+        "start_tier": "economy",
+        "attempts": 3,
+        "escalate": true,
+        "description": "opens on the cheapest rung (economy), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict"
+      }
+    },
+    "evals_config": {
+      "directory": "C:\\Users\\akenn\\GitHub\\agent_observability_economics\\agent_economics\\config",
+      "judge": {
+        "scale_max": 4.0,
+        "threshold": 0.75,
+        "min_criterion": 0.5,
+        "tie_break": "score",
+        "retries": 5,
+        "retry_backoff_seconds": 15.0,
+        "pace_seconds": 5.0,
+        "criteria": [
+          {
+            "name": "addresses_task",
+            "weight": 1.0,
+            "requires_expectation": false
+          },
+          {
+            "name": "specific",
+            "weight": 1.0,
+            "requires_expectation": false
+          },
+          {
+            "name": "consistent",
+            "weight": 1.0,
+            "requires_expectation": false
+          },
+          {
+            "name": "complete",
+            "weight": 1.0,
+            "requires_expectation": false
+          },
+          {
+            "name": "meets_expectation",
+            "weight": 2.0,
+            "requires_expectation": true
+          }
+        ],
+        "panel": [
+          {
+            "name": "judge_a",
+            "provider": "cerebras",
+            "model": "zai-glm-4.7"
+          },
+          {
+            "name": "judge_b",
+            "provider": "openrouter",
+            "model": "nvidia/nemotron-3-super-120b-a12b:free"
+          }
+        ]
+      },
+      "strategies": {
+        "max_attempts": 3,
+        "cheapest_retries": 2,
+        "cheapest_attempts": 3,
+        "escalate": true,
+        "start": "cheapest"
+      }
+    },
+    "judge_meter": {
+      "judge_calls": 12,
+      "judge_failures": 0,
+      "judge_transport_failures": 15,
+      "judge_cost": 0.007187699999999999,
+      "judge_input_tokens": 12485,
+      "judge_output_tokens": 1020,
+      "panel": [
+        {
+          "name": "cli_cerebras",
+          "provider": "cerebras",
+          "model": "zai-glm-4.7"
+        }
+      ]
+    },
+    "judge_verdict_reuses": 0,
+    "tasks": [
+      {
+        "id": "a01_integers_200",
+        "task": "List every integer from 1 to 200 inclusive, comma-separated, on a single line. Output the list and nothing else.",
+        "expectation": "Lists all 200 integers in ascending order, beginning 1, 2, 3 and ending 198, 199, 200, with none missing and none repeated.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "a02_times_table_13",
+        "task": "Write the 13 times table from 13 x 1 up to 13 x 60. Put each product on its own line, formatted exactly as '13 x N = R'.",
+        "expectation": "Gives all 60 lines in order from '13 x 1 = 13' to '13 x 60 = 780', each product correct.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "a03_fizzbuzz_150",
+        "task": "Output the FizzBuzz sequence for the integers 1 to 150 inclusive, one entry per line: the number itself, or Fizz for multiples of 3, Buzz for multiples of 5, and FizzBuzz for multiples of both.",
+        "expectation": "Gives all 150 lines in order, with FizzBuzz at 15, 30, 45, 60, 75, 90, 105, 120, 135 and 150, and ends at line 150.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "a04_powers_of_two",
+        "task": "List the powers of two from 2^1 to 2^60, one per line, formatted exactly as '2^N = value'.",
+        "expectation": "Gives all 60 lines from '2^1 = 2' to '2^60 = 1152921504606846976', each value correct.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "a05_digit_sums",
+        "task": "List every two-digit integer from 10 to 99 inclusive, comma-separated, with the sum of each number's digits immediately after it in parentheses. For example: 10 (1), 11 (2).",
+        "expectation": "Gives all 90 entries in ascending order from 10 (1) through 99 (18), with each digit sum correct.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "a06_numbers_in_words",
+        "task": "Write out the integers from 1 to 120 in English words, one per line, in ascending order.",
+        "expectation": "Gives all 120 lines from 'one' through 'one hundred and twenty' (or 'one hundred twenty'), in order and with none missing.",
+        "difficulty": "attack",
+        "metadata": {}
+      },
+      {
+        "id": "b01_product",
+        "task": "What is 13 multiplied by 60? Give the number only.",
+        "expectation": "States 780.",
+        "difficulty": "control",
+        "metadata": {}
+      },
+      {
+        "id": "b02_sum_to_200",
+        "task": "What is the sum of all integers from 1 to 200 inclusive? Give the number only.",
+        "expectation": "States 20100.",
+        "difficulty": "control",
+        "metadata": {}
+      },
+      {
+        "id": "b03_two_to_sixty",
+        "task": "What is 2 to the power of 60? Give the number only.",
+        "expectation": "States 1152921504606846976.",
+        "difficulty": "control",
+        "metadata": {}
+      },
+      {
+        "id": "b04_divisible_both",
+        "task": "How many integers between 1 and 150 inclusive are divisible by both 3 and 5? Give the number only.",
+        "expectation": "States 10.",
+        "difficulty": "control",
+        "metadata": {}
+      },
+      {
+        "id": "b05_digit_sum_99",
+        "task": "What is the sum of the digits of 99? Give the number only.",
+        "expectation": "States 18.",
+        "difficulty": "control",
+        "metadata": {}
+      },
+      {
+        "id": "b06_count_two_digit",
+        "task": "How many two-digit integers are there? Give the number only.",
+        "expectation": "States 90.",
+        "difficulty": "control",
+        "metadata": {}
+      }
+    ],
+    "per_task": {
+      "C": [
+        {
+          "task_id": "a01_integers_200",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a01_integers_200#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.0003453,
+              "input_tokens": 172,
+              "output_tokens": 426,
+              "latency_ms": 1263.0,
+              "error": null,
+              "answer_chars": 691,
+              "answer_excerpt": ",121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.0003453,
+          "calls": 1,
+          "input_tokens": 172,
+          "output_tokens": 426,
+          "latency_ms": 1263.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "a01_integers_200",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0006493,
+            "judge_tokens": {
+              "input": 1193,
+              "output": 80
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer lists every integer from 1 to 200 exactly once, in ascending order, comma-separated on a single line, with no extra text. It fully satisfies the success criterion.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1193,
+                "output_tokens": 80,
+                "cost": 0.0006493,
+                "latency_ms": 784,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer lists every integer from 1 to 200 exactly once, in ascending order, comma-separated on a single line, with no extra text. It fully satisfies the success criterion.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "a02_times_table_13",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a02_times_table_13#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.00040710000000000003,
+              "input_tokens": 184,
+              "output_tokens": 506,
+              "latency_ms": 1415.0,
+              "error": null,
+              "answer_chars": 941,
+              "answer_excerpt": "  \n13 x 41 = 533  \n13 x 42 = 546  \n13 x 43 = 559  \n13 x 44 = 572  \n13 x 45 = 585  \n13 x 46 = 598  \n13 x 47 = 611  \n13 x 48 = 624  \n13 x 49 = 637  \n13 x 50 = 650  \n13 x 51 = 663  \n13 x 52 = 676  \n13 x 53 = 689  \n13 x 54 = 702  \n13 x 55 = 715  \n13 x 56 = 728  \n13 x 57 = 741  \n13 x 58 = 754  \n13 x 59 = 767  \n13 x 60 = 780",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00040710000000000003,
+          "calls": 1,
+          "input_tokens": 184,
+          "output_tokens": 506,
+          "latency_ms": 1415.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "a02_times_table_13",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0007713,
+            "judge_tokens": {
+              "input": 1438,
+              "output": 79
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer provides all 60 lines from 13 x 1 to 13 x 60, each correctly formatted and with the correct product. It fully satisfies the success criterion.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1438,
+                "output_tokens": 79,
+                "cost": 0.0007713,
+                "latency_ms": 916,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer provides all 60 lines from 13 x 1 to 13 x 60, each correctly formatted and with the correct product. It fully satisfies the success criterion.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "a03_fizzbuzz_150",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a03_fizzbuzz_150#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.00027165,
+              "input_tokens": 196,
+              "output_tokens": 323,
+              "latency_ms": 1048.0,
+              "error": null,
+              "answer_chars": 651,
+              "answer_excerpt": "zz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n101\nFizz\n103\n104\nFizzBuzz\n106\n107\nFizz\n109\nBuzz\nFizz\n112\n113\nFizz\nBuzz\n116\nFizz\n118\n119\nFizzBuzz\n121\n122\nFizz\n124\nBuzz\nFizz\n127\n128\nFizz\nBuzz\n131\nFizz\n133\n134\nFizzBuzz\n136\n137\nFizz\n139\nBuzz\nFizz\n142\n143\nFizz\nBuzz\n146\nFizz\n148\n149\nFizzBuzz",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00027165,
+          "calls": 1,
+          "input_tokens": 196,
+          "output_tokens": 323,
+          "latency_ms": 1048.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "a03_fizzbuzz_150",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0006742,
+            "judge_tokens": {
+              "input": 1138,
+              "output": 108
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly outputs the FizzBuzz sequence from 1 to 150, one per line, with FizzBuzz at all required multiples (15, 30, 45, 60, 75, 90, 105, 120, 135, 150) and ends at line 150.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1138,
+                "output_tokens": 108,
+                "cost": 0.0006742,
+                "latency_ms": 1031,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly outputs the FizzBuzz sequence from 1 to 150, one per line, with FizzBuzz at all required multiples (15, 30, 45, 60, 75, 90, 105, 120, 135, 150) and ends at line 150.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "a04_powers_of_two",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a04_powers_of_two#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.0004104,
+              "input_tokens": 176,
+              "output_tokens": 512,
+              "latency_ms": 1388.0,
+              "error": null,
+              "answer_chars": 960,
+              "answer_excerpt": " = 1099511627776  \n2^41 = 2199023255552  \n2^42 = 4398046511104  \n2^43 = 8796093022208  \n2^44 = 17592186044416  \n2^45 = 35184372088832  \n2^46 = 70368744177664  \n2^47 = 140737488355328  \n2^48 = 281474976710656  \n2^49 = 562949953421312  \n2^50 = 1125899906842624  \n2^51 = 2251799813685248  \n2^52 = 4503599627370496  \n2^53 = ",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.3333333333333333,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges did not resolve",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "a04_powers_of_two#C2",
+              "requested_tier": "standard",
+              "charged_tier": null,
+              "decision": null,
+              "provider": null,
+              "model": null,
+              "cost": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "latency_ms": 0.08153915405273438,
+              "error": "budget refused: budget refused a standard call for a04_powers_of_two#C2: cheapest tier economy projects 0.000405, run holds 0.000190 (headroom 0.000012)",
+              "answer_chars": 0,
+              "answer_excerpt": "",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.0,
+                "agreement": null,
+                "disputed": false,
+                "reason": "answer failed: budget refused: budget refused a standard call for a04_powers_of_two#C2: cheapest tier economy projects 0.000405, run holds 0.000190 (headroom 0.000012)",
+                "judged_by": [],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "a04_powers_of_two#C3",
+              "requested_tier": "frontier",
+              "charged_tier": null,
+              "decision": null,
+              "provider": null,
+              "model": null,
+              "cost": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "latency_ms": 0.036716461181640625,
+              "error": "budget refused: budget refused a frontier call for a04_powers_of_two#C3: cheapest tier economy projects 0.000405, run holds 0.000190 (headroom 0.000012)",
+              "answer_chars": 0,
+              "answer_excerpt": "",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.0,
+                "agreement": null,
+                "disputed": false,
+                "reason": "answer failed: budget refused: budget refused a frontier call for a04_powers_of_two#C3: cheapest tier economy projects 0.000405, run holds 0.000190 (headroom 0.000012)",
+                "judged_by": [],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": false,
+          "status": "unresolved",
+          "overall": 0.0,
+          "agreement": null,
+          "self_judged": false,
+          "cost": 0.0004104,
+          "calls": 1,
+          "input_tokens": 176,
+          "output_tokens": 512,
+          "latency_ms": 1388.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 2,
+          "verdict": {
+            "task_id": "a04_powers_of_two",
+            "status": "unresolved",
+            "resolved": false,
+            "overall": 0.0,
+            "threshold": 0.75,
+            "reason": "answer failed: budget refused: budget refused a frontier call for a04_powers_of_two#C3: cheapest tier economy projects 0.000405, run holds 0.000190 (headroom 0.000012)",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": null,
+            "disputed": false,
+            "judge_calls": 0,
+            "judge_failures": 0,
+            "judge_cost": 0.0,
+            "judge_tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "judged_by": [],
+            "answer": {
+              "provider": null,
+              "model": null
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": []
+          }
+        },
+        {
+          "task_id": "a05_digit_sums",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a05_digit_sums#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.00038685,
+              "input_tokens": 189,
+              "output_tokens": 478,
+              "latency_ms": 1362.0,
+              "error": null,
+              "answer_chars": 763,
+              "answer_excerpt": "9), 64 (10), 65 (11), 66 (12), 67 (13), 68 (14), 69 (15), 70 (7), 71 (8), 72 (9), 73 (10), 74 (11), 75 (12), 76 (13), 77 (14), 78 (15), 79 (16), 80 (8), 81 (9), 82 (10), 83 (11), 84 (12), 85 (13), 86 (14), 87 (15), 88 (16), 89 (17), 90 (9), 91 (10), 92 (11), 93 (12), 94 (13), 95 (14), 96 (15), 97 (16), 98 (17), 99 (18)",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 0.00038685,
+          "calls": 1,
+          "input_tokens": 189,
+          "output_tokens": 478,
+          "latency_ms": 1362.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "a05_digit_sums",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0007210999999999999,
+            "judge_tokens": {
+              "input": 1247,
+              "output": 80
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer lists all 90 two-digit integers from 10 to 99 in ascending order, each followed by the correct sum of its digits in parentheses, exactly matching the success criterion.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 1247,
+                "output_tokens": 80,
+                "cost": 0.0007210999999999999,
+                "latency_ms": 742,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer lists all 90 two-digit integers from 10 to 99 in ascending order, each followed by the correct sum of its digits in parentheses, exactly matching the success criterion.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "a06_numbers_in_words",
+          "difficulty": "attack",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "a06_numbers_in_words#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 0.0004092,
+              "input_tokens": 168,
+              "output_tokens": 512,
+              "latency_ms": 1209.0,
+              "error": null,
+              "answer_chars": 1448,
+              "answer_excerpt": "three  \nninety\u2011four  \nninety\u2011five  \nninety\u2011six  \nninety\u2011seven  \nninety\u2011eight  \nninety\u2011nine  \none hundred  \none hundred one  \none hundred two  \none hundred three  \none hundred four  \none hundred five  \none hundred six  \none hundred seven  \none hundred eight  \none hundred nine  \none hundred ten  \none hundred eleven  \none",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.5,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges did not resolve",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 2,
+              "node_id": "a06_numbers_in_words#C2",
+              "requested_tier": "standard",
+              "charged_tier": null,
+              "decision": null,
+              "provider": null,
+              "model": null,
+              "cost": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "latency_ms": 0.05984306335449219,
+              "error": "budget refused: budget refused a standard call for a06_numbers_in_words#C2: cheapest tier economy projects 0.000405, run holds 0.000191 (headroom 0.000012)",
+              "answer_chars": 0,
+              "answer_excerpt": "",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.0,
+                "agreement": null,
+                "disputed": false,
+                "reason": "answer failed: budget refused: budget refused a standard call for a06_numbers_in_words#C2: cheapest tier economy projects 0.000405, run holds 0.000191 (headroom 0.000012)",
+                "judged_by": [],
+                "self_judged": false,
+                "reused": false
+              }
+            },
+            {
+              "attempt": 3,
+              "node_id": "a06_numbers_in_words#C3",
+              "requested_tier": "frontier",
+              "charged_tier": null,
+              "decision": null,
+              "provider": null,
+              "model": null,
+              "cost": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "latency_ms": 0.030994415283203125,
+              "error": "budget refused: budget refused a frontier call for a06_numbers_in_words#C3: cheapest tier economy projects 0.000405, run holds 0.000191 (headroom 0.000012)",
+              "answer_chars": 0,
+              "answer_excerpt": "",
+              "verdict": {
+                "status": "unresolved",
+                "resolved": false,
+                "overall": 0.0,
+                "agreement": null,
+                "disputed": false,
+                "reason": "answer failed: budget refused: budget refused a frontier call for a06_numbers_in_words#C3: cheapest tier economy projects 0.000405, run holds 0.000191 (headroom 0.000012)",
+                "judged_by": [],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 3,
+          "resolved": false,
+          "status": "unresolved",
+          "overall": 0.0,
+          "agreement": null,
+          "self_judged": false,
+          "cost": 0.0004092,
+          "calls": 1,
+          "input_tokens": 168,
+          "output_tokens": 512,
+          "latency_ms": 1209.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 2,
+          "verdict": {
+            "task_id": "a06_numbers_in_words",
+            "status": "unresolved",
+            "resolved": false,
+            "overall": 0.0,
+            "threshold": 0.75,
+            "reason": "answer failed: budget refused: budget refused a frontier call for a06_numbers_in_words#C3: cheapest tier economy projects 0.000405, run holds 0.000191 (headroom 0.000012)",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 0.0,
+                "normalized": 0.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": null,
+            "disputed": false,
+            "judge_calls": 0,
+            "judge_failures": 0,
+            "judge_cost": 0.0,
+            "judge_tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "judged_by": [],
+            "answer": {
+              "provider": null,
+              "model": null
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": []
+          }
+        },
+        {
+          "task_id": "b01_product",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b01_product#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 3.675e-05,
+              "input_tokens": 160,
+              "output_tokens": 17,
+              "latency_ms": 413.0,
+              "error": null,
+              "answer_chars": 3,
+              "answer_excerpt": "780",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 3.675e-05,
+          "calls": 1,
+          "input_tokens": 160,
+          "output_tokens": 17,
+          "latency_ms": 413.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b01_product",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.00045,
+            "judge_tokens": {
+              "input": 749,
+              "output": 87
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states 780, which is the product of 13 and 60. It is a single number, fully addresses the task, is specific, consistent, complete, and meets the success criterion.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 749,
+                "output_tokens": 87,
+                "cost": 0.00045,
+                "latency_ms": 5079,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states 780, which is the product of 13 and 60. It is a single number, fully addresses the task, is specific, consistent, complete, and meets the success criterion.\"}\n"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "b02_sum_to_200",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b02_sum_to_200#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 4.815e-05,
+              "input_tokens": 166,
+              "output_tokens": 31,
+              "latency_ms": 426.0,
+              "error": null,
+              "answer_chars": 5,
+              "answer_excerpt": "20100",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 4.815e-05,
+          "calls": 1,
+          "input_tokens": 166,
+          "output_tokens": 31,
+          "latency_ms": 426.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b02_sum_to_200",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0004495,
+            "judge_tokens": {
+              "input": 755,
+              "output": 80
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states the sum of integers from 1 to 200 as 20100, matching the success criterion exactly. It is direct, specific, internally consistent, and complete.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 755,
+                "output_tokens": 80,
+                "cost": 0.0004495,
+                "latency_ms": 792,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states the sum of integers from 1 to 200 as 20100, matching the success criterion exactly. It is direct, specific, internally consistent, and complete.\"}"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "b03_two_to_sixty",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b03_two_to_sixty#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 4.8299999999999995e-05,
+              "input_tokens": 162,
+              "output_tokens": 32,
+              "latency_ms": 409.0,
+              "error": null,
+              "answer_chars": 19,
+              "answer_excerpt": "1152921504606846976",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 4.8299999999999995e-05,
+          "calls": 1,
+          "input_tokens": 162,
+          "output_tokens": 32,
+          "latency_ms": 409.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b03_two_to_sixty",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.0004664,
+            "judge_tokens": {
+              "input": 769,
+              "output": 87
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states 2^60 as 1152921504606846976, matching the success criterion exactly. It is direct, specific, internally consistent, complete, and fully actionable.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 769,
+                "output_tokens": 87,
+                "cost": 0.0004664,
+                "latency_ms": 2475,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states 2^60 as 1152921504606846976, matching the success criterion exactly. It is direct, specific, internally consistent, complete, and fully actionable.\"}\r\n"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "b04_divisible_both",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b04_divisible_both#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 5.79e-05,
+              "input_tokens": 171,
+              "output_tokens": 43,
+              "latency_ms": 431.0,
+              "error": null,
+              "answer_chars": 2,
+              "answer_excerpt": "10",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 5.79e-05,
+          "calls": 1,
+          "input_tokens": 171,
+          "output_tokens": 43,
+          "latency_ms": 431.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b04_divisible_both",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.00045850000000000003,
+            "judge_tokens": {
+              "input": 758,
+              "output": 95
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states 10, which is the count of integers between 1 and 150 divisible by both 3 and 5 (i.e., multiples of 15). It directly answers the task with a definite, complete, and correct value.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 758,
+                "output_tokens": 95,
+                "cost": 0.00045850000000000003,
+                "latency_ms": 792,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states 10, which is the count of integers between 1 and 150 divisible by both 3 and 5 (i.e., multiples of 15). It directly answers the task with a definite, complete, and correct value.\"}\n"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "b05_digit_sum_99",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b05_digit_sum_99#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 4.755e-05,
+              "input_tokens": 162,
+              "output_tokens": 31,
+              "latency_ms": 417.0,
+              "error": null,
+              "answer_chars": 2,
+              "answer_excerpt": "18",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 4.755e-05,
+          "calls": 1,
+          "input_tokens": 162,
+          "output_tokens": 31,
+          "latency_ms": 417.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b05_digit_sum_99",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.000442,
+            "judge_tokens": {
+              "input": 749,
+              "output": 71
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states the sum of the digits of 99 as 18, exactly matching the success criterion and all rubric requirements.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 749,
+                "output_tokens": 71,
+                "cost": 0.000442,
+                "latency_ms": 2489,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states the sum of the digits of 99 as 18, exactly matching the success criterion and all rubric requirements.\"}\r\n"
+              }
+            ]
+          }
+        },
+        {
+          "task_id": "b06_count_two_digit",
+          "difficulty": "control",
+          "strategy": "C",
+          "attempts": [
+            {
+              "attempt": 1,
+              "node_id": "b06_count_two_digit#C1",
+              "requested_tier": "economy",
+              "charged_tier": "economy",
+              "decision": "proceed",
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b",
+              "cost": 5.085e-05,
+              "input_tokens": 159,
+              "output_tokens": 36,
+              "latency_ms": 430.0,
+              "error": null,
+              "answer_chars": 2,
+              "answer_excerpt": "90",
+              "verdict": {
+                "status": "resolved",
+                "resolved": true,
+                "overall": 1.0,
+                "agreement": 1.0,
+                "disputed": false,
+                "reason": "1/1 judges resolved",
+                "judged_by": [
+                  "cerebras/zai-glm-4.7"
+                ],
+                "self_judged": false,
+                "reused": false
+              }
+            }
+          ],
+          "attempt_count": 1,
+          "resolved": true,
+          "status": "resolved",
+          "overall": 1.0,
+          "agreement": 1.0,
+          "self_judged": false,
+          "cost": 5.085e-05,
+          "calls": 1,
+          "input_tokens": 159,
+          "output_tokens": 36,
+          "latency_ms": 430.0,
+          "tiers_charged": [
+            "economy"
+          ],
+          "models": [
+            "openai/gpt-oss-120b"
+          ],
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "verdict": {
+            "task_id": "b06_count_two_digit",
+            "status": "resolved",
+            "resolved": true,
+            "overall": 1.0,
+            "threshold": 0.75,
+            "reason": "1/1 judges resolved",
+            "criteria": [
+              {
+                "name": "addresses_task",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "specific",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "consistent",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "complete",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.1667
+              },
+              {
+                "name": "meets_expectation",
+                "score": 4.0,
+                "normalized": 1.0,
+                "weight": 0.3333
+              }
+            ],
+            "agreement": 1.0,
+            "disputed": false,
+            "judge_calls": 1,
+            "judge_failures": 0,
+            "judge_cost": 0.00044699999999999997,
+            "judge_tokens": {
+              "input": 746,
+              "output": 84
+            },
+            "judged_by": [
+              "cerebras/zai-glm-4.7"
+            ],
+            "answer": {
+              "provider": "groq",
+              "model": "openai/gpt-oss-120b"
+            },
+            "self_judged": false,
+            "expectation_used": true,
+            "samples": [
+              {
+                "judge": "cli_cerebras",
+                "ok": true,
+                "called": true,
+                "requested": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "answered_by": {
+                  "provider": "cerebras",
+                  "model": "zai-glm-4.7"
+                },
+                "scores": {
+                  "addresses_task": 4.0,
+                  "specific": 4.0,
+                  "consistent": 4.0,
+                  "complete": 4.0,
+                  "meets_expectation": 4.0
+                },
+                "overall": 1.0,
+                "resolved": true,
+                "reason": "overall 1.000 >= threshold 0.75",
+                "notes": "The answer correctly states 90, which is the number of two-digit integers (10 through 99). It directly answers the question, is specific, consistent, complete, and meets the success criterion.",
+                "warnings": [],
+                "error": null,
+                "input_tokens": 746,
+                "output_tokens": 84,
+                "cost": 0.00044699999999999997,
+                "latency_ms": 1011,
+                "raw": "{\"scores\": {\"addresses_task\": 4, \"specific\": 4, \"consistent\": 4, \"complete\": 4, \"meets_expectation\": 4}, \"notes\": \"The answer correctly states 90, which is the number of two-digit integers (10 through 99). It directly answers the question, is specific, consistent, complete, and meets the success criterion.\"}\n"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "simulated": false,
+    "cache_stats": {
+      "before": {
+        "hits": 14,
+        "stores": 98,
+        "lookups": 114
+      },
+      "after": {
+        "hits": 14,
+        "stores": 98,
+        "lookups": 114
+      }
+    },
+    "wall_clock_seconds": 510.88021421432495
+  }
+}

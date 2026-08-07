@@ -1,0 +1,207 @@
+{
+  "proof": "p7_cross_model_ladder",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "In exactly three sentences, explain why a budget must be enforced in code rather than in a prompt.",
+    "budget": 0.05,
+    "principal": "proofs/s15/reviewer",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "C:\\Users\\akenn\\GitHub\\agent_observability_economics\\agent_economics\\config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.5-flash-lite",
+      "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "ladder": "economy < standard < frontier",
+    "rung economy": "groq / openai/gpt-oss-120b  projected 0.00039045  charged 0.00008295  103in/90out  396 chars",
+    "rung standard": "gemini_1 / gemini-3.5-flash-lite  projected 0.00257290  charged 0.00017590  28in/67out  395 chars",
+    "rung frontier": "nvidia / nvidia/nemotron-3-ultra-550b-a55b  projected 0.01477140  charged 0.00031140  45in/79out  477 chars",
+    "asked frontier, allowance for economy": "served economy on groq / openai/gpt-oss-120b  (downgrade, charged 0.00008070)",
+    "asked frontier, allowance for standard": "served standard on gemini_1 / gemini-3.5-flash-lite  (downgrade, charged 0.00016340)",
+    "projected spread": "37.8x  (0.00039045 -> 0.01477140)",
+    "measured spread": "3.75x  (0.00008295 -> 0.00031140)"
+  },
+  "checks": [
+    {
+      "claim": "every rung answered",
+      "ok": true,
+      "observed": "3 rungs"
+    },
+    {
+      "claim": "each rung is served by the model its config names",
+      "ok": true,
+      "observed": {
+        "economy": "openai/gpt-oss-120b",
+        "standard": "gemini-3.5-flash-lite",
+        "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+      }
+    },
+    {
+      "claim": "no two rungs are the same model",
+      "ok": true,
+      "observed": [
+        "gemini-3.5-flash-lite",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "openai/gpt-oss-120b"
+      ]
+    },
+    {
+      "claim": "the rungs are spread across providers, not one provider's menu",
+      "ok": true,
+      "observed": {
+        "configured": {
+          "economy": "groq",
+          "standard": "gemini",
+          "frontier": "nvidia"
+        },
+        "reported": {
+          "economy": "groq",
+          "standard": "gemini_1",
+          "frontier": "nvidia"
+        }
+      }
+    },
+    {
+      "claim": "no rung returns empty text",
+      "ok": true,
+      "observed": "3 rungs answered"
+    },
+    {
+      "claim": "a node allowance below the requested rung is served lower down the ladder",
+      "ok": true,
+      "observed": {
+        "economy": "economy",
+        "standard": "standard"
+      }
+    },
+    {
+      "claim": "every downgrade is recorded as one",
+      "ok": true,
+      "observed": {
+        "economy": "downgrade",
+        "standard": "downgrade"
+      }
+    },
+    {
+      "claim": "a downgrade changes the MODEL, not just the token budget",
+      "ok": true,
+      "observed": {
+        "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "served_models": {
+          "economy": "openai/gpt-oss-120b",
+          "standard": "gemini-3.5-flash-lite"
+        }
+      }
+    },
+    {
+      "claim": "projected cost rises monotonically along the ladder",
+      "ok": true,
+      "observed": {
+        "economy": 0.00039045,
+        "standard": 0.0025729,
+        "frontier": 0.0147714
+      }
+    },
+    {
+      "claim": "the top rung measurably costs more than the bottom rung",
+      "ok": true,
+      "observed": "0.00031140 > 0.00008295"
+    }
+  ],
+  "detail": {
+    "observed": {
+      "est_input_tokens": 43,
+      "per_rung": {
+        "economy": {
+          "requested_tier": "economy",
+          "served_tier": "economy",
+          "configured_model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "cost": 8.295e-05,
+          "input_tokens": 103,
+          "output_tokens": 90,
+          "text_chars": 396,
+          "projected": 0.00039045000000000003,
+          "decision": "proceed"
+        },
+        "standard": {
+          "requested_tier": "standard",
+          "served_tier": "standard",
+          "configured_model": "gemini-3.5-flash-lite",
+          "provider": "gemini_1",
+          "model": "gemini-3.5-flash-lite",
+          "cost": 0.0001759,
+          "input_tokens": 28,
+          "output_tokens": 67,
+          "text_chars": 395,
+          "projected": 0.0025729000000000004,
+          "decision": "proceed"
+        },
+        "frontier": {
+          "requested_tier": "frontier",
+          "served_tier": "frontier",
+          "configured_model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "provider": "nvidia",
+          "model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "cost": 0.00031140000000000003,
+          "input_tokens": 45,
+          "output_tokens": 79,
+          "text_chars": 477,
+          "projected": 0.0147714,
+          "decision": "proceed"
+        }
+      },
+      "walk": {
+        "economy": {
+          "requested_tier": "frontier",
+          "served_tier": "economy",
+          "allowance": 0.0014816750000000002,
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "cost": 8.07e-05,
+          "decision": "downgrade"
+        },
+        "standard": {
+          "requested_tier": "frontier",
+          "served_tier": "standard",
+          "allowance": 0.00867215,
+          "provider": "gemini_1",
+          "model": "gemini-3.5-flash-lite",
+          "cost": 0.0001634,
+          "decision": "downgrade"
+        }
+      }
+    },
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.5-flash-lite",
+      "frontier": "nvidia/nemotron-3-ultra-550b-a55b"
+    }
+  }
+}
