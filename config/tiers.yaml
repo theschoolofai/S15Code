@@ -83,13 +83,12 @@ tiers:
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      provider: groq
+      model: llama-3.3-70b-versatile
+      reasoning: "off"
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: llama-3.3-70b-versatile
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 

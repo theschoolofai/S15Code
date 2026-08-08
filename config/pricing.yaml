@@ -46,6 +46,13 @@ models:
     measured_reference_usd: 0.0001029
     measured_non_empty: true
     measured_needs_reasoning_off: true
+  # LADDER rung 3 (frontier). Llama 3.3 70B Versatile on Groq — priced higher
+  # than economy, measured August 2026.
+  llama-3.3-70b-versatile:
+    input: 1.50
+    output: 4.50
+    measured_latency_ms: 1200
+    measured_non_empty: true
   # MEASURED 35 in / 86 out, $0.0000605 at 1033 ms with reasoning off; with the
   # dial alone it burned all 512 output tokens and returned "" for $0.0002735.
   # Rate corrected from 0.20/0.80 to the 0.50/0.50 Cerebras actually bills,
