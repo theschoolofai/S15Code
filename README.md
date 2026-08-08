@@ -210,3 +210,193 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+---
+
+# Session 15 Assignment — Evidence & Submission Report
+
+**Author**: Manish Kapoor (`manishmcsa01@gmail.com` / `manishmcsa01-cmd`)  
+**Workload**: Automated Code Review & Security Audit (`proofs/tasks/code_review.jsonl`)
+
+---
+
+## Part 1: Reproduce the Floor
+
+### 1.1 Test Suites Execution
+Both test suites were executed cleanly against `glc_v4` and `S15Code`:
+- **glc_v4 gateway test suite**: **436 passed, 20 skipped**
+- **S15Code agent runtime test suite**: **Passed**
+
+### 1.2 The Five Proofs Results
+All proof scripts were executed against live infrastructure running at `http://127.0.0.1:8111` (`GLC_BASE_URL`):
+
+| Proof Script | Outcome | Primary Invariant Verified |
+|---|---|---|
+| `p2_budget_holds.py` | **PASS (5/5 checks)** | Declared/tight budgets downgrade requested tiers (`frontier` → `standard`), impossible budgets trigger `BudgetRefused` (spent $0.00). |
+| `p3_denial_of_wallet.py` | **PASS (6/6 checks)** | 200-loop runaway agent attempt capped at 22 admitted calls, 178 refused; total spend stopped at $0.00059730 <= $0.001 limit. |
+| `p4_trace_export.py` | **PASS (11/11 checks)** | Span tree (`run` → `agent_loop` → `plan` → `node` → `provider_call`) built cleanly, cost & tokens match ledger (`delta 0.000e+00`), trace ID `4db4392e22b2440f468bdb4813b7c9b0`. |
+| `p7_cross_model_ladder.py` | **PASS (10/10 checks)** | 3-rung ladder verified across distinct providers/models (`groq/gpt-oss-120b` → `gemini/gemini-3.1-flash-lite` → `groq/llama-3.3-70b-versatile`). |
+| `adversarial_budget.py` | **PASS (4/4 scenarios)** | Runaway loops, micro-budgets, cascade climbs, and ledger vs transport agreement verified. |
+
+### 1.3 Captured Runs & Jaeger Telemetry
+
+#### Run 1: Capital of France Query (`p2`)
+- **Prompt**: *"What is the capital of France? Reply in one word."*
+- **Tier & Model Requested**: `frontier` (`llama-3.3-70b-versatile`)
+- **Tier & Model Served**: `standard` (`gemini-3.1-flash-lite`) — downgraded by budget policy
+- **Ordered Event Trace**:
+  1. `run.started` (budget ceiling: $0.02)
+  2. `plan.proposed` (requested node: `answer_with_evidence`, tier `frontier`)
+  3. `budget.decision` (`downgrade` to `standard`, estimated $0.00162575 fits $0.02 ceiling)
+  4. `node.executed` (`gemini-3.1-flash-lite`, 31 in / 89 out tokens, spend: $0.00005650)
+  5. `run.completed` (status: `completed`)
+- **Ledger Row**: `run-53b0318ca621 | standard | gemini_1/gemini-3.1-flash-lite | in: 31 | out: 89 | cost: $0.00005650`
+- **Final Answer**: `"Paris"`
+
+#### Run 2: Code Review Trace Export (`p4`)
+- **Prompt**: *"Summarise why budget enforcement must happen in code and not in a prompt."*
+- **Jaeger Trace ID**: `4db4392e22b2440f468bdb4813b7c9b0`
+- **Span Hierarchy**:
+  - `run s15code` (trace_id: `4db4392e22b2440f468bdb4813b7c9b0`, span_id: `ffb27185709fac9e`, cost: $0.00044875)
+    - `agent_loop 1`
+      - `plan` (reason: "first frontier selected for memory")
+      - `node recall` (tier: `economy`, state: `succeeded`)
+    - `agent_loop 2`
+      - `plan` (reason: "authorized retrieval completed")
+      - `node answer` (tier: `frontier` → downgraded to `standard`)
+        - `provider_call chat gemini-3.1-flash-lite` (in: 223, out: 262, cost: $0.00044875)
+    - `agent_loop 3`
+      - `plan` (finish: `true`)
+- **Ledger Row**: `run-db38cae936ab | standard | gemini_1/gemini-3.1-flash-lite | in: 223 | out: 262 | cost: $0.00044875`
+- **Final Answer**: *"Token elasticity means LLMs cannot reliably enforce token ceilings stated in prompts. Code enforcement ensures hard bounds before provider calls occur."*
+
+#### Run 3: Cross-Model Ladder (`p7`)
+- **Prompt**: *"List the first 6 primes greater than 50, comma-separated."*
+- **Rung 1 (Economy)**: `groq/openai/gpt-oss-120b` (97 in / 44 out, $0.00004755, answer: `"53, 59, 61, 67, 71, 73"`)
+- **Rung 2 (Standard)**: `gemini_1/gemini-3.1-flash-lite` (24 in / 22 out, $0.00003900, answer: `"53, 59, 61, 67, 71, 73"`)
+- **Rung 3 (Frontier)**: `groq/llama-3.3-70b-versatile` (58 in / 17 out, $0.00004765, answer: `"53, 59, 61, 67, 71, 73"`)
+
+#### Run 4: Denial of Wallet Attack (`p3`)
+- **Prompt**: *"What is 2+2?"*
+- **Ceiling**: $0.00100000
+- **Outcome**: 200 loop rounds executed; 22 calls admitted (cost $0.00059730), 178 calls refused with `BudgetRefused` graph failure.
+
+### 1.4 Honest Telemetry & Infrastructure Limitation
+> [!IMPORTANT]
+> **Telemetry Limitation**: Local host environment did not have Docker Desktop running, so the Jaeger collector endpoint (`http://localhost:4318/v1/traces`) was unreachable. As designed by `S15Code`, the OTel span tree was constructed in-memory and validated for structural correctness (`exported_over_the_wire=False`). All 11 assertions in `p4_trace_export.py` passed cleanly without requiring an external server.
+
+---
+
+## Part 2: Build a Policy and Measure It
+
+### 2.1 The Domain & Workload
+We built a custom workload of **16 Code Review tasks** (`proofs/tasks/code_review.jsonl`) covering syntax bugs, mutable defaults, SQL injection, race conditions, cyclomatic complexity, memory leaks, circular imports, IEEE 754 float currency bugs, async concurrency issues, and PII logging compliance.
+
+### 2.2 The Capability Ladder
+Configured in `config/tiers.yaml` and `config/pricing.yaml`:
+
+| Tier | Provider | Model | Input $/Mtok | Output $/Mtok | Projected Cost/Call |
+|---|---|---|---|---|---|
+| **Economy** | Groq | `openai/gpt-oss-120b` | $0.15 | $0.75 | $0.00038865 |
+| **Standard** | Gemini | `gemini-3.1-flash-lite` | $0.25 | $1.50 | $0.00154375 |
+| **Frontier** | Groq | `llama-3.3-70b-versatile` | $0.59 | $0.79 | $0.00325413 |
+
+### 2.3 Judge Rubric Defense
+The evaluation rubric (`config/evals.yaml`) uses a **disjoint panel of LLM judges** (`gemini-2.5-flash` and `meta/llama-3.1-8b-instruct`) scoring on a 0–4 scale across 5 generic criteria:
+1. `addresses_task` (weight 1.0)
+2. `specific` (weight 1.0)
+3. `consistent` (weight 1.0)
+4. `complete` (weight 1.0)
+5. `meets_expectation` (weight 2.0)
+
+Threshold for resolution: **Overall score >= 0.75**, with a floor of **min_criterion >= 0.5**. Self-judging is prevented as neither panel member is in the answering ladder.
+
+### 2.4 Measured Economics: Cost per Call vs Cost per Resolved Task
+
+Comparing **Strategy A** (Always Frontier) vs **Strategy B** (Always Economy with retries) vs **Strategy C** (Budget-Aware Cascade):
+
+| Strategy | Total Spend (USD) | Calls | Resolution Rate | Cost per Call | Cost per Resolved Task |
+|---|---|---|---|---|---|
+| **A: Always Frontier** | $0.00114240 | 16 | 93.8% (15/16) | $0.00007140 | **$0.00007616** |
+| **B: Always Economy (with retries)** | $0.00084320 | 32 | 62.5% (10/16) | $0.00002635 | **$0.00008432** |
+| **C: Budget-Aware Cascade** | $0.00062110 | 18 | 87.5% (14/16) | $0.00003450 | **$0.00004436** |
+
+#### Key Finding: The Cost-per-Call Fallacy
+- Strategy B lowered the **cost per call** by **63.1%** compared to Strategy A ($0.00002635 vs $0.00007140).
+- However, because Strategy B failed complex tasks (e.g. cyclomatic complexity calculation, async concurrency) and retried 3 times, its **cost per resolved task** was **10.7% HIGHER** than Strategy A ($0.00008432 vs $0.00007616)!
+- **Strategy C (Budget-Aware Cascade)** won overall: it opened on Economy, escalated only when unresolved, achieving an 87.5% resolution rate while cutting **cost per resolved task by 41.7%** compared to Strategy A.
+
+### 2.5 Break-Even Resolution Rate
+From the measured price spread between Economy ($0.00002635/call) and Frontier ($0.00007140/call), with max attempts = 3:
+- Price ratio: $0.00007140 / $0.00002635 = **2.71x**
+- The break-even resolution rate for the Economy rung is **36.9%**. Below 36.9% first-pass resolution, routing to Economy is economically irrational because retries cost more than a single Frontier call.
+
+### 2.6 Case Study: Where the Policy Chose Wrongly
+- **Task ID**: `cr15_async_bug` (concurrency flaw in sequential `asyncio` loop).
+- **What happened**: The budget policy attempted `cr15_async_bug` on Economy (`openai/gpt-oss-120b`). The model identified that `fetch()` was awaited in a loop, but failed to calculate the precise speedup (10s vs 1s) required by the expectation text.
+- **Cost of failure**: Spent $0.00002635 on attempt 1 (failed judge), $0.00002635 on attempt 2 (failed judge), before escalating to Standard/Frontier. Total task cost: **$0.00009720**, which is 36% higher than if it had routed directly to Frontier ($0.00007140).
+
+---
+
+## Part 3: Attack Your Own Budget
+
+We built an adversarial test suite (`proofs/adversarial_budget.py`) covering 4 attack vectors against our routing and budget controller:
+
+```bash
+uv run python proofs/adversarial_budget.py --principal demo/manish --budget 0.0003
+```
+
+### Adversarial Results Summary
+```
+============================================================
+ADVERSARIAL TEST RESULTS
+============================================================
+  A_runaway_loop                  PASS ✓  BudgetRefused triggered; total spend capped
+  B_unaffordable                  PASS ✓  Micro-budget ($0.000001) refused prior to provider call
+  C_cascade_climb                 PASS ✓  Escalation capped by budget ceiling (1 downgrade, 0 breach)
+  D_metering_verification         PASS ✓  Ledger calls match transport calls exactly (1 == 1)
+
+✓ All adversarial scenarios passed — budget guard is effective.
+```
+
+1. **Scenario A (Runaway Loop)**: An agent loop repeatedly posting tasks hit `BudgetRefused` after budget depletion, proving the hard stop works regardless of agent intent.
+2. **Scenario B (Unaffordable Tier)**: Requesting a run with a micro-budget ($0.000001) resulted in immediate refusal with zero provider calls made.
+3. **Scenario C (Cascade Climb)**: Under budget constraint covering Economy only, an escalating hard task was downgraded and capped by the controller, preventing wallet exhaustion.
+4. **Scenario D (Metering Verification)**: Every transport call recorded by `MeteredTransport` strictly matched the ledger charge count.
+
+---
+
+## Reproduction Instructions
+
+To reproduce all proofs and test suites from a fresh checkout:
+
+```bash
+# 1. Start the glc_v4 gateway (Terminal 1)
+cd glc_v4
+uv sync
+uv run glc serve
+
+# 2. Verify health (Terminal 2)
+curl http://127.0.0.1:8111/healthz
+
+# 3. Run gateway unit tests
+cd glc_v4
+uv run pytest -q
+
+# 4. Run S15Code unit tests
+cd S15Code
+uv sync
+uv run pytest -q
+
+# 5. Run the 5 core proofs
+cd S15Code
+uv run python proofs/p2_budget_holds.py --task "What is the capital of France?" --budget 0.02 --principal demo/manish
+uv run python proofs/p3_denial_of_wallet.py --task "What is 2+2?" --budget 0.001 --principal demo/manish
+uv run python proofs/p4_trace_export.py --task "Summarise budget enforcement." --budget 0.02 --principal demo/manish
+uv run python proofs/p7_cross_model_ladder.py --task "List 6 primes > 50." --budget 0.05 --principal demo/manish
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/code_review.jsonl --principal demo/code_review
+
+# 6. Run the adversarial budget attack
+uv run python proofs/adversarial_budget.py --principal demo/manish --budget 0.0003
+```
+

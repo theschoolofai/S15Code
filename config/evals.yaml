@@ -108,15 +108,15 @@ judge:
   panel:
     - name: judge_a
       request:
-        provider: cerebras
-        model: zai-glm-4.7
+        provider: gemini
+        model: gemini-2.5-flash
         reasoning: "off"
         max_tokens: 500
         temperature: 0
     - name: judge_b
       request:
-        provider: openrouter
-        model: nvidia/nemotron-3-super-120b-a12b:free
+        provider: nvidia
+        model: meta/llama-3.1-8b-instruct
         reasoning: "off"
         max_tokens: 700
         temperature: 0
