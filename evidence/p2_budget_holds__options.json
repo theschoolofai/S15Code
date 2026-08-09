@@ -1,0 +1,165 @@
+{
+  "proof": "p2_budget_holds",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "For an iron condor collecting 60 credit on a 75-lot, state the max loss per lot.",
+    "budget": 0.02,
+    "principal": "tradon/s15/options",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/shwethd/Desktop/EAGv3/Session15/S15Code/config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "declared": "ceiling 0.02000000  spent 0.00030725  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "generous": "ceiling 1.19160000  spent 0.00413100  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "tight": "ceiling 0.05100063  spent 0.00030725  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "impossible": "ceiling 0.00000056  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -",
+    "currency": "USD",
+    "ladder": "economy < standard < frontier",
+    "models charged": [
+      "gemini-3.1-flash-lite",
+      "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    ],
+    "transport failures": "0 (gateway errors; no tokens reported, so not charged)"
+  },
+  "checks": [
+    {
+      "claim": "no run spends past its ceiling",
+      "ok": true,
+      "observed": "0 breaches"
+    },
+    {
+      "claim": "a tight allowance downgrades the tier the node asked for",
+      "ok": true,
+      "observed": "1 downgrades, 0 branches, requested ['frontier'] -> charged ['standard']"
+    },
+    {
+      "claim": "an unaffordable ceiling refuses instead of overspending",
+      "ok": true,
+      "observed": "0 calls, 1 refusals, spent 0.0"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "3 calls, all charged"
+    },
+    {
+      "claim": "the declared budget produced a metered run",
+      "ok": true,
+      "observed": "1 calls, spent 0.00030725"
+    }
+  ],
+  "detail": {
+    "runs": {
+      "declared": {
+        "ceiling": 0.02,
+        "spent": 0.00030724999999999996,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 1.677,
+        "run_id": "run-14f935939e60"
+      },
+      "generous": {
+        "ceiling": 1.1916,
+        "spent": 0.004131,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+        ],
+        "seconds": 6.709,
+        "run_id": "run-398e54680e97"
+      },
+      "tight": {
+        "ceiling": 0.051000625,
+        "spent": 0.00030724999999999996,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 1.439,
+        "run_id": "run-8da1dd16f71d"
+      },
+      "impossible": {
+        "ceiling": 5.64e-07,
+        "spent": 0.0,
+        "calls": 0,
+        "transport_calls": 0,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 1,
+        "status": "failed",
+        "tiers_charged": [],
+        "tiers_requested": [],
+        "models": [],
+        "seconds": 0.036,
+        "run_id": "run-8594a2496e62"
+      }
+    }
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "runtime_url": "http://127.0.0.1:8113",
+  "gateway_url": "http://127.0.0.1:8111",
+  "jaeger_url": "http://127.0.0.1:16686",
+  "runs": [
+    {
+      "label": "trivial_fact",
+      "prompt": "What is the capital city of Australia? Reply with the city name only.",
+      "budget_usd": 0.02,
+      "principal": "course/s15/floor/trivial",
+      "status": "completed",
+      "answer": "Canberra",
+      "served": {
+        "answer": {
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "tier": "frontier",
+          "state": "succeeded"
+        },
+        "recall": {
+          "provider": null,
+          "model": null,
+          "tier": "economy",
+          "state": "succeeded"
+        }
+      },
+      "events": [
+        {
+          "seq": 73,
+          "kind": "run_started",
+          "node": null
+        },
+        {
+          "seq": 74,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 75,
+          "kind": "task_started",
+          "node": "recall"
+        },
+        {
+          "seq": 76,
+          "kind": "task_succeeded",
+          "node": "recall"
+        },
+        {
+          "seq": 77,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 78,
+          "kind": "task_started",
+          "node": "answer"
+        },
+        {
+          "seq": 79,
+          "kind": "task_succeeded",
+          "node": "answer"
+        },
+        {
+          "seq": 80,
+          "kind": "graph_patched",
+          "node": null
+        }
+      ],
+      "jaeger_trace_ids": [
+        "f24b3de29ad91948cb875322063097ed"
+      ],
+      "jaeger_query_url": [
+        "http://127.0.0.1:16686/api/traces/f24b3de29ad91948cb875322063097ed"
+      ],
+      "span_kinds": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "span_cost_usd": 8.6e-05,
+      "span_input_tokens": 332,
+      "span_output_tokens": 2,
+      "exported_over_the_wire": true,
+      "ledger_rows": [
+        {
+          "id": 676,
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 332,
+          "output_tokens": 2,
+          "usd": 8.6e-05,
+          "status": "ok",
+          "tier": null,
+          "agent": "s15_answer",
+          "tenant": null,
+          "project": null
+        }
+      ],
+      "ledger_total_usd": 8.6e-05
+    },
+    {
+      "label": "moderate_math",
+      "prompt": "A tank holds 240 litres of a 15% salt solution. How many litres must be drained and replaced with pure water so the tank again holds 240 litres at 9% salt? Give the number of litres.",
+      "budget_usd": 0.02,
+      "principal": "course/s15/floor/moderate",
+      "status": "completed",
+      "answer": "To achieve a 9% salt concentration in a 240-litre tank that currently holds a 15% salt solution, you must drain and replace 96 litres with pure water.\n\nThis is calculated by determining the initial salt content (36 litres) and setting up an equation based on the target salt content (21.6 litres) after removing $x$ litres of the 15% solution: $36 - 0.15x = 21.6$, which results in $x = 96$ [source: run://run-770bbdc235b0/answer, run://run-9943e14b69ca/answer].",
+      "served": {
+        "answer": {
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "tier": "frontier",
+          "state": "succeeded"
+        },
+        "recall": {
+          "provider": null,
+          "model": null,
+          "tier": "economy",
+          "state": "succeeded"
+        }
+      },
+      "events": [
+        {
+          "seq": 81,
+          "kind": "run_started",
+          "node": null
+        },
+        {
+          "seq": 82,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 83,
+          "kind": "task_started",
+          "node": "recall"
+        },
+        {
+          "seq": 84,
+          "kind": "task_succeeded",
+          "node": "recall"
+        },
+        {
+          "seq": 85,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 86,
+          "kind": "task_started",
+          "node": "answer"
+        },
+        {
+          "seq": 87,
+          "kind": "task_succeeded",
+          "node": "answer"
+        },
+        {
+          "seq": 88,
+          "kind": "graph_patched",
+          "node": null
+        }
+      ],
+      "jaeger_trace_ids": [
+        "d8251f6f1fa8eecbd6f6172a8aadd4dd"
+      ],
+      "jaeger_query_url": [
+        "http://127.0.0.1:16686/api/traces/d8251f6f1fa8eecbd6f6172a8aadd4dd"
+      ],
+      "span_kinds": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "span_cost_usd": 0.00043725,
+      "span_input_tokens": 831,
+      "span_output_tokens": 153,
+      "exported_over_the_wire": true,
+      "ledger_rows": [
+        {
+          "id": 677,
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 831,
+          "output_tokens": 153,
+          "usd": 0.00043725000000000003,
+          "status": "ok",
+          "tier": null,
+          "agent": "s15_answer",
+          "tenant": null,
+          "project": null
+        }
+      ],
+      "ledger_total_usd": 0.00043725
+    },
+    {
+      "label": "tight_ceiling",
+      "prompt": "Explain in two sentences why a spend budget must be enforced in code.",
+      "budget_usd": 0.0004,
+      "principal": "course/s15/floor/tight",
+      "status": "failed",
+      "answer": "",
+      "served": {
+        "answer": {
+          "provider": null,
+          "model": null,
+          "tier": "frontier",
+          "state": "failed"
+        },
+        "recall": {
+          "provider": null,
+          "model": null,
+          "tier": "economy",
+          "state": "succeeded"
+        }
+      },
+      "events": [
+        {
+          "seq": 89,
+          "kind": "run_started",
+          "node": null
+        },
+        {
+          "seq": 90,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 91,
+          "kind": "task_started",
+          "node": "recall"
+        },
+        {
+          "seq": 92,
+          "kind": "task_succeeded",
+          "node": "recall"
+        },
+        {
+          "seq": 93,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 94,
+          "kind": "task_started",
+          "node": "answer"
+        },
+        {
+          "seq": 95,
+          "kind": "task_failed",
+          "node": "answer"
+        },
+        {
+          "seq": 96,
+          "kind": "graph_patched",
+          "node": null
+        }
+      ],
+      "jaeger_trace_ids": [
+        "6cffd57db1b349367c56425585cff2ab"
+      ],
+      "jaeger_query_url": [
+        "http://127.0.0.1:16686/api/traces/6cffd57db1b349367c56425585cff2ab"
+      ],
+      "span_kinds": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "run": 1
+      },
+      "span_cost_usd": 0,
+      "span_input_tokens": 0,
+      "span_output_tokens": 0,
+      "exported_over_the_wire": true,
+      "ledger_rows": [],
+      "ledger_total_usd": 0
+    },
+    {
+      "label": "impossible_ceiling",
+      "prompt": "Compare two approaches to bounding agent spend.",
+      "budget_usd": 4e-07,
+      "principal": "course/s15/floor/impossible",
+      "status": "failed",
+      "answer": "",
+      "served": {
+        "answer": {
+          "provider": null,
+          "model": null,
+          "tier": "frontier",
+          "state": "failed"
+        },
+        "recall": {
+          "provider": null,
+          "model": null,
+          "tier": "economy",
+          "state": "succeeded"
+        }
+      },
+      "events": [
+        {
+          "seq": 97,
+          "kind": "run_started",
+          "node": null
+        },
+        {
+          "seq": 98,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 99,
+          "kind": "task_started",
+          "node": "recall"
+        },
+        {
+          "seq": 100,
+          "kind": "task_succeeded",
+          "node": "recall"
+        },
+        {
+          "seq": 101,
+          "kind": "graph_patched",
+          "node": null
+        },
+        {
+          "seq": 102,
+          "kind": "task_started",
+          "node": "answer"
+        },
+        {
+          "seq": 103,
+          "kind": "task_failed",
+          "node": "answer"
+        },
+        {
+          "seq": 104,
+          "kind": "graph_patched",
+          "node": null
+        }
+      ],
+      "jaeger_trace_ids": [
+        "6c8cfbeb2c5cb91f3cc21581640daeae"
+      ],
+      "jaeger_query_url": [
+        "http://127.0.0.1:16686/api/traces/6c8cfbeb2c5cb91f3cc21581640daeae"
+      ],
+      "span_kinds": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "run": 1
+      },
+      "span_cost_usd": 0,
+      "span_input_tokens": 0,
+      "span_output_tokens": 0,
+      "exported_over_the_wire": true,
+      "ledger_rows": [],
+      "ledger_total_usd": 0
+    }
+  ]
+}
