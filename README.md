@@ -314,6 +314,25 @@ final run carries **zero transport failures** — but the policy-level lesson
 stands: **a cascade must distinguish "the model failed" from "the transport
 failed", and only the first justifies climbing**.
 
+**(c) Part of what the ladder billed as "capability" was my own token cap.**
+Every economy attempt on the four escalated tasks stopped at exactly
+`stop_reason=max_tokens` — the rung's 512-token output cap, sized for short
+computational answers, not multi-part deliverables (two attempts returned
+**zero visible characters**: the fully-billed empty answer that opens the
+session). `proofs/probe_truncation.py` re-asks the same model the same four
+tasks at a deliverable-sized cap (1500): r04 completes cleanly (`end_turn`) and
+r05 recovers **all** of its required content — so at least some escalations
+bought a bigger *model* when the task only needed a bigger *cap*, at ~4× the
+price. But not all: r06/r07 still miss required content at 1500, so genuine
+capability gaps remain, and the two probe runs disagreed on which tasks recover
+— the §12 non-reproducibility caveat applies to this probe too. The fix
+(borrowed from the strongest peer submission on this point): **size each rung's
+`max_tokens` to the task class's answer shape, because max_tokens is not just a
+cost cap — it is the worst case the admission controller prices AND a hidden
+failure mode for any answer that does not fit.** Left as configured here so the
+published numbers stay honest to the policy as measured; re-running with a
+right-sized economy cap is a one-line config change a reviewer can try.
+
 ### 7. The meta-cost, stated
 
 Judging the mixed experiment cost **$0.230 across 140 calls — 0.78× the entire
@@ -360,6 +379,7 @@ uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/options_mixed.json
 uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/options_trading.jsonl \
   --budget 0.10 --principal tradon/s15/options --label _options
 uv run python proofs/probe_rungs.py                         # per-rung correctness vs a hidden key
+uv run python proofs/probe_truncation.py                    # capability failure vs token-cap failure (§6c)
 
 # 4. The adversarial test (Part 3)
 uv run python proofs/attack_wallet.py --rounds 40 --ceiling 0.02 --max-tokens 512

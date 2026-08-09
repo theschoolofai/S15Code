@@ -1,0 +1,99 @@
+{
+  "gateway": "http://127.0.0.1:8117",
+  "rung": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "reasoning": "off"
+  },
+  "caps_compared": [
+    512,
+    1500
+  ],
+  "rows": [
+    {
+      "id": "r04_sizing_critique",
+      "caps": {
+        "512": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 512,
+          "visible_chars": 1544,
+          "content_hits": 3,
+          "content_required": 3,
+          "cost": 0.00041955
+        },
+        "1500": {
+          "stop_reason": "end_turn",
+          "output_tokens": 1326,
+          "visible_chars": 4772,
+          "content_hits": 3,
+          "content_required": 3,
+          "cost": 0.00103005
+        }
+      }
+    },
+    {
+      "id": "r05_expiry_pin",
+      "caps": {
+        "512": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 512,
+          "visible_chars": 1356,
+          "content_hits": 2,
+          "content_required": 4,
+          "cost": 0.0004314
+        },
+        "1500": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 1500,
+          "visible_chars": 4735,
+          "content_hits": 4,
+          "content_required": 4,
+          "cost": 0.0011724
+        }
+      }
+    },
+    {
+      "id": "r06_stt_trap",
+      "caps": {
+        "512": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 512,
+          "visible_chars": 1337,
+          "content_hits": 2,
+          "content_required": 3,
+          "cost": 0.00043185
+        },
+        "1500": {
+          "stop_reason": "end_turn",
+          "output_tokens": 1161,
+          "visible_chars": 4024,
+          "content_hits": 2,
+          "content_required": 3,
+          "cost": 0.0009186
+        }
+      }
+    },
+    {
+      "id": "r07_hedge_review",
+      "caps": {
+        "512": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 512,
+          "visible_chars": 1019,
+          "content_hits": 0,
+          "content_required": 4,
+          "cost": 0.0004236
+        },
+        "1500": {
+          "stop_reason": "max_tokens",
+          "output_tokens": 1500,
+          "visible_chars": 2290,
+          "content_hits": 2,
+          "content_required": 4,
+          "cost": 0.0011646
+        }
+      }
+    }
+  ],
+  "fully_recovered_at_larger_cap": 1
+}
