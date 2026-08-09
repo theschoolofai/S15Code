@@ -1,0 +1,72 @@
+# Capability tiers for the travel-ops disruption recovery workload.
+#
+# Three rungs, three providers, monotonically rising cost. Each rung was chosen
+# for a specific class of work in the travel-ops task set:
+#
+#   economy    classification and lookup (tasks 1-5): high-volume, short output
+#   standard   structured output and boundary logic (tasks 6-10): format matters
+#   frontier   multi-constraint reasoning and adversarial resistance (tasks 11-15)
+#
+# max_tokens is set per-rung based on what the task class actually produces, not
+# a round number. A classification task never produces 512 tokens; a rebooking
+# analysis never produces 4096. Tight ceilings make the projected cost closer to
+# the real cost, which makes the policy's routing decisions better.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: cerebras
+      model: zai-glm-4.7
+      reasoning: "off"
+      max_tokens: 256
+      temperature: 0
+    price_model: zai-glm-4.7
+    projected_input_tokens: 800
+    projected_output_tokens: 200
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 768
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 2000
+    projected_output_tokens: 600
+
+  frontier:
+    request:
+      provider: openrouter
+      model: openai/gpt-4.1
+      max_tokens: 1536
+      temperature: 0
+    price_model: openai/gpt-4.1
+    projected_input_tokens: 4000
+    projected_output_tokens: 1200
+
+# Role-to-tier mapping. The travel-ops workload routes research and retrieval
+# through economy, structured synthesis through standard, and the final
+# evidence-based answer through frontier.
+role_tiers:
+  default: standard
+  memory_recall: economy
+  remember_explicit_fact: economy
+  web_search: economy
+  fetch_url: economy
+  index_file: economy
+  list_directory: economy
+  read_file: economy
+  create_reminder: economy
+  researcher: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  distiller: standard
+  content: standard
+  coder_validator: standard
+  compose_surface: standard
+  answer_with_evidence: frontier

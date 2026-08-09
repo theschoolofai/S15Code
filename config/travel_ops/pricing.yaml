@@ -1,0 +1,35 @@
+# Per-model pricing for the travel-ops ladder.
+#
+# Three ladder rungs plus every other model the gateway can reach, so an
+# unexpected model is priced rather than silently free.
+
+currency: USD
+unit_tokens: 1000000
+
+# Unknown models fall back here. Deliberately expensive so an unlisted model
+# is never silently free.
+default:
+  input: 1.00
+  output: 5.00
+
+models:
+  # LADDER rung 1 (economy): Cerebras zai-glm-4.7
+  zai-glm-4.7: {input: 0.50, output: 0.50}
+  # LADDER rung 2 (standard): Gemini flash-lite
+  gemini-3.1-flash-lite: {input: 0.25, output: 1.50}
+  gemini-3.1-flash: {input: 0.50, output: 3.00}
+  gemini-3.1-pro: {input: 2.00, output: 12.00}
+  # LADDER rung 3 (frontier): OpenRouter GPT-4.1
+  openai/gpt-4.1: {input: 2.00, output: 8.00}
+  # Other reachable models
+  openai/gpt-oss-120b: {input: 0.15, output: 0.75}
+  deepseek-ai/deepseek-v4-pro: {input: 0.14, output: 0.28}
+  meta/llama-3.1-8b-instruct: {input: 0.0, output: 0.0}
+  nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
+  gemma4:31b: {input: 0.0, output: 0.0}
+  claude-haiku-4-5: {input: 1.00, output: 5.00}
+  claude-sonnet-5: {input: 3.00, output: 15.00}
+  ollama: {input: 0.0, output: 0.0}
+
+cache_read_multiplier: 0.1
+cache_write_multiplier: 1.25

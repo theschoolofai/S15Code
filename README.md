@@ -210,3 +210,190 @@ The generated protobuf modules under `s15code/core/a2a/` keep their original
 filenames. They are reproduced verbatim because the serialized descriptor is
 keyed on the `.proto` file name, and hand-editing generated gencode is worse than
 a stale name.
+
+
+# Session 15 Assignment: Budget-Aware LLM Routing for Irregular Travel Operations
+
+**Author:** Kumari Astha  
+**Domain:** Airline disruption recovery — policy-safe passenger rebooking under time, inventory, and cost constraints  
+**Ladder:** cerebras/zai-glm-4.7 (economy) → gemini/gemini-3.1-flash-lite (standard) → openrouter/openai/gpt-4.1 (frontier)
+
+---
+
+## The Workload
+
+Fifteen tasks modelling an airline irregular-operations desk. Five trivial (classification, lookup), five moderate (structured JSON output, boundary-condition policy), five hard (multi-constraint rebooking, adversarial prompt injection, root-cause trace diagnosis). Every task has a single objectively verifiable answer and a rubric expectation precise enough for the judge panel to score 0–4.
+
+Task file: [`proofs/tasks/travel_ops.jsonl`](proofs/tasks/travel_ops.jsonl)
+
+## The Ladder
+
+Three rungs, three providers, monotonically rising cost. Each rung was chosen for a specific class of work:
+
+| Tier | Provider | Model | Input $/Mtok | Output $/Mtok | max_tokens | reasoning |
+|------|----------|-------|-------------|--------------|------------|-----------|
+| economy | cerebras | zai-glm-4.7 | 0.50 | 0.50 | 256 | off |
+| standard | gemini | gemini-3.1-flash-lite | 0.25 | 1.50 | 768 | off |
+| frontier | openrouter | openai/gpt-4.1 | 2.00 | 8.00 | 1536 | — |
+
+`max_tokens` is set per-rung based on what the task class actually produces, not a round number. Tight ceilings make the projected cost closer to the real cost, which makes the policy's routing decisions better.
+
+Config files: [`config/travel_ops/`](config/travel_ops/)
+
+## The Budget Policy
+
+| Parameter | Value | Why |
+|-----------|-------|-----|
+| default_budget | $0.03 | enough for frontier on the hardest tasks, tight enough that runaway loops downgrade and refuse |
+| reserve_fraction | 0.20 | holds 20% so the terminal answer node is never starved by upstream research |
+| downgrade_at | 0.50 | at 50% spend, start stepping down the ladder |
+| refuse_at | 0.90 | at 90% spend, refuse all further calls |
+| headroom_fraction | 0.02 | last admitted call never lands exactly on zero |
+| max_calls_per_run | 40 | denial-of-wallet defence, independent of price estimates |
+| max_calls_per_node | 5 | prevents a single retrying node from spinning |
+
+Judge panel: groq/openai/gpt-oss-120b + nvidia/meta/llama-3.1-8b-instruct — disjoint from the answering ladder so no model judges its own output.
+
+---
+
+## Part 1: Reproduce the Floor
+
+### Suites
+
+| Suite | Result |
+|-------|--------|
+| GLC v4 pytest | 448 passed, 8 skipped, 1 warning (19.04s) |
+| S15Code proofs p2, p3, p4, p7 | ALL CHECKS PASSED |
+
+### Proofs
+
+| Proof | What it tests | Result |
+|-------|--------------|--------|
+| p2_budget_holds | ceiling holds, downgrades work, exhaustion refuses, every call metered | 5/5 PASS |
+| p3_denial_of_wallet | runaway loop capped at max_calls_per_run=40 | 6/6 PASS. 200 rounds, 40 admitted, 160 refused. Uncontrolled bill: ~$3.16 |
+| p4_trace_export | journal → OTel → Jaeger pipeline, span costs sum to ledger | 15/15 PASS. Delta 0.000e+00 |
+| p7_cross_model_ladder | each rung is distinct model/provider, downgrades change the model | 10/10 PASS. Projected spread 90×, measured spread 10.24× |
+
+Proof outputs: [`proofs/out/`](proofs/out/)
+
+### Four Evidence Captures
+
+| Task | Difficulty | Answer | Correct? | Tier | Model | Cost (USD) | Run ID | Jaeger Trace ID |
+|------|-----------|--------|----------|------|-------|------------|--------|-----------------|
+| t01 delay_minutes | trivial | 75 | ✓ | frontier | openai/gpt-4.1 | $0.000508 | run-9c4f46d43de8 | 0b4683f5e34eac4520904678834d69e6 |
+| t08 evidence_conflict | moderate | {"claim_status":"contradicted","verified_event":"passenger_no_show"} | ✓ | frontier | openai/gpt-4.1 | $0.000910 | run-7afb61e9e1cf | f2c4f2ad68a27221b4da9cc6cbcdb14f |
+| t11 rebooking_option | hard | A | ✓ | frontier | openai/gpt-4.1 | $0.001474 | run-bab43e1364d6 | 01ab16b47f76a04ba171c561e41316fd |
+| t15 trace_diagnosis | hard | correct JSON | ✓ | frontier | openai/gpt-4.1 | $0.002000 | run-68c6716d8b4e | b9a06554e75891217cd1e46cd8ac27b1 |
+
+Full JSON for each run: [`evidence/part1/`](evidence/part1/)
+
+### Jaeger Trace
+Span tree for run-bab43e1364d6 (t11, hard multi-constraint rebooking). Duration 1.6s, 10 spans, depth 4:
+
+![Jaeger span tree showing run → agent_loop_1 (plan, node recall) → agent_loop_2 (plan, node answer → chat openai/gpt-4.1) → agent_loop_3 (plan, finish)](evidence/jaeger_trace_t11_tree.png)
+
+![Provider call span tags showing s15.cost, gen_ai.usage.input_tokens, gen_ai.usage.output_tokens, gen_ai.provider.name, gen_ai.request.model](evidence/jaeger_trace_t11_tags.png)
+
+
+### Honest Limitation
+
+All four tasks routed to the frontier tier regardless of difficulty. The `role_tiers` mapping sends every `answer_with_evidence` node to frontier — routing is by graph role, not by task complexity. A trivial arithmetic task ($0.000508) used the same model as a hard multi-constraint reasoning task ($0.002000). The 4× cost difference comes purely from token count, not model selection. The budget policy never had a chance to downgrade because spend pressure never crossed 0.5 on any single run. This is the inefficiency Part 2 quantifies.
+
+---
+
+## Part 2: Measured Cost Per Call and Cost Per Resolved Task
+
+### Strategy Comparison
+
+p1_cost_per_task ran all 15 tasks through three strategies:
+
+| Strategy | Total Spend | Calls | Resolved | Cost/Call | Cost/Resolved Task |
+|----------|------------|-------|----------|-----------|-------------------|
+| A: Always frontier | $0.00783 | 15 | 12/15 (80%) | $0.000522 | $0.000653 |
+| B: Always cheapest (retries) | $0.00034 | 5 | 2/15 (13%) | $0.000069 | $0.000172 |
+| C: Budget-aware cascade | $0.00348 | 19 | 13/15 (87%) | $0.000183 | $0.000267 |
+
+**Strategy C (the cascade) wins on both axes.** It resolves the most tasks (13/15 — one more than frontier) at 59.1% lower cost per resolved task than always-frontier.
+
+### Resolution by Difficulty
+
+| Difficulty | A (frontier) | B (cheapest) | C (cascade) |
+|-----------|-------------|-------------|-------------|
+| trivial (5) | 4 | 2 | 4 |
+| moderate (5) | 4 | 0 | 4 |
+| hard (5) | 4 | 0 | 5 |
+
+Strategy C resolved all 5 hard tasks. Strategy A missed one hard task (t15). Strategy B collapsed — 47 transport failures, most economy calls returned empty responses.
+
+### Break-Even Resolution Rate
+
+The break-even resolution rate is the point where the cheapest strategy's cost per resolved task equals the frontier's. Derived from the measured price spread and 3 retry attempts:
+
+- **B vs A:** 26.2%. Strategy B would need to resolve at least 26.2% of tasks to become cheaper per resolved task than frontier. At 13%, B is far below break-even — it's just bad, not trapped.
+- **B vs C:** 51.1%. Strategy B would need to resolve 51.1% of tasks to match the cascade's cost per resolved task.
+
+**The signature failure mode (cheap model trap) was NOT observed.** The economy model's resolution rate (13%) was too low for the trap to appear. travel-ops task set is genuinely harder for small models.
+
+### Where the Strategies Disagreed
+
+Strategy C resolved t15 (disruption trace diagnosis) on economy/standard, while Strategy A **failed** on frontier. This was reproduced in a retest: frontier consistently fails this task while the cascade succeeds on standard. The frontier model over-explains the problem and produces verbose output that the judge scores poorly; standard gives a more direct answer.
+
+Strategy C also resolved t12, t13, t14 (all hard tasks) on the economy tier in a single attempt — proving that some hard tasks don't need frontier at all.
+
+### One Task the Policy Got Wrong
+
+**t02_connection_validity** (trivial) failed across all three strategies. Root cause analysis:
+
+1. **Cerebras rate limiting** (503, RPM quota burned) prevented the cascade's economy-tier attempt entirely on Strategy C's first attempt.
+2. **Empty answer extraction** — even when the provider responded (Strategy A on frontier), the answer field was empty. The model returned verbose reasoning but p1's answer extraction produced an empty string. The same task succeeds through the full agent runtime (with the answer_with_evidence skill layer) because the skill's system prompt shapes the output.
+3. **Judge panel split** on Strategy C's second attempt (gemini) — one judge scored it resolved, the other didn't. The `meets_expectation` criterion fell below the 0.5 floor.
+
+**Cost wasted:** $0.000304 (A) + $0.000220 (B retries) + $0.000343 (C escalation) = $0.000867 across all strategies for zero resolved tasks.
+
+This failure reveals two things: (a) rate-limiting on free-tier APIs is a measurement artifact that affects reproducibility, and (b) the skill layer (system prompts, output formatting) adds real value beyond model selection — the same model fails on a bare call but succeeds when wrapped in the agent's answer_with_evidence skill.
+
+**t09_connection_failure_reason** (moderate) also failed across all strategies for similar reasons — empty answers on direct calls, successful through the full agent runtime.
+
+Proof output: [`evidence/part2/p1_cost_per_task.json`](evidence/part2/p1_cost_per_task.json)
+
+---
+
+## Part 3: Adversarial Budget Tests
+
+Four attacks against the budget policy, implemented in 
+[`evidence/part3/p8_adversarial_budget_adversarial.json`](evidence/part3/p8_adversarial_budget_adversarial.json)
+
+
+### Attack 1: Full Ladder Climb
+
+Sent a hard task explicitly through each rung of the ladder (economy → standard → frontier).
+
+| Tier | Cost | Provider/Model |
+|------|------|---------------|
+| economy | $0.000137 | cerebras/zai-glm-4.7 |
+| standard | $0.000141 | gemini/gemini-3.1-flash-lite |
+| frontier | $0.000788 | openrouter/openai/gpt-4.1 |
+
+**Result:** All three tiers visited. Cost rises monotonically (5.7× from economy to frontier). The ladder is real — each rung routes to a different model at a different price. ✅
+
+### Attack 2: Budget Exhaustion
+
+Set a budget of $0.000038 — below the projected cost of a single economy call ($0.000528 projected).
+
+**Result:** Zero calls admitted, one refusal. The controller refused all work rather than risking overspend. Spend: $0.00. The projection-based admission gate prevents calls whose worst case exceeds the budget. ✅
+
+### Attack 3: Per-Node Call Ceiling
+
+Gave a generous budget ($0.30) but called from the same `node_id` repeatedly, targeting `max_calls_per_node: 5`.
+
+**Result:** 5 calls admitted, 6th refused. The call ceiling is independent of money — a retrying node cannot spin even with unlimited budget. ✅
+
+### Attack 4: Provider Failure After Token Consumption (Known Gap)
+
+**Documented, not demonstrated.** If a provider accepts a request, consumes tokens (incurring real cost), then returns a 5xx error, `MeteredTransport` records a failure with no charge. The budget ledger never sees the spend because `charge()` only runs on successful responses. The real money is gone at the provider but `budget.spent` is understated.
+
+This is structural: the gateway reports token counts only on success, so the controller has no token count to price. **Mitigation:** monitor provider-side billing independently of the agent's ledger. 
+
+Evidence output: [`evidence/part3/p8_adversarial_budget_adversarial.json`](evidence/part3/p8_adversarial_budget_adversarial.json)
+
+---

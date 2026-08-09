@@ -1,0 +1,32 @@
+# Budget policy for the travel-ops disruption recovery workload.
+#
+# A single disruption recovery session gets $0.03 — enough for the frontier tier
+# to answer the hardest tasks but tight enough that a runaway loop or a deep
+# graph under pressure will downgrade and eventually refuse.
+
+default_budget: 0.03
+
+# Hold back 20% so the terminal answer node is never starved by upstream research.
+reserve_fraction: 0.20
+
+# At 50% spend, start downgrading requested tiers one rung down.
+downgrade_at: 0.50
+
+# At 90% spend, refuse all further calls regardless of tier.
+refuse_at: 0.90
+
+# Keep 2% headroom so the last admitted call never lands exactly on zero.
+headroom_fraction: 0.02
+
+# Token estimation for admission: ~4 chars per token with a 25% safety factor.
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Hard ceiling on calls per run. Denial-of-wallet defence that does not depend
+# on price estimates being right.
+max_calls_per_run: 40
+
+# Hard ceiling per node, so a single retrying node cannot spin.
+max_calls_per_node: 5
+
+principals: {}
