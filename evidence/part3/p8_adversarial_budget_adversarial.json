@@ -1,0 +1,82 @@
+{
+  "proof": "p8_adversarial_budget",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "adversarial suite",
+    "budget": 0.03,
+    "principal": "travel-ops/s15/adversarial",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/home/kastha/projects/S15Code/config/travel_ops",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "zai-glm-4.7",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.03,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 40,
+      "max_calls_per_node": 5
+    }
+  },
+  "facts": {
+    "ladder": "economy < standard < frontier",
+    "thresholds": "{\"downgrade_at\": 0.5, \"refuse_at\": 0.9, \"max_calls_per_run\": 40, \"max_calls_per_node\": 5}",
+    "attack_1_ladder_climb": "tiers visited: ['economy', 'standard', 'frontier']  cost per tier: [('economy', 0.00013739999999999998), ('standard', 0.00014125), ('frontier', 0.000788)]  total spent: 0.00106665  calls: 3  downgrades: 0",
+    "attack_2_budget_exhaustion": "budget: 0.00003800  calls made: 0  refused after: True  spent: 0.00000000  pressure: 0.0000  refusals: 1",
+    "attack_3_per_node_limit": "max_calls_per_node: 5  calls made: 5  refused after: True  spent: 0.00010000  refusals: 1",
+    "attack_4_provider_failure_gap": "KNOWN GAP: If a provider accepts a request, processes tokens (incurring real cost), then returns a 5xx error, MeteredTransport records a failure with no charge. The budget ledger never sees the spend because charge() only runs on successful responses. The real money is gone at the provider but the run's budget.spent is understated. This gap is structural: the gateway reports tokens only on success, so the controller has no token count to price. Mitigation: monitor provider-side billing independently of the agent's ledger. PR #2 by BavyaBalakrishnan demonstrated this with a mock provider that consumed tokens then raised.",
+    "total transport calls": "8",
+    "total transport failures": "0"
+  },
+  "checks": [
+    {
+      "claim": "ladder climb visited all three tiers",
+      "ok": true,
+      "observed": "visited ['economy', 'standard', 'frontier']"
+    },
+    {
+      "claim": "each rung costs more than the one below it",
+      "ok": true,
+      "observed": "cheapest: $0.000137, most expensive: $0.000788"
+    },
+    {
+      "claim": "tight budget either refused or stopped after minimal spend",
+      "ok": true,
+      "observed": "made 0 calls, spent 0.00000000, ceiling 0.00003800, refused: True"
+    },
+    {
+      "claim": "spend never exceeded the tight ceiling",
+      "ok": true,
+      "observed": "spent 0.00000000 <= ceiling 0.00003800"
+    },
+    {
+      "claim": "per-node call ceiling stopped a retrying node",
+      "ok": true,
+      "observed": "made 5 calls, ceiling is 5"
+    },
+    {
+      "claim": "provider failure gap is documented as a known limitation",
+      "ok": true,
+      "observed": "gap acknowledged \u2014 provider-side spend on failed calls is not metered"
+    }
+  ],
+  "detail": {}
+}

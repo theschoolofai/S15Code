@@ -83,15 +83,13 @@ tiers:
 
   frontier:
     request:
-      provider: github
+      provider: openrouter
       model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
-      max_tokens: 4096
+      max_tokens: 1536
       temperature: 0
     price_model: openai/gpt-4.1
-    projected_input_tokens: 6000
-    projected_output_tokens: 2000
+    projected_input_tokens: 4000
+    projected_output_tokens: 1200
 
 # Which tier a graph ROLE asks for. Keys are the runtime's own skill/role names
 # (never task content), so a node "declares the tier it needs" by declaring its

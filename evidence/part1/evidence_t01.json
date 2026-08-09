@@ -1,0 +1,357 @@
+{
+    "run_id": "run-9c4f46d43de8",
+    "status": "completed",
+    "answer": "75",
+    "provider": "openrouter",
+    "model": "openai/gpt-4.1",
+    "graph": {
+        "finished": true,
+        "nodes": {
+            "answer": {
+                "id": "answer",
+                "skill": "answer_with_evidence",
+                "input": {
+                    "query": "A fictional flight was scheduled to depart at 14:10 and actually departed at 15:25 on the same day. How many minutes late was the flight? Return only the integer."
+                },
+                "metadata": {
+                    "tier": "frontier"
+                },
+                "state": "succeeded",
+                "result": {
+                    "answer": "75",
+                    "provider": "openrouter",
+                    "model": "openai/gpt-4.1",
+                    "evidence_count": 0,
+                    "metered_calls": [
+                        {
+                            "sequence": 1,
+                            "node_id": "answer",
+                            "role": "answer_with_evidence",
+                            "tier": "frontier",
+                            "provider": "openrouter",
+                            "model": "openai/gpt-4.1",
+                            "input_tokens": 246,
+                            "output_tokens": 2,
+                            "cache_read_tokens": 0,
+                            "cache_write_tokens": 0,
+                            "cost": 0.0005079999999999999,
+                            "projected_cost": 0.01306,
+                            "latency_ms": 1225.0,
+                            "started_at": 1786275316.9809678,
+                            "decision": "proceed",
+                            "requested_tier": "frontier",
+                            "requested_model": "openai/gpt-4.1",
+                            "reasoning": null,
+                            "budget_remaining": 0.029491999999999997,
+                            "budget_pressure": 0.01693333333333333
+                        }
+                    ],
+                    "budget_decisions": [
+                        {
+                            "action": "proceed",
+                            "node_id": "answer",
+                            "requested_tier": "frontier",
+                            "tier": "frontier",
+                            "model": "openai/gpt-4.1",
+                            "projected_cost": 0.01306,
+                            "allowance": 0.024,
+                            "remaining": 0.03,
+                            "pressure": 0.0,
+                            "ladder_steps": 0,
+                            "reason": "requested tier fits the node allowance"
+                        }
+                    ]
+                }
+            },
+            "recall": {
+                "id": "recall",
+                "skill": "memory_recall",
+                "input": {
+                    "query": "A fictional flight was scheduled to depart at 14:10 and actually departed at 15:25 on the same day. How many minutes late was the flight? Return only the integer."
+                },
+                "metadata": {
+                    "tier": "economy"
+                },
+                "state": "succeeded",
+                "result": {
+                    "hits": [],
+                    "metered_calls": [],
+                    "budget_decisions": []
+                }
+            }
+        },
+        "edges": [
+            [
+                "recall",
+                "answer"
+            ]
+        ]
+    },
+    "trace": {
+        "planner": {
+            "mode": "deterministic"
+        },
+        "agents": {
+            "answer": {
+                "agent": "answer_with_evidence",
+                "skill": "answer_with_evidence",
+                "state": "succeeded",
+                "provider": "openrouter",
+                "model": "openai/gpt-4.1",
+                "tier": "frontier"
+            },
+            "recall": {
+                "agent": "memory_recall",
+                "skill": "memory_recall",
+                "state": "succeeded",
+                "provider": null,
+                "model": null,
+                "tier": "economy"
+            }
+        }
+    },
+    "events": [
+        {
+            "sequence": 1,
+            "kind": "run_started",
+            "node_id": null,
+            "payload": {}
+        },
+        {
+            "sequence": 2,
+            "kind": "graph_patched",
+            "node_id": null,
+            "payload": {
+                "trigger_event": 1,
+                "reason": "first frontier selected for memory",
+                "add": [
+                    "recall"
+                ],
+                "connect": [],
+                "cancel": [],
+                "wait": [],
+                "resume": [],
+                "finish": false
+            }
+        },
+        {
+            "sequence": 3,
+            "kind": "task_started",
+            "node_id": "recall",
+            "payload": {
+                "skill": "memory_recall",
+                "agent": "memory_recall"
+            }
+        },
+        {
+            "sequence": 4,
+            "kind": "task_succeeded",
+            "node_id": "recall",
+            "payload": {
+                "hits": [],
+                "metered_calls": [],
+                "budget_decisions": []
+            }
+        },
+        {
+            "sequence": 5,
+            "kind": "graph_patched",
+            "node_id": null,
+            "payload": {
+                "trigger_event": 4,
+                "reason": "authorized retrieval completed",
+                "add": [
+                    "answer"
+                ],
+                "connect": [
+                    [
+                        "recall",
+                        "answer"
+                    ]
+                ],
+                "cancel": [],
+                "wait": [],
+                "resume": [],
+                "finish": false
+            }
+        },
+        {
+            "sequence": 6,
+            "kind": "task_started",
+            "node_id": "answer",
+            "payload": {
+                "skill": "answer_with_evidence",
+                "agent": "answer_with_evidence"
+            }
+        },
+        {
+            "sequence": 7,
+            "kind": "task_succeeded",
+            "node_id": "answer",
+            "payload": {
+                "answer": "75",
+                "provider": "openrouter",
+                "model": "openai/gpt-4.1",
+                "evidence_count": 0,
+                "metered_calls": [
+                    {
+                        "sequence": 1,
+                        "node_id": "answer",
+                        "role": "answer_with_evidence",
+                        "tier": "frontier",
+                        "provider": "openrouter",
+                        "model": "openai/gpt-4.1",
+                        "input_tokens": 246,
+                        "output_tokens": 2,
+                        "cache_read_tokens": 0,
+                        "cache_write_tokens": 0,
+                        "cost": 0.0005079999999999999,
+                        "projected_cost": 0.01306,
+                        "latency_ms": 1225.0,
+                        "started_at": 1786275316.9809678,
+                        "decision": "proceed",
+                        "requested_tier": "frontier",
+                        "requested_model": "openai/gpt-4.1",
+                        "reasoning": null,
+                        "budget_remaining": 0.029491999999999997,
+                        "budget_pressure": 0.01693333333333333
+                    }
+                ],
+                "budget_decisions": [
+                    {
+                        "action": "proceed",
+                        "node_id": "answer",
+                        "requested_tier": "frontier",
+                        "tier": "frontier",
+                        "model": "openai/gpt-4.1",
+                        "projected_cost": 0.01306,
+                        "allowance": 0.024,
+                        "remaining": 0.03,
+                        "pressure": 0.0,
+                        "ladder_steps": 0,
+                        "reason": "requested tier fits the node allowance"
+                    }
+                ]
+            }
+        },
+        {
+            "sequence": 8,
+            "kind": "graph_patched",
+            "node_id": null,
+            "payload": {
+                "trigger_event": 7,
+                "reason": "grounded answer produced",
+                "add": [],
+                "connect": [],
+                "cancel": [],
+                "wait": [],
+                "resume": [],
+                "finish": true
+            }
+        }
+    ],
+    "principal": "travel-ops",
+    "budget": {
+        "run_id": "run-9c4f46d43de8",
+        "principal": "travel-ops",
+        "currency": "USD",
+        "total": 0.03,
+        "spent": 0.0005079999999999999,
+        "remaining": 0.029491999999999997,
+        "pressure": 0.01693333333333333,
+        "reserve": 0.006,
+        "calls": 1,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "reservations": {},
+        "by_tier": {
+            "frontier": {
+                "calls": 1,
+                "cost": 0.0005079999999999999,
+                "input_tokens": 246,
+                "output_tokens": 2
+            }
+        },
+        "charges": [
+            {
+                "sequence": 1,
+                "node_id": "answer",
+                "role": "answer_with_evidence",
+                "tier": "frontier",
+                "provider": "openrouter",
+                "model": "openai/gpt-4.1",
+                "input_tokens": 246,
+                "output_tokens": 2,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "cost": 0.0005079999999999999,
+                "projected_cost": 0.01306,
+                "latency_ms": 1225.0,
+                "started_at": 1786275316.9809678,
+                "decision": "proceed",
+                "requested_tier": "frontier"
+            }
+        ],
+        "refusal_log": []
+    },
+    "economics": {
+        "directory": "/home/kastha/projects/S15Code/config/travel_ops",
+        "currency": "USD",
+        "tier_order": [
+            "economy",
+            "standard",
+            "frontier"
+        ],
+        "default_tier": "standard",
+        "tier_models": {
+            "economy": "zai-glm-4.7",
+            "standard": "gemini-3.1-flash-lite",
+            "frontier": "openai/gpt-4.1"
+        },
+        "default_budget": 0.03,
+        "thresholds": {
+            "downgrade_at": 0.5,
+            "refuse_at": 0.9,
+            "headroom_fraction": 0.02,
+            "reserve_fraction": 0.2,
+            "max_calls_per_run": 40,
+            "max_calls_per_node": 5
+        }
+    },
+    "allocations": [
+        {
+            "trigger_event": 1,
+            "frontier": [
+                "recall"
+            ],
+            "per_node": {
+                "recall": 0.024
+            },
+            "remaining": 0.03,
+            "tiers": {
+                "recall": "economy"
+            }
+        },
+        {
+            "trigger_event": 4,
+            "frontier": [
+                "answer"
+            ],
+            "per_node": {
+                "answer": 0.024
+            },
+            "remaining": 0.03,
+            "tiers": {
+                "answer": "frontier"
+            }
+        },
+        {
+            "trigger_event": 7,
+            "frontier": [],
+            "per_node": {},
+            "remaining": 0.029491999999999997,
+            "tiers": {}
+        }
+    ]
+}
