@@ -118,6 +118,52 @@ a span tree.
 Omit `budget` and the run behaves exactly as it did before economics existed —
 the layer is additive.
 
+## Part 1 — Reproduce the floor
+
+Both suites green against this checkout: **glc_v4 455 passed, 1 skipped** ·
+**S15Code 277 passed**. All five proofs run live against the gateway and pass —
+`p1_cost_per_task`, `p2_budget_holds`, `p3_denial_of_wallet`, `p4_trace_export`
+(the trace is fetched back **from Jaeger by ID** and its span costs sum to the
+ledger with zero delta), and `p7_cross_model_ladder`.
+
+### Four captured runs
+
+Captured by `proofs/capture_floor_runs.py` (machine-generated, committed as
+[`evidence/floor_runs.json`](evidence/floor_runs.json) — prompt, tier, model,
+ordered events, Jaeger trace ID, ledger rows and final answer for each). All
+four ran through `POST /v1/agent/runs` with a budget and a principal; the
+answering role requests **frontier** in every case, so what got *served* is the
+budget controller's decision. Every run's ordered event trace follows the same
+journal shape: `run_started → graph_patched → task_started(recall) →
+task_succeeded(recall) → graph_patched → task_started(answer) →
+task_{succeeded|failed}(answer) → graph_patched`.
+
+| | run 1 | run 2 | run 3 | run 4 |
+|---|---|---|---|---|
+| Prompt | capital of Australia (name only) | 240 L of 15% salt → 9%: litres to replace | why budgets must be enforced in code (2 sentences) | compare two approaches to bounding spend |
+| Budget | $0.02 | $0.02 | $0.0004 | $0.0000004 |
+| Tier requested | frontier | frontier | frontier | frontier |
+| Served | `gemini_1` / `gemini-3.1-flash-lite` (**downgraded**) | `gemini_1` / `gemini-3.1-flash-lite` (**downgraded**) | — (**refused pre-call**) | — (**refused pre-call**) |
+| Status / answer | completed — "Canberra" | completed — 96 litres, working shown | failed, `BudgetRefused` | failed, `BudgetRefused` |
+| Jaeger trace ID | `f24b3de29ad91948cb875322063097ed` | `d8251f6f1fa8eecbd6f6172a8aadd4dd` | `6cffd57db1b349367c56425585cff2ab` | `6c8cfbeb2c5cb91f3cc21581640daeae` |
+| Ledger | 1 row, $0.0000860 | 1 row, $0.00043725 | **0 rows, $0** | **0 rows, $0** |
+| Span cost == ledger | ✓ exact | ✓ exact | ✓ (both zero) | ✓ (both zero) |
+
+The refused runs are the controller working: the answer node **failed visibly**
+(`task_failed`, `BudgetRefused`) with zero provider contact, zero spans of kind
+`provider_call`, zero ledger rows.
+
+### One honest limitation the traces exposed
+
+In runs 1 and 2 the answering role asked for **frontier** and was silently
+served **standard** — the worst-case projection for the frontier rung did not
+fit the allowance, so the controller downgraded. The run response looks
+completely successful; only the trace (requested tier vs `gen_ai.request.model`
+on the provider-call span) reveals that the policy quietly substituted a
+cheaper model. A dashboard aggregating "success rate" would never show this:
+**the tier the caller asked for and the tier that answered are different facts,
+and only span-level telemetry keeps both.**
+
 ## Evidence — a routing & budget policy for an options-trading desk
 
 This is the Session 15 assignment, worked end to end on a real workload. The
@@ -272,6 +318,14 @@ stored by the gateway's boundary refusal recorder (the §9 "safest outcome was t
 least visible" fix). Note the admission is worst-case: after 2 real calls the
 *projected* next call exceeds the remaining budget, so it refuses while actual
 spend is still below the ceiling — conservative by design.
+
+Full machine-readable log of the attack — every admitted call's cost, every
+402's projected/shortfall numbers, and a sample of the recorder's stored
+envelopes — is committed at
+[`evidence/attack_wallet.json`](evidence/attack_wallet.json). Spend **before**
+the control is the extrapolated uncontrolled row above (clearly marked); spend
+**after** is the measured $0.01563 flatline against the $0.02 ceiling while 38
+further requests kept arriving and were refused.
 
 ### 6. A case my policy got wrong, and what it cost
 
