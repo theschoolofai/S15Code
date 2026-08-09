@@ -1,0 +1,122 @@
+{
+  "gateway": "http://127.0.0.1:8111",
+  "attack": {
+    "principal": "session:wallet-attack",
+    "rounds": 40,
+    "ceiling_usd": 0.02,
+    "frontier_model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "max_tokens": 512
+  },
+  "outcome": {
+    "admitted": 2,
+    "refused": 38,
+    "errors": 0,
+    "admitted_spend_usd": 0.01563,
+    "ledger_spent_usd": 0.01563,
+    "remaining_usd": 0.00437,
+    "uncontrolled_extrapolated_usd": 0.3126,
+    "mean_admitted_cost_usd": 0.007815
+  },
+  "telemetry": {
+    "new_refusals_recorded": 38,
+    "sample_recorded_402": [
+      {
+        "ts": 1786239477.970111,
+        "status": 402,
+        "method": "POST",
+        "path": "/v1/chat",
+        "detail": {
+          "error": "budget_exceeded",
+          "code": "budget_exceeded",
+          "message": "session:wallet-attack would exceed its day budget: spent $0.015630 of $0.020000, this call projects $0.007803 ($0.004370 remaining)",
+          "principal": "session:wallet-attack",
+          "dimension": "session",
+          "period": "day",
+          "period_start": 1786233600.0,
+          "limit_usd": 0.02,
+          "spent_usd": 0.01563,
+          "remaining_usd": 0.00437,
+          "projected_usd": 0.007803,
+          "shortfall_usd": 0.003433,
+          "checked": [
+            {
+              "principal": "session:wallet-attack",
+              "dimension": "session",
+              "value": "wallet-attack",
+              "limit_usd": 0.02,
+              "spent_usd": 0.01563,
+              "remaining_usd": 0.00437,
+              "fraction_used": 0.7815,
+              "period": "day",
+              "period_start": 1786233600.0,
+              "source": "runtime"
+            }
+          ],
+          "hint": "The call was refused before any provider was contacted, so nothing was billed. Lower max_tokens, route to a cheaper tier, or raise the ceiling with POST /v1/budget."
+        }
+      },
+      {
+        "ts": 1786239477.9656389,
+        "status": 402,
+        "method": "POST",
+        "path": "/v1/chat",
+        "detail": {
+          "error": "budget_exceeded",
+          "code": "budget_exceeded",
+          "message": "session:wallet-attack would exceed its day budget: spent $0.015630 of $0.020000, this call projects $0.007803 ($0.004370 remaining)",
+          "principal": "session:wallet-attack",
+          "dimension": "session",
+          "period": "day",
+          "period_start": 1786233600.0,
+          "limit_usd": 0.02,
+          "spent_usd": 0.01563,
+          "remaining_usd": 0.00437,
+          "projected_usd": 0.007803,
+          "shortfall_usd": 0.003433,
+          "checked": [
+            {
+              "principal": "session:wallet-attack",
+              "dimension": "session",
+              "value": "wallet-attack",
+              "limit_usd": 0.02,
+              "spent_usd": 0.01563,
+              "remaining_usd": 0.00437,
+              "fraction_used": 0.7815,
+              "period": "day",
+              "period_start": 1786233600.0,
+              "source": "runtime"
+            }
+          ],
+          "hint": "The call was refused before any provider was contacted, so nothing was billed. Lower max_tokens, route to a cheaper tier, or raise the ceiling with POST /v1/budget."
+        }
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "spend never crossed the ceiling",
+      "passed": true,
+      "detail": "0.01563 <= 0.02"
+    },
+    {
+      "name": "the loop kept asking and was refused",
+      "passed": true,
+      "detail": "2 admitted, 38 refused of 40"
+    },
+    {
+      "name": "every refusal is a 402 carrying its shortfall",
+      "passed": true,
+      "detail": "38 refusals, all with shortfall"
+    },
+    {
+      "name": "refusals are visible in the recorder",
+      "passed": true,
+      "detail": "recorder gained 38; loop saw 38"
+    },
+    {
+      "name": "the control, not the attacker, stopped the spend",
+      "passed": true,
+      "detail": "spend flattened while requests kept arriving"
+    }
+  ]
+}

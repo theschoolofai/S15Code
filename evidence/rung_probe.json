@@ -1,0 +1,484 @@
+{
+  "gateway": "http://127.0.0.1:8117",
+  "rows": [
+    {
+      "id": "o01_premium",
+      "difficulty": "trivial",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 3.48e-05,
+          "error": null,
+          "answer_tail": "9000"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 1.825e-05,
+          "error": null,
+          "answer_tail": "9000"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000261,
+          "error": null,
+          "answer_tail": "9000"
+        }
+      }
+    },
+    {
+      "id": "o02_atm_strike",
+      "difficulty": "trivial",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 6.645e-05,
+          "error": null,
+          "answer_tail": "23850"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 1.85e-05,
+          "error": null,
+          "answer_tail": "23850"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000249,
+          "error": null,
+          "answer_tail": "23,850"
+        }
+      }
+    },
+    {
+      "id": "o03_moneyness",
+      "difficulty": "trivial",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 4.575e-05,
+          "error": null,
+          "answer_tail": "out-of-the-money"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 2.575e-05,
+          "error": null,
+          "answer_tail": "out-of-the-money"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000342,
+          "error": null,
+          "answer_tail": "out-of-the-money"
+        }
+      }
+    },
+    {
+      "id": "o04_pct_move",
+      "difficulty": "trivial",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 7.14e-05,
+          "error": null,
+          "answer_tail": "1.00%"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.000192,
+          "error": null,
+          "answer_tail": " = 236 2.  **Division:** 236 / 23,600 = 0.01 3.  **Percentage:** 0.01 * 100 = 1.00%  The percentage change is **1.00%**."
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.001455,
+          "error": null,
+          "answer_tail": "nge = ((23,836 - 23,600) / 23,600) \u00d7 100  Percentage change = (236 / 23,600) \u00d7 100  Percentage change = 1.00%  **1.00%**"
+        }
+      }
+    },
+    {
+      "id": "o05_lots_capital",
+      "difficulty": "trivial",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 4.29e-05,
+          "error": null,
+          "answer_tail": "13"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 1.575e-05,
+          "error": null,
+          "answer_tail": "13"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000243,
+          "error": null,
+          "answer_tail": "13"
+        }
+      }
+    },
+    {
+      "id": "o06_bull_call_be",
+      "difficulty": "moderate",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 6.135e-05,
+          "error": null,
+          "answer_tail": "23,880"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 2.725e-05,
+          "error": null,
+          "answer_tail": "23,880"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.001869,
+          "error": null,
+          "answer_tail": "- 70 = 80  **Breakeven Point:** Breakeven = Lower strike + Net premium paid Breakeven = 23,800 + 80 = 23,880  **23,880**"
+        }
+      }
+    },
+    {
+      "id": "o07_bull_call_maxloss",
+      "difficulty": "moderate",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 6.795e-05,
+          "error": null,
+          "answer_tail": "6000"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 2.275e-05,
+          "error": null,
+          "answer_tail": "6000"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000297,
+          "error": null,
+          "answer_tail": "6000"
+        }
+      }
+    },
+    {
+      "id": "o08_expiry_weekly",
+      "difficulty": "moderate",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.00011385,
+          "error": null,
+          "answer_tail": "h falls on a **Thursday**.    So, the Nifty weekly option for that trading week expires on **12\u202fMarch\u202f2026 (Thursday)**."
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.00021125,
+          "error": null,
+          "answer_tail": "11: Wednesday     *   March 12: Thursday  The Nifty weekly options for that week expire on **Thursday, March 12, 2026**."
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.00228,
+          "error": null,
+          "answer_tail": "ch 2026 - **Thursday, 12 March 2026** - Friday, 13 March 2026  The weekly option expires on **Thursday, 12 March 2026**."
+        }
+      }
+    },
+    {
+      "id": "o09_pnl_expiry",
+      "difficulty": "moderate",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.00024225,
+          "error": null,
+          "answer_tail": "text{ rupees} \\]  Hence the net result is    \\[ \\text{Net P/L} = 18{,}750 - 11{,}250 = \\boxed{+7{,}500\\text{ rupees}} \\]"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.000353,
+          "error": null,
+          "answer_tail": "t per unit \u00d7 Lot Size *   Total Profit = 100 \u00d7 75 = **7,500**  **Result:** The net profit on the position is **+7,500**."
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.003654,
+          "error": null,
+          "answer_tail": "4. **Net profit/loss:**    - 18,750 - 11,250 = **\u20b97,500**  The net profit on the position at expiry is **+7500** rupees."
+        }
+      }
+    },
+    {
+      "id": "o10_brokerage",
+      "difficulty": "moderate",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 7.05e-05,
+          "error": null,
+          "answer_tail": "160"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 1.85e-05,
+          "error": null,
+          "answer_tail": "160"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.000282,
+          "error": null,
+          "answer_tail": "160"
+        }
+      }
+    },
+    {
+      "id": "o11_condor_maxprofit",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 9.45e-05,
+          "error": null,
+          "answer_tail": "4500"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 3e-05,
+          "error": null,
+          "answer_tail": "4500"
+        },
+        "frontier": {
+          "correct": false,
+          "cost": 0.000372,
+          "error": null,
+          "answer_tail": "12000"
+        }
+      }
+    },
+    {
+      "id": "o12_condor_maxloss",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.0001104,
+          "error": null,
+          "answer_tail": "10500"
+        },
+        "standard": {
+          "correct": false,
+          "cost": 2.775e-05,
+          "error": null,
+          "answer_tail": "4500"
+        },
+        "frontier": {
+          "correct": false,
+          "cost": 0.000333,
+          "error": null,
+          "answer_tail": "7125"
+        }
+      }
+    },
+    {
+      "id": "o13_condor_be",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.0001785,
+          "error": null,
+          "answer_tail": "  - **Lower breakeven (put side):**\u202f23\u202f800\u202f\u2212\u202f60\u202f=\u202f**23\u202f740** - **Upper breakeven (call side):**\u202f24\u202f000\u202f+\u202f60\u202f=\u202f**24\u202f060**"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.0003085,
+          "error": null,
+          "answer_tail": "net credit to the short call strike: 24,000 + 60 = **24,060**  **The two breakeven index levels are 23,740 and 24,060.**"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.002907,
+          "error": null,
+          "answer_tail": ". **24,060** (upper breakeven)  The position is profitable if Nifty expires between these two levels (23,740 to 24,060)."
+        }
+      }
+    },
+    {
+      "id": "o14_ratio_profit",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.00014295,
+          "error": null,
+          "answer_tail": "14250"
+        },
+        "standard": {
+          "correct": false,
+          "cost": 2.6e-05,
+          "error": null,
+          "answer_tail": "1050"
+        },
+        "frontier": {
+          "correct": false,
+          "cost": 0.000336,
+          "error": null,
+          "answer_tail": "8250"
+        }
+      }
+    },
+    {
+      "id": "o15_ratio_ube",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.00018975,
+          "error": null,
+          "answer_tail": "24190"
+        },
+        "standard": {
+          "correct": false,
+          "cost": 2.625e-05,
+          "error": null,
+          "answer_tail": "24,210"
+        },
+        "frontier": {
+          "correct": false,
+          "cost": 0.000312,
+          "error": null,
+          "answer_tail": "24,400"
+        }
+      }
+    },
+    {
+      "id": "o16_return_on_margin",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 9.36e-05,
+          "error": null,
+          "answer_tail": "42.86%"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.00033875,
+          "error": null,
+          "answer_tail": "s 100$     Return = $42.8571...\\%$  4.  **Round to two decimal places:**     42.86%  **The return on margin is 42.86%.**"
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.002718,
+          "error": null,
+          "answer_tail": "500) \u00d7 100 Return on margin = 0.428571... \u00d7 100 Return on margin = 42.857...%  **Rounded to two decimal places: 42.86%**"
+        }
+      }
+    },
+    {
+      "id": "o17_expiry_holiday",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 9.96e-05,
+          "error": null,
+          "answer_tail": " holiday, the expiry is moved back to the preceding trading day, which is **Wednesday\u202f25\u202fMarch\u202f2026** (a **Wednesday**)."
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.0003605,
+          "error": null,
+          "answer_tail": " trading day.  **Conclusion:** The Nifty monthly expiry for March 2026 will take place on **Wednesday, March 25, 2026**."
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.002265,
+          "error": null,
+          "answer_tail": "26 (Wednesday)  **Answer: March 25, 2026 (Wednesday)**  The monthly expiry takes place on **Wednesday, March 25, 2026**."
+        }
+      }
+    },
+    {
+      "id": "o18_straddle_be",
+      "difficulty": "hard",
+      "rungs": {
+        "economy": {
+          "correct": true,
+          "cost": 0.00027,
+          "error": null,
+          "answer_tail": "of 20 only scales the total cash amount received (\u20b91150\u202f\u00d7\u202f20\u202f=\u202f\u20b923,000) but does not affect the breakeven index levels.)"
+        },
+        "standard": {
+          "correct": true,
+          "cost": 0.000321,
+          "error": null,
+          "answer_tail": "tal Premium     *   80,000 - 1,150 = **78,850**  The two breakeven index levels at expiry are **78,850** and **81,150**."
+        },
+        "frontier": {
+          "correct": true,
+          "cost": 0.002808,
+          "error": null,
+          "answer_tail": "81,150**  2. **Lower Breakeven:** Strike - Total Premium    - 80,000 - 1,150 = **78,850**  **Answer: 78,850 and 81,150**"
+        }
+      }
+    }
+  ],
+  "capability_inversions": [
+    {
+      "id": "o11_condor_maxprofit",
+      "cheaper_right": "economy",
+      "dearer_wrong": "frontier"
+    },
+    {
+      "id": "o11_condor_maxprofit",
+      "cheaper_right": "standard",
+      "dearer_wrong": "frontier"
+    },
+    {
+      "id": "o12_condor_maxloss",
+      "cheaper_right": "economy",
+      "dearer_wrong": "standard"
+    },
+    {
+      "id": "o12_condor_maxloss",
+      "cheaper_right": "economy",
+      "dearer_wrong": "frontier"
+    },
+    {
+      "id": "o14_ratio_profit",
+      "cheaper_right": "economy",
+      "dearer_wrong": "standard"
+    },
+    {
+      "id": "o14_ratio_profit",
+      "cheaper_right": "economy",
+      "dearer_wrong": "frontier"
+    },
+    {
+      "id": "o15_ratio_ube",
+      "cheaper_right": "economy",
+      "dearer_wrong": "standard"
+    },
+    {
+      "id": "o15_ratio_ube",
+      "cheaper_right": "economy",
+      "dearer_wrong": "frontier"
+    }
+  ],
+  "per_rung_score": {
+    "economy": 18,
+    "standard": 15,
+    "frontier": 14
+  }
+}

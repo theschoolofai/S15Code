@@ -53,8 +53,15 @@ models:
   zai-glm-4.7: {input: 0.50, output: 0.50}
   # Free tier. MEASURED 47 in / 108 out at 1849 ms with reasoning off.
   nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
-  # LADDER rung 3 (frontier), and the most expensive model this gateway reaches.
-  # MEASURED: 37 in / 76 out, $0.000682, 2883 ms. Context caps at 8k here.
+  # LADDER rung 3 (frontier). openai/gpt-4.1 on GitHub Models was the shipped
+  # frontier rung; GitHub Models retired in 2026, so the rung is repointed at
+  # AWS Bedrock Claude Sonnet 4.5. us-east-1 on-demand list price, USD/Mtok.
+  # Its full inference-profile ID is the price key so the gateway's own
+  # per-model table matches the same row.
+  us.anthropic.claude-sonnet-4-5-20250929-v1:0:
+    input: 3.00
+    output: 15.00
+  # Kept for reference — the retired shipped frontier model.
   openai/gpt-4.1:
     input: 2.00
     output: 8.00

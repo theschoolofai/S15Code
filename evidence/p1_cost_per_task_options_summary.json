@@ -1,0 +1,1229 @@
+{
+  "proof": "p1_cost_per_task",
+  "ok": true,
+  "mode": "live",
+  "arguments": {
+    "task": "18 tasks from proofs/tasks/options_trading.jsonl",
+    "budget": 0.1,
+    "principal": "tradon/s15/options",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "facts": {
+    "A always_frontier": "spend 0.05096100 USD  calls 18  cost/call 0.00283117  resolved 17/18  cost/resolved 0.00299771  tiers frontier",
+    "B always_cheapest": "spend 0.00240975 USD  calls 18  cost/call 0.00013387  resolved 18/18  cost/resolved 0.00013387  tiers economy",
+    "C budget_aware": "spend 0.00324405 USD  calls 18  cost/call 0.00018023  resolved 18/18  cost/resolved 0.00018023  tiers economy,standard",
+    "A resolved by difficulty": "{\"hard\": 7, \"moderate\": 5, \"trivial\": 5}  of {\"trivial\": 5, \"moderate\": 5, \"hard\": 8}",
+    "B resolved by difficulty": "{\"hard\": 8, \"moderate\": 5, \"trivial\": 5}  of {\"trivial\": 5, \"moderate\": 5, \"hard\": 8}",
+    "C resolved by difficulty": "{\"hard\": 8, \"moderate\": 5, \"trivial\": 5}  of {\"trivial\": 5, \"moderate\": 5, \"hard\": 8}",
+    "ladder": "economy < standard < frontier",
+    "tasks": "18 from proofs/tasks/options_trading.jsonl  {'trivial': ['o01_premium', 'o02_atm_strike', 'o03_moneyness', 'o04_pct_move', 'o05_lots_capital'], 'moderate': ['o06_bull_call_be', 'o07_bull_call_maxloss', 'o08_expiry_weekly', 'o09_pnl_expiry', 'o10_brokerage'], 'hard': ['o11_condor_maxprofit', 'o12_condor_maxloss', 'o13_condor_be', 'o14_ratio_profit', 'o15_ratio_ube', 'o16_return_on_margin', 'o17_expiry_holiday', 'o18_straddle_be']}",
+    "per-task ceiling": "0.1 USD (principal tradon/s15/options)",
+    "judge panel": "bedrock/us.amazon.nova-pro-v1:0, bedrock/us.meta.llama3-3-70b-instruct-v1:0",
+    "judge bar": "overall >= 0.75, min criterion 0.5, tie_break score",
+    "judge meta-cost": "78 calls, 0.09244900 USD, 0 unusable, 0 transport retries, 15 verdicts reused",
+    "signature failure mode": "NOT OBSERVED \u2014 {\"B_vs_A\": {\"cost_per_call_delta_pct\": -95.27138399952906, \"cost_per_resolved_task_delta_pct\": -95.5340848884441, \"resolution_rate\": {\"B\": 1.0, \"A\": 0.9444444444444444}, \"cheaper_per_call\": true, \"dearer_per_resolved_task\": false, \"signature_failure_mode\": false, \"worse_than_dearer\": false, \"break_even_resolution_rate\": 0.1229920153478255, \"headroom_above_break_even\": 0.8770079846521746, \"note\": \"\"}, \"B_vs_C\": {\"cost_per_call_delta_pct\": -25.717852684144827, \"cost_per_resolved_task_delta_pct\": -25.717852684144827, \"resolution_rate\": {\"B\": 1.0, \"C\": 1.0}, \"cheaper_per_call\": true, \"dearer_per_r",
+    "wall clock": "193.0s",
+    "where the strategies disagreed": "{\"A_vs_B\": [\"o12_condor_maxloss (hard): B resolved on economy, A did not on frontier\"], \"A_vs_C\": [\"o12_condor_maxloss (hard): C resolved on standard, A did not on frontier\"]}"
+  },
+  "checks": [
+    {
+      "claim": "every strategy attempted every task in the file",
+      "ok": true,
+      "observed": "3 strategies x 18 tasks"
+    },
+    {
+      "claim": "every answering provider call that returned is metered",
+      "ok": true,
+      "observed": "54 transport calls, 54 ledger charges, 4 transport failures (no tokens reported, so not charged)"
+    },
+    {
+      "claim": "no verdict was unparseable (an unparseable judge is a JUDGE failure)",
+      "ok": true,
+      "observed": "0 tasks ended with status=judge_failed, 0 unusable judge samples"
+    },
+    {
+      "claim": "an empty or errored answer never counted as resolved",
+      "ok": true,
+      "observed": "0 such rows"
+    },
+    {
+      "claim": "no answer was graded by its own model",
+      "ok": true,
+      "observed": "judges ['us.amazon.nova-pro-v1:0', 'us.meta.llama3-3-70b-instruct-v1:0'] vs ladder ['gemini-3.1-flash-lite', 'openai/gpt-oss-120b', 'us.anthropic.claude-sonnet-4-5-20250929-v1:0']"
+    },
+    {
+      "claim": "at least one strategy resolved at least one task, so cost/resolved is defined",
+      "ok": true,
+      "observed": "53 resolved rows across 3 strategies"
+    },
+    {
+      "claim": "the configured ladder separates cost per call at all",
+      "ok": true,
+      "observed": "projected top 0.07944000 > bottom 0.00056400"
+    },
+    {
+      "claim": "every model that answered has its own row in pricing.yaml",
+      "ok": true,
+      "observed": "all priced"
+    },
+    {
+      "claim": "no semantic-cache hit served one strategy another's answer",
+      "ok": true,
+      "observed": {
+        "before": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        },
+        "after": {
+          "hits": 0,
+          "stores": 0,
+          "lookups": 0
+        }
+      }
+    }
+  ],
+  "summaries": {
+    "A": {
+      "strategy": "A",
+      "name": "always_frontier",
+      "description": "every task once on the top rung (frontier)",
+      "start_tier": "frontier",
+      "max_attempts": 1,
+      "escalates": false,
+      "tasks": 18,
+      "spend": 0.050961,
+      "calls": 18,
+      "attempts": 18,
+      "cost_per_call": 0.0028311666666666667,
+      "cost_per_task": 0.0028311666666666667,
+      "resolved": 17,
+      "unresolved": 1,
+      "judge_failed": 0,
+      "cost_per_resolved_task": 0.002997705882352941,
+      "resolution_rate": 0.9444444444444444,
+      "tokens": 5491,
+      "tokens_per_resolved_task": 323.0,
+      "latency_ms": 62104.0,
+      "errors": 0,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "tiers_charged": [
+        "frontier"
+      ],
+      "models": [
+        "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+      ],
+      "resolved_by_difficulty": {
+        "hard": 7,
+        "moderate": 5,
+        "trivial": 5
+      }
+    },
+    "B": {
+      "strategy": "B",
+      "name": "always_cheapest",
+      "description": "every task on the bottom rung (economy), retried up to 3 times on an unresolved verdict",
+      "start_tier": "economy",
+      "max_attempts": 3,
+      "escalates": false,
+      "tasks": 18,
+      "spend": 0.00240975,
+      "calls": 18,
+      "attempts": 18,
+      "cost_per_call": 0.000133875,
+      "cost_per_task": 0.000133875,
+      "resolved": 18,
+      "unresolved": 0,
+      "judge_failed": 0,
+      "cost_per_resolved_task": 0.000133875,
+      "resolution_rate": 1.0,
+      "tokens": 6117,
+      "tokens_per_resolved_task": 339.8333333333333,
+      "latency_ms": 17448.0,
+      "errors": 0,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "tiers_charged": [
+        "economy"
+      ],
+      "models": [
+        "openai/gpt-oss-120b"
+      ],
+      "resolved_by_difficulty": {
+        "hard": 8,
+        "moderate": 5,
+        "trivial": 5
+      }
+    },
+    "C": {
+      "strategy": "C",
+      "name": "budget_aware",
+      "description": "opens on the cheapest rung (economy), up to 3 attempts, climbing ONE RUNG instead of retrying after an unresolved verdict",
+      "start_tier": "economy",
+      "max_attempts": 3,
+      "escalates": true,
+      "tasks": 18,
+      "spend": 0.00324405,
+      "calls": 18,
+      "attempts": 22,
+      "cost_per_call": 0.000180225,
+      "cost_per_task": 0.000180225,
+      "resolved": 18,
+      "unresolved": 0,
+      "judge_failed": 0,
+      "cost_per_resolved_task": 0.000180225,
+      "resolution_rate": 1.0,
+      "tokens": 6077,
+      "tokens_per_resolved_task": 337.6111111111111,
+      "latency_ms": 19917.0,
+      "errors": 4,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "tiers_charged": [
+        "economy",
+        "standard"
+      ],
+      "models": [
+        "gemini-3.1-flash-lite",
+        "openai/gpt-oss-120b"
+      ],
+      "resolved_by_difficulty": {
+        "hard": 8,
+        "moderate": 5,
+        "trivial": 5
+      }
+    }
+  },
+  "divergences": {
+    "A_vs_B": [
+      {
+        "task_id": "o12_condor_maxloss",
+        "difficulty": "hard",
+        "resolved_by": "B",
+        "failed_for": "A",
+        "winner": {
+          "tiers": [
+            "economy"
+          ],
+          "attempts": 1,
+          "cost": 0.0001419,
+          "overall": 1.0
+        },
+        "loser": {
+          "tiers": [
+            "frontier"
+          ],
+          "attempts": 1,
+          "cost": 0.004344000000000001,
+          "overall": 0.6666666666666666,
+          "status": "unresolved"
+        }
+      }
+    ],
+    "C_vs_B": [],
+    "A_vs_C": [
+      {
+        "task_id": "o12_condor_maxloss",
+        "difficulty": "hard",
+        "resolved_by": "C",
+        "failed_for": "A",
+        "winner": {
+          "tiers": [
+            "standard"
+          ],
+          "attempts": 2,
+          "cost": 0.00048375,
+          "overall": 1.0
+        },
+        "loser": {
+          "tiers": [
+            "frontier"
+          ],
+          "attempts": 1,
+          "cost": 0.004344000000000001,
+          "overall": 0.6666666666666666,
+          "status": "unresolved"
+        }
+      }
+    ]
+  },
+  "per_task": {
+    "A": [
+      {
+        "task_id": "o01_premium",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.000492,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o02_atm_strike",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.00048,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o03_moneyness",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.000573,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o04_pct_move",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.002256,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o05_lots_capital",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.00047400000000000003,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o06_bull_call_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.00396,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o07_bull_call_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.001653,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o08_expiry_weekly",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.002526,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o09_pnl_expiry",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.00504,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o10_brokerage",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.000513,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o11_condor_maxprofit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.003033,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o12_condor_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.004344000000000001,
+            "error": null,
+            "resolved": false,
+            "overall": 0.6666666666666666
+          }
+        ]
+      },
+      {
+        "task_id": "o13_condor_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.002223,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o14_ratio_profit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.0057870000000000005,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o15_ratio_ube",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.005223,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o16_return_on_margin",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.003879,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o17_expiry_holiday",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.0036360000000000003,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o18_straddle_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "frontier",
+            "charged_tier": "frontier",
+            "decision": "proceed",
+            "provider": "bedrock",
+            "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            "cost": 0.004869,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      }
+    ],
+    "B": [
+      {
+        "task_id": "o01_premium",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 4.6049999999999994e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o02_atm_strike",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 7.245e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o03_moneyness",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 6.6e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o04_pct_move",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 8.79e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 0.8333333333333333
+          }
+        ]
+      },
+      {
+        "task_id": "o05_lots_capital",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 5.49e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o06_bull_call_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001311,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o07_bull_call_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 8.82e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o08_expiry_weekly",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001191,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o09_pnl_expiry",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0002565,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o10_brokerage",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 8.175000000000001e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o11_condor_maxprofit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.000105,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o12_condor_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001419,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o13_condor_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001815,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o14_ratio_profit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00018795,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o15_ratio_ube",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.000186,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o16_return_on_margin",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001851,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o17_expiry_holiday",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001851,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o18_straddle_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00023325,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      }
+    ],
+    "C": [
+      {
+        "task_id": "o01_premium",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 4.6049999999999994e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o02_atm_strike",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 7.245e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o03_moneyness",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 6.6e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o04_pct_move",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 8.865e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 0.8333333333333333
+          }
+        ]
+      },
+      {
+        "task_id": "o05_lots_capital",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 5.49e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o06_bull_call_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001311,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o07_bull_call_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": null,
+            "decision": null,
+            "provider": null,
+            "model": null,
+            "cost": 0.0,
+            "error": "RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all providers unavailable. attempts: [{'provider': 'groq', 'reason': 'TPM limit'}]. last_error: None\"}",
+            "resolved": false,
+            "overall": 0.0
+          },
+          {
+            "attempt": 2,
+            "requested_tier": "standard",
+            "charged_tier": "standard",
+            "decision": "proceed",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "cost": 4.075e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o08_expiry_weekly",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": null,
+            "decision": null,
+            "provider": null,
+            "model": null,
+            "cost": 0.0,
+            "error": "RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all providers unavailable. attempts: [{'provider': 'groq', 'reason': 'TPM limit'}]. last_error: None\"}",
+            "resolved": false,
+            "overall": 0.0
+          },
+          {
+            "attempt": 2,
+            "requested_tier": "standard",
+            "charged_tier": "standard",
+            "decision": "proceed",
+            "provider": "gemini_2",
+            "model": "gemini-3.1-flash-lite",
+            "cost": 0.00025175,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o09_pnl_expiry",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00025875000000000003,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o10_brokerage",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 8.175000000000001e-05,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o11_condor_maxprofit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001005,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o12_condor_maxloss",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": null,
+            "decision": null,
+            "provider": null,
+            "model": null,
+            "cost": 0.0,
+            "error": "RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all providers unavailable. attempts: [{'provider': 'groq', 'reason': 'TPM limit'}]. last_error: None\"}",
+            "resolved": false,
+            "overall": 0.0
+          },
+          {
+            "attempt": 2,
+            "requested_tier": "standard",
+            "charged_tier": "standard",
+            "decision": "proceed",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "cost": 0.00048375,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o13_condor_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00017475,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o14_ratio_profit",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001872,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o15_ratio_ube",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": null,
+            "decision": null,
+            "provider": null,
+            "model": null,
+            "cost": 0.0,
+            "error": "RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all providers unavailable. attempts: [{'provider': 'groq', 'reason': 'TPM limit'}]. last_error: None\"}",
+            "resolved": false,
+            "overall": 0.0
+          },
+          {
+            "attempt": 2,
+            "requested_tier": "standard",
+            "charged_tier": "standard",
+            "decision": "proceed",
+            "provider": "gemini_1",
+            "model": "gemini-3.1-flash-lite",
+            "cost": 0.00067425,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o16_return_on_margin",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00011760000000000001,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o17_expiry_holiday",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.0001851,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      },
+      {
+        "task_id": "o18_straddle_be",
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested_tier": "economy",
+            "charged_tier": "economy",
+            "decision": "proceed",
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "cost": 0.00022875,
+            "error": null,
+            "resolved": true,
+            "overall": 1.0
+          }
+        ]
+      }
+    ]
+  }
+}

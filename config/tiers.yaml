@@ -83,13 +83,21 @@ tiers:
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      # GitHub Models (the shipped frontier provider, openai/gpt-4.1) was
+      # RETIRED in 2026 — the gateway returns HTTP 400 "unknown provider
+      # 'github'". The frontier rung is repointed at AWS Bedrock's Claude
+      # Sonnet 4.5, which is a genuinely different model on a genuinely
+      # different provider from the two rungs below it, so the ladder stays
+      # cross-model. This is exactly the "prices/providers change quarterly"
+      # drift the session warns about, handled where the session says it
+      # belongs: a config edit, no Python.
+      provider: bedrock
+      model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+      # Claude exposes no plain thinking dial through Converse in this adapter,
+      # so the reasoning field is left off rather than sent and ignored.
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 
