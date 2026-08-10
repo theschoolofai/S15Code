@@ -1,0 +1,80 @@
+# Customer-support triage ladder (Assignment 15 Part 2).
+# Same cross-model rungs as the session floor, with role_tiers tuned for support:
+# classify / draft / escalate map to economy / standard / frontier.
+#
+# Measured reference rates (session floor, 2026-07-30) still apply to these models.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 1400
+    projected_output_tokens: 400
+
+  standard:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 1024
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 2800
+    projected_output_tokens: 800
+
+  frontier:
+    # Preferred: openai/gpt-4o-mini via OPENAI_LLM_KEY (native openai provider).
+    # Live probe on this machine returned HTTP 429 credit_balance_exhausted, so
+    # the measured always-frontier baseline uses Cerebras zai-glm-4.7 instead —
+    # still a distinct provider/model from economy (groq) and standard (gemini).
+    # Flip back to openai/gpt-4o-mini after topping up OpenAI credits.
+    request:
+      provider: cerebras
+      model: zai-glm-4.7
+      reasoning: "off"
+      max_tokens: 2048
+      temperature: 0
+    price_model: zai-glm-4.7
+    projected_input_tokens: 4000
+    projected_output_tokens: 1500
+    # To use OpenAI instead (when credits are available):
+    # request: {provider: openai, model: gpt-4o-mini, max_tokens: 4096, temperature: 0}
+    # price_model: gpt-4o-mini
+
+# Support workload roles. Keys are runtime role/skill names, not ticket text.
+role_tiers:
+  default: standard
+  # Cheap path: classification, formatting, lookups
+  memory_recall: economy
+  remember_explicit_fact: economy
+  web_search: economy
+  fetch_url: economy
+  index_file: economy
+  list_directory: economy
+  read_file: economy
+  create_reminder: economy
+  researcher: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  triage: economy
+  classify: economy
+  # Draft customer-facing replies on the middle rung
+  distiller: standard
+  content: standard
+  compose_surface: standard
+  draft_reply: standard
+  coder_validator: standard
+  # Escalations / safety / policy conflicts need the top rung
+  answer_with_evidence: frontier
+  escalate: frontier
+  adjudicator: frontier
+  privacy_review: frontier

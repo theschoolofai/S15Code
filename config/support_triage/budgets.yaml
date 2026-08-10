@@ -1,0 +1,27 @@
+# Budget policy for the customer-support triage workload.
+# Tighter pressure thresholds than the packaged default so downgrade/refuse
+# show up earlier on repetitive ticket loops (denial-of-wallet defence).
+
+default_budget: 0.03
+
+# Keep headroom for the terminal reply node.
+reserve_fraction: 0.20
+
+# Start downgrading earlier under ticket-storm pressure.
+downgrade_at: 0.40
+
+# Hard refuse before the last 15% is consumed by projection overshoot.
+refuse_at: 0.85
+
+headroom_fraction: 0.02
+
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Denial-of-wallet: a runaway triage loop cannot burn unbounded calls.
+max_calls_per_run: 40
+max_calls_per_node: 4
+
+# Optional per-principal overrides (runtime POST / budget args still apply).
+principals: {}
+  # support/demo: 0.01

@@ -1,0 +1,16 @@
+{
+  "proof": "p4_trace_export",
+  "mode": "live",
+  "ok": false,
+  "reason": "backend held 7/10 emitted spans; hierarchy parents incomplete",
+  "trace_id": "4a4c13bf124380bc7edf61939b2a6444",
+  "jaeger_url": "http://localhost:16686/trace/4a4c13bf124380bc7edf61939b2a6444",
+  "ledger_spent_usd": 0.000413,
+  "span_cost_total_usd": 0.000413,
+  "provider": "gemini_1",
+  "model": "gemini-3.1-flash-lite",
+  "input_tokens": 212,
+  "output_tokens": 240,
+  "content_capture": false,
+  "source_log": "proofs/out/p4_trace_export.json"
+}
