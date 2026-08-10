@@ -1,0 +1,63 @@
+{
+  "proof": "p1_cost_per_task",
+  "label": "support",
+  "mode": "live",
+  "ok": true,
+  "base_url": "http://127.0.0.1:8111",
+  "tasks": 18,
+  "ladder": ["economy", "standard", "frontier"],
+  "models": {
+    "economy": "openai/gpt-oss-120b",
+    "standard": "gemini-3.1-flash-lite",
+    "frontier": "zai-glm-4.7"
+  },
+  "judges": ["openrouter/openai/gpt-4o-mini"],
+  "strategies": {
+    "A_always_frontier": {
+      "spend_usd": 0.001616,
+      "calls": 14,
+      "cost_per_call": 0.00011543,
+      "resolved": "13/18",
+      "cost_per_resolved": 0.00012431
+    },
+    "B_always_cheapest": {
+      "spend_usd": 0.0031911,
+      "calls": 18,
+      "cost_per_call": 0.00017728,
+      "resolved": "18/18",
+      "cost_per_resolved": 0.00017728
+    },
+    "C_budget_aware": {
+      "spend_usd": 0.00343535,
+      "calls": 19,
+      "cost_per_call": 0.00018081,
+      "resolved": "18/18",
+      "cost_per_resolved": 0.00019085
+    }
+  },
+  "break_even_resolution_rate": {
+    "B_vs_A": 1.0,
+    "B_vs_C": 0.975,
+    "B_resolution_rate": 1.0,
+    "signature_failure_mode": false
+  },
+  "wrong_cases": [
+    {
+      "id": "st14_partial_refund_math",
+      "issue": "cascade escalated economy->standard; 2.1x spend vs always-cheapest for same resolve",
+      "C_spend_usd": 0.0004154,
+      "B_spend_usd": 0.00019515
+    },
+    {
+      "id": "st11_angry_escalation",
+      "issue": "frontier unresolved while economy resolved",
+      "A_spend_usd": 0.0001445,
+      "A_resolved": false,
+      "B_resolved": true
+    }
+  ],
+  "judge_meta_cost_usd": 0.1099404,
+  "wall_clock_seconds": 399.3,
+  "source_log": "proofs/evidence/part2/p1_live_rerun.log",
+  "source_json_gitignored": "proofs/out/p1_cost_per_task_support.json"
+}

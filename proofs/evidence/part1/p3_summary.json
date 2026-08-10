@@ -1,0 +1,14 @@
+{
+  "proof": "p3_denial_of_wallet",
+  "label": "support_attack",
+  "mode": "live",
+  "ok": true,
+  "ceiling_usd": 0.002,
+  "spent_usd": 0.00158605,
+  "admitted_calls": 39,
+  "refusals": 161,
+  "loop_rounds": 200,
+  "refused_nodes_BudgetRefused": 161,
+  "uncontrolled_bill_extrapolated_10k": 0.4067,
+  "source_log": "proofs/out/p3_denial_of_wallet_support_attack.json"
+}

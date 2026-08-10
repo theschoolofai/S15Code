@@ -190,6 +190,89 @@ ignored `max_tokens` the call already in flight could overshoot — so the ledge
 also an absolute stop, and `max_calls_per_run` / `max_calls_per_node` bound the
 loop even when every price estimate is wrong. A test drives exactly that case.
 
+## Evidence — Assignment 15 (three submission links)
+
+Workload: **ShopNova customer-support triage** (18 tickets).  
+Policy: [`config/support_triage/`](config/support_triage/).  
+Tasks: [`proofs/tasks/support_triage.jsonl`](proofs/tasks/support_triage.jsonl).  
+Committed logs/summaries: [`proofs/evidence/`](proofs/evidence/) (raw `proofs/out/*.json` is gitignored).
+
+| Ladder rung | Provider | Model |
+|---|---|---|
+| economy | groq | `openai/gpt-oss-120b` |
+| standard | gemini | `gemini-3.1-flash-lite` |
+| frontier | cerebras | `zai-glm-4.7` *(OpenAI `gpt-4o-mini` via `OPENAI_LLM_KEY` is wired in glc_v4 but returned `credit_balance_exhausted` on probe)* |
+
+Budget policy: `downgrade_at: 0.40`, `refuse_at: 0.85`, `max_calls_per_run: 40`.
+
+### Part 1 — Reproduce the floor
+
+**GitHub evidence folder:** [`proofs/evidence/part1/`](proofs/evidence/part1/)
+
+- Both pytest suites run locally (see part1 README for pass/fail notes).
+- Five proofs exercised; **four runs** captured (prompt, tier/model, events, Jaeger ID, ledger, answer).
+- **Honest limitation:** Jaeger returned 7/10 spans for trace `4a4c13bf124380bc7edf61939b2a6444` — costs and GenAI attrs still matched the ledger; root hierarchy was incomplete on the backend.
+
+Details + tables: [part1/README.md](proofs/evidence/part1/README.md) · [p4_summary.json](proofs/evidence/part1/p4_summary.json) · [p3_summary.json](proofs/evidence/part1/p3_summary.json)
+
+### Part 2 — Policy measurement
+
+**GitHub evidence folder:** [`proofs/evidence/part2/`](proofs/evidence/part2/)
+
+Live `p1` (OpenRouter judges = paid `openai/gpt-4o-mini`; free OpenRouter SKUs were at 0/day):
+
+| Strategy | Spend | Calls | Cost/call | Resolved | Cost/resolved |
+|---|---|---|---|---|---|
+| A always_frontier | $0.001616 | 14 | $0.000115 | 13/18 | $0.000124 |
+| B always_cheapest | $0.003191 | 18 | $0.000177 | **18/18** | $0.000177 |
+| C budget_aware | $0.003435 | 19 | $0.000181 | **18/18** | $0.000191 |
+
+- Break-even `r*`: **97.5%** (B vs C); B sits at **100%** (+2.5 pp). Signature trap **not** observed.
+- Wrong cases: **`st14`** cascade paid ~2.1× vs always-cheapest for the same resolve; **`st11`** frontier failed while economy resolved.
+- Full write-up + log: [part2/README.md](proofs/evidence/part2/README.md) · [p1_summary.json](proofs/evidence/part2/p1_summary.json) · [p1_live_rerun.log](proofs/evidence/part2/p1_live_rerun.log)
+
+```bash
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/support_triage.jsonl \
+  --config-dir config/support_triage --strategies A,B,C \
+  --principal support/p1 --label support --budget 0.05 \
+  --base-url http://127.0.0.1:8111
+```
+
+### Part 3 — Adversarial budget attack
+
+**GitHub evidence folder:** [`proofs/evidence/part3/`](proofs/evidence/part3/)
+
+- Attack: runaway loop via [`proofs/p_adversarial_support.py`](proofs/p_adversarial_support.py)
+- **Before control:** ~$0.41 extrapolated over 10k rounds
+- **After control:** spent $0.00158605 ≤ $0.002; 39 admitted / 161 refused
+- Refusals visible as **`BudgetRefused`** on the graph
+
+Details: [part3/README.md](proofs/evidence/part3/README.md)
+
+### Reproduce from a fresh checkout
+
+```bash
+git clone https://github.com/Prerit-112/glc_v4.git
+git clone https://github.com/Prerit-112/S15Code.git
+docker compose -f glc_v4/docker-compose.observability.yml up -d
+# glc_v4/.env: GEMINI_*, GROQ_*, CEREBRAS_*, OPEN_ROUTER_*, optional OPENAI_LLM_KEY
+# S15Code/.env: GLC_BASE_URL=http://127.0.0.1:8111 (no provider keys)
+
+cd glc_v4 && uv sync && set OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 && uv run glc serve
+cd S15Code && uv sync && uv run s15code serve
+
+cd S15Code
+uv run pytest -q
+uv run python proofs/p1_cost_per_task.py --tasks proofs/tasks/support_triage.jsonl \
+  --config-dir config/support_triage --strategies A,B,C --principal support/p1 --label support --base-url http://127.0.0.1:8111
+uv run python proofs/p_adversarial_support.py --base-url http://127.0.0.1:8111
+uv run python proofs/p4_trace_export.py --task "Triage forgot password" --budget 0.02 \
+  --config-dir config/support_triage --principal support/p4 \
+  --otel-endpoint http://127.0.0.1:4318/v1/traces --base-url http://127.0.0.1:8111
+```
+
+Secrets, `.env`, and real customer data never enter the pull request.
+
 ## Carried forward vs new
 
 **Carried forward** (imports renamed to `s15code.*`, behaviour unchanged): the
