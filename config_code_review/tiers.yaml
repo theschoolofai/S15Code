@@ -1,0 +1,136 @@
+# Capability tiers for the CODE REVIEW workload.
+#
+# Selected with `--config-dir config_code_review`, which swaps tiers, pricing,
+# budgets and evals together. The shipped `config/` is untouched so Part 1's
+# recorded numbers stay reproducible.
+#
+# Workload: given one function, name the defect, describe a concrete failure
+# scenario, and give corrected code. Task set: proofs/tasks/code_review.jsonl —
+# 16 tasks (4 trivial, 5 moderate, 7 hard), one of which has no defect at all.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+# ── This ladder is ordered by MEASURED COST, not by assumed capability ───────
+#
+# Measured through the gateway on 2026-08-11, task t11_float_money, one call per
+# model, max_tokens 1600:
+#
+#   model                  $/Mtok in/out   answer   complete?   projected/call
+#   zai-glm-4.7            0.50 / 0.50     1781 ch  yes         $0.00110
+#   openai/gpt-oss-120b    0.15 / 0.75     2102 ch  yes         $0.00129
+#   gemini-3.1-flash-lite  0.25 / 1.50     1282 ch  yes         $0.00255
+#
+# Input and output rates do NOT both rise monotonically here — zai bills input at
+# 0.50 and output at 0.50, so it is the dearest on input and the cheapest on
+# output. What rises monotonically is the number admission actually reads:
+# projected worst-case cost per call. With max_tokens equal across rungs, that
+# ordering is dominated by the output rate, and it is stable for any prompt this
+# workload produces.
+#
+# ── An honest finding, recorded rather than hidden ───────────────────────────
+# The CHEAPEST rung wrote the most thorough answer (1781 chars against the
+# frontier rung's 1282). On this workload price and capability do not align, so
+# "escalate one rung" buys a different model rather than a reliably better one.
+# Whether escalation actually pays is therefore an empirical question for p1, not
+# something this ladder can assume. That is the opposite of the comfortable story
+# and it is what the measurements support.
+
+# ── Why gemini-2.5-flash is NOT the frontier rung ────────────────────────────
+# It was, for one run. It failed on four independent counts, all measured:
+#
+# 1. THINKING CANNOT BE DISABLED. glc_v4's providers.py guards the thinkingConfig
+#    branch with `if reasoning and reasoning != "off"`, so asking for
+#    reasoning:"off" sends NO thinkingConfig at all — and 2.5-flash thinks by
+#    default, so "off" silently leaves thinking ON. Every ledger row for it shows
+#    reasoning_applied=0 while the model was plainly thinking.
+#
+# 2. THOUGHTS EAT THE ANSWER. With max_tokens 1600, 8 of 12 calls returned ~61
+#    visible tokens (~280 chars) — a review truncated mid-sentence, which the
+#    judge correctly failed. The other 4 returned 339-556 tokens. Bimodal, exactly
+#    as thought-budget contention predicts.
+#
+# 3. THOUGHT TOKENS ARE NOT METERED. The gemini parser reads
+#    `usage.candidatesTokenCount` for output and never reads `thoughtsTokenCount`.
+#    Google bills thoughts; this ledger does not see them. That is unmetered spend
+#    in a system whose stated invariant is that no call escapes the ledger.
+#
+# 4. IT IS UNREACHABLE AT VOLUME. Free tier allows 20 requests/day, and Google has
+#    closed the model to new accounts entirely: of seven gemini keys here, three
+#    can call it and four return 404 "no longer available to new users".
+#
+# gemini-3.1-flash-lite has no thinking knob at all (providers.py returns None for
+# flash-lite), answers completely, and is served by all seven keys — which matters
+# because it is the rung escalation lands on.
+
+tiers:
+  economy:
+    request:
+      provider: cerebras
+      model: zai-glm-4.7
+      # This one is honoured. For open-weight families the gateway sends
+      # {"thinking": false}, which the server acts on — unlike the gemini path.
+      # Measured: with the dial left alone this model burned its whole output
+      # budget thinking and returned "" at full price.
+      reasoning: "off"
+      max_tokens: 1600
+      temperature: 0
+    price_model: zai-glm-4.7
+    projected_input_tokens: 600
+    projected_output_tokens: 900
+
+  standard:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 1600
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 600
+    projected_output_tokens: 900
+
+  frontier:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      # flash-lite has no thinking channel, so this is a no-op sent for symmetry
+      # rather than effect. Kept explicit so the ladder states its intent at every
+      # rung instead of leaving one to inference.
+      reasoning: "off"
+      max_tokens: 1600
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 600
+    projected_output_tokens: 900
+
+# ── Every rung gets the SAME max_tokens, deliberately ────────────────────────
+# The shipped ladder ramps 512 / 1024 / 4096. Measured on this workload, a hard
+# review needs up to 844 output tokens, so a 512-token rung would be cut off
+# mid-answer and then fail the rubric's `complete` and `consistent` criteria for
+# running out of room rather than for being a weaker model. In the final
+# cost-per-resolved-task number those two failures are indistinguishable.
+#
+# Equal ceilings mean the only difference between rungs is the model and its
+# price. The cost of that choice, stated plainly: the projected spread is 2.3x
+# rather than the shipped ladder's 26x, because that 26x came substantially from
+# the frontier rung being handed 8x the tokens. Break-even resolution rate rises
+# to roughly 43%, which is a far more demanding bar and the honest one.
+
+# Which tier a graph ROLE opens on. p1's budget-aware strategy takes its opening
+# rung from evals.yaml (`strategies.start: cheapest`), not from here, so these
+# govern ordinary agent runs rather than the p1 comparison.
+role_tiers:
+  default: standard
+  answer_with_evidence: standard
+  memory_recall: economy
+  read_file: economy
+  index_file: economy
+  list_directory: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  coder_validator: frontier
+  distiller: standard
+  content: standard
+  compose_surface: standard

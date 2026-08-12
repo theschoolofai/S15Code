@@ -28,6 +28,15 @@ models:
     measured_non_empty: true
   gemini-3.1-flash: {input: 0.50, output: 3.00}
   gemini-3.1-pro: {input: 2.00, output: 12.00}
+  # LADDER rung 3 (frontier) as of 2026-08-11. Rates are NOT invented here: they
+  # are copied from glc_v4's own price table (glc/economics/pricing.yaml), which
+  # is the table the gateway actually bills this model against — so the ledger and
+  # this file cannot disagree. MEASURED through the gateway: 8 in / 2 out,
+  # $0.0000049, price_source "model".
+  #
+  # Why this model and not gemini-3.1-pro: the free AI Studio tier has no quota for
+  # pro (HTTP 429 on every attempt), and a rung that cannot be called is not a rung.
+  gemini-2.5-flash: {input: 0.30, output: 2.50}
   # Open weight / hosted (the other models this gateway serves today)
   #
   # NOT REACHABLE as of 2026-07-30: this is the model NVIDIA_MODEL selects, and
