@@ -1,0 +1,62 @@
+# Budget policy for the CODE REVIEW workload.
+#
+# Paired with config_code_review/tiers.yaml. Every threshold the controller reads
+# lives here; none of it appears in Python.
+
+# Per-task ceiling when a caller asks for a budgeted run without naming an amount.
+#
+# Measured cost of a single review answer on this workload runs $0.0007 (economy)
+# to roughly $0.004 (frontier, long answer). A three-attempt cascade that climbs
+# the whole ladder therefore costs about $0.008 in the worst realistic case.
+# $0.02 leaves room for that plus the controller's conservative projection, while
+# still being small enough that a runaway loop hits the ceiling quickly.
+default_budget: 0.02
+
+# Held back from frontier allocation so the node that actually answers is never
+# starved by upstream work. Lower than the shipped 0.20 because this workload's
+# graphs are shallow — usually one answering node — so there is little upstream
+# work to protect against, and a large reserve just shrinks the usable allowance.
+reserve_fraction: 0.15
+
+# Spend ratio at or above which a node's requested tier is downgraded one rung.
+#
+# Raised from the shipped 0.50. This workload's whole strategy is to ESCALATE on
+# an unresolved verdict, and a downgrade threshold that trips early fights the
+# cascade: the run climbs to frontier because the answer was wrong, and the
+# controller immediately drops it back down because climbing cost money. At 0.65
+# a two-rung cascade completes before pressure starts pulling the other way,
+# while a genuine runaway still gets throttled well before the refusal line.
+downgrade_at: 0.65
+
+# Spend ratio at or above which no further call is admitted at any tier.
+refuse_at: 0.90
+
+# A projected call must leave at least this fraction of the allowance unspent, so
+# the last admitted call cannot land exactly on zero.
+headroom_fraction: 0.02
+
+# Admission prices the WORST case: output bounded by the tier's max_tokens, input
+# by the real prompt at roughly four characters per token, times a safety factor
+# because the provider's tokeniser is not ours.
+#
+# Note the consequence, measured in Part 1: projection over-reserved by up to
+# 10.8x against actual spend. That is what makes refusal trustworthy — the ceiling
+# is never breached by a call that was admitted optimistically — but it also means
+# the controller refuses calls that would have fitted. On this workload, with
+# max_tokens equal across rungs, the over-reservation is roughly 2-4x rather than
+# 10x, because the token ceiling is closer to what answers actually use.
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Hard ceiling on admitted calls per run, independent of price estimates being
+# right. The cascade needs at most 3 (one per rung); 12 allows for a multi-node
+# graph while still stopping a loop long before it becomes expensive.
+max_calls_per_run: 12
+
+# One node may attempt at most one call per rung, plus one. A single retrying
+# review node cannot spin.
+max_calls_per_node: 4
+
+# Per-principal overrides. A principal named here is capped at this amount
+# regardless of what the caller requested, whichever is smaller.
+principals: {}

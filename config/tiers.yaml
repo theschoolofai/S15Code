@@ -25,12 +25,58 @@ default_tier: standard
 #   rung      provider    model                    $/Mtok in/out  latency  answered
 #   economy   groq        openai/gpt-oss-120b      0.15 / 0.75    0.74 s   yes
 #   standard  gemini      gemini-3.1-flash-lite    0.25 / 1.50    1.24 s   yes
-#   frontier  github      openai/gpt-4.1           2.00 / 8.00    2.88 s   yes
+#   frontier  gemini      gemini-2.5-flash         0.30 / 2.50    n/m      yes
 #
-# Input rate, output rate and latency all rise monotonically along the ladder,
-# which is what makes "one rung down" unambiguous. Projected worst-case cost per
-# call (the number admission actually uses) is $0.000564 / $0.002161 / $0.044768
-# — a 79x spread across the ladder, where the same-model ladder managed 5x.
+# ── 2026-08-11: the frontier rung was REPLACED ───────────────────────────────
+# Rung 3 was github / openai/gpt-4.1 at 2.00/8.00 until GitHub Models entered its
+# retirement brownout (HTTP 410 github_models_retirement_brownout) and stopped
+# answering every request. The top of the ladder had to be rebuilt from providers
+# still reachable on free tiers.
+#
+# The first attempt was cerebras / zai-glm-4.7 at 0.50/0.50, and it FAILED p7 —
+# worth recording, because the failure is the instructive part. Its output rate
+# (0.50) is below the economy rung's (0.75), and output dominates every real call,
+# so the measured ladder came out INVERTED: frontier $0.00004750 against economy
+# $0.00008025, a 0.59x "spread". p7's check "the top rung measurably costs more
+# than the bottom rung" caught it. A rung that costs less than the one below it is
+# not a frontier, whatever its projected worst case says.
+#
+# gemini-2.5-flash restores monotonicity on BOTH rates, which is what makes "one
+# rung down" unambiguous:
+#
+#   input rate    0.15 -> 0.25 -> 0.30    rises
+#   output rate   0.75 -> 1.50 -> 2.50    rises
+#
+# Two spreads, and they are very different numbers. p7 on a one-sentence task,
+# 2026-08-11:
+#
+#   projected worst case   0.00039090 -> 0.00154750 -> 0.01025380    26.2x
+#   actually charged       0.00008025 -> 0.00010025 -> 0.00014870     1.85x
+#
+# The projected figures are what ADMISSION reads, and they are dominated by each
+# rung's `max_tokens` ceiling. The charged figures are what the LEDGER records, and
+# on a short task every rung emitted a similar ~60-token answer, so the 26x design
+# spread collapsed to under 2x in practice.
+#
+# That gap is the single most important thing to understand about this ladder.
+# Break-even resolution rate computed from the projected spread is ~3.8%; computed
+# from the measured spread it is ~54%. The second number is the honest one for
+# short tasks, and it means the cheap rung has to be right MOST of the time to pay
+# for itself — nothing like the "cheap rung only needs 1 in 80" story the original
+# 79x github ladder told. The spread only approaches its design value on tasks
+# whose answers are long enough for the frontier rung to use its token budget.
+#
+# (`projected_input_tokens` below is only a FALLBACK estimate. Admission prices the
+# real prompt when it has one, which is why these numbers are not what you get by
+# multiplying the configured token counts by the rates.)
+#
+# Two rungs now share the gemini provider. p7 requires the ladder to span MORE
+# THAN ONE provider, not three, so groq + gemini satisfies it — but the ladder is
+# less provider-diverse than the original, and an outage at Google now takes out
+# two rungs instead of one. That is a real fragility, not a cosmetic one.
+#
+# Rung 3 is priced from glc_v4's own table, so the ledger cannot disagree with it.
+# Point frontier back at github if the service ever returns.
 #
 # Two facts worth keeping, both learned the hard way:
 #
@@ -83,13 +129,16 @@ tiers:
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
+      provider: gemini
+      model: gemini-2.5-flash
+      # Left alone deliberately, as gpt-4.1 was: this model answers without the
+      # dial and did not show the burn-the-budget-thinking failure that forces
+      # `reasoning: "off"` on the economy rung and on zai-glm-4.7.
       max_tokens: 4096
       temperature: 0
-    price_model: openai/gpt-4.1
+    price_model: gemini-2.5-flash
+    # Gemini's context is 1M, so 6000 + 4096 fits with room to spare. The cerebras
+    # attempt had to shrink these to 3000 to stay inside an 8k ceiling.
     projected_input_tokens: 6000
     projected_output_tokens: 2000
 
