@@ -1,0 +1,782 @@
+{
+  "proof": "p11_strategy_costs",
+  "ok": true,
+  "mode": "composed",
+  "mode_detail": {
+    "source": "proofs/out/p10_judge_audit_navigation.json",
+    "note": "rung-level costs and verdicts are MEASURED; strategy sequencing is composed"
+  },
+  "arguments": {
+    "task": "strategies composed from proofs/out/p10_judge_audit_navigation.json",
+    "budget": 0.02,
+    "principal": "nav/s15/p11",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "A always_frontier": "spend 0.01186400 USD  calls 18  cost/call 0.00065911  resolved 14/18 (78%)  cost/resolved 0.00084743",
+    "B always_cheapest": "spend 0.01017000 USD  calls 22  cost/call 0.00046227  resolved 16/18 (89%)  cost/resolved 0.00063563",
+    "C budget_aware": "spend 0.00823650 USD  calls 20  cost/call 0.00041182  resolved 16/18 (89%)  cost/resolved 0.00051478",
+    "B vs always-frontier baseline": "cost/resolved -25.0%  cost/call -29.9%",
+    "C vs always-frontier baseline": "cost/resolved -39.3%  cost/call -37.5%",
+    "break-even resolution rate for the cheap rung": "78.3% (below this, retrying the cheap rung costs more per RESOLVED task than always-frontier)",
+    "where the cheap rung actually sits": "88.9%, +10.6 points against break-even",
+    "tasks where the rungs disagreed": "[\"nav06: economy PASS, frontier FAIL (frontier call errored)\", \"nav17: economy PASS, frontier FAIL (frontier call errored)\"]",
+    "tasks neither rung resolved": "[\"nav12\", \"nav14\"]",
+    "retry assumption (temperature 0 reproduces the answer)": "3/3 re-asked tasks returned a byte-identical answer"
+  },
+  "checks": [
+    {
+      "claim": "every task has a measured row at both rungs",
+      "ok": true,
+      "observed": "18 economy, 18 frontier"
+    },
+    {
+      "claim": "A and C are composed only of calls that were actually made",
+      "ok": true,
+      "observed": "C spends at most one call per rung per task"
+    },
+    {
+      "claim": "B's retry assumption holds: a temperature-0 retry returns the same answer",
+      "ok": true,
+      "observed": "3/3 identical"
+    },
+    {
+      "claim": "the baseline resolved something, so cost per resolved task is defined",
+      "ok": true,
+      "observed": "A resolved 14"
+    },
+    {
+      "claim": "no strategy's spend is negative or zero",
+      "ok": true,
+      "observed": {
+        "A": 0.011864,
+        "B": 0.01017,
+        "C": 0.008236499999999999
+      }
+    }
+  ],
+  "detail": {
+    "strategies": {
+      "A": {
+        "key": "A",
+        "name": "always_frontier",
+        "note": "each task's measured frontier row, once",
+        "tasks": [
+          {
+            "task_id": "nav01",
+            "cost": 0.0005835,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav02",
+            "cost": 0.0007815,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav03",
+            "cost": 0.001263,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav04",
+            "cost": 0.0005960000000000001,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav05",
+            "cost": 0.000658,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav06",
+            "cost": 0.0,
+            "calls": 1,
+            "resolved": false,
+            "errored": true,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav07",
+            "cost": 0.0009335000000000001,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav08",
+            "cost": 0.0013160000000000001,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav09",
+            "cost": 0.0006615,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav10",
+            "cost": 0.00041200000000000004,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav11",
+            "cost": 0.0002435,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav12",
+            "cost": 0.0,
+            "calls": 1,
+            "resolved": false,
+            "errored": true,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav13",
+            "cost": 0.00056,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav14",
+            "cost": 0.0005465,
+            "calls": 1,
+            "resolved": false,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav15",
+            "cost": 0.0005595,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav16",
+            "cost": 0.0017135,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav17",
+            "cost": 0.0,
+            "calls": 1,
+            "resolved": false,
+            "errored": true,
+            "rungs": [
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav18",
+            "cost": 0.001036,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "frontier"
+            ]
+          }
+        ],
+        "spend": 0.011864,
+        "calls": 18,
+        "resolved": 14,
+        "errored": 3,
+        "task_count": 18,
+        "cost_per_call": 0.0006591111111111111,
+        "cost_per_task": 0.0006591111111111111,
+        "cost_per_resolved_task": 0.0008474285714285713,
+        "resolution_rate": 0.7777777777777778
+      },
+      "B": {
+        "key": "B",
+        "name": "always_cheapest",
+        "note": "each task's measured economy row, retried up to 3 times when unresolved",
+        "tasks": [
+          {
+            "task_id": "nav01",
+            "cost": 0.00028425,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav02",
+            "cost": 0.00039825,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav03",
+            "cost": 0.000543,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav04",
+            "cost": 0.000265,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav05",
+            "cost": 0.0005840000000000001,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav06",
+            "cost": 0.0003915,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav07",
+            "cost": 0.00037825,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav08",
+            "cost": 0.0005575,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav09",
+            "cost": 0.00020175,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav10",
+            "cost": 0.0003425,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav11",
+            "cost": 0.00032275,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav12",
+            "cost": 0.00133425,
+            "calls": 3,
+            "resolved": false,
+            "errored": false,
+            "rungs": [
+              "economy",
+              "economy",
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav13",
+            "cost": 0.000448,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav14",
+            "cost": 0.00238575,
+            "calls": 3,
+            "resolved": false,
+            "errored": false,
+            "rungs": [
+              "economy",
+              "economy",
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav15",
+            "cost": 0.00039225,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav16",
+            "cost": 0.00054025,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav17",
+            "cost": 0.00038175,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav18",
+            "cost": 0.000419,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          }
+        ],
+        "spend": 0.01017,
+        "calls": 22,
+        "resolved": 16,
+        "errored": 0,
+        "task_count": 18,
+        "cost_per_call": 0.0004622727272727273,
+        "cost_per_task": 0.000565,
+        "cost_per_resolved_task": 0.000635625,
+        "resolution_rate": 0.8888888888888888
+      },
+      "C": {
+        "key": "C",
+        "name": "budget_aware",
+        "note": "each task's measured economy row, escalated to its measured frontier row when unresolved",
+        "tasks": [
+          {
+            "task_id": "nav01",
+            "cost": 0.00028425,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav02",
+            "cost": 0.00039825,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav03",
+            "cost": 0.000543,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav04",
+            "cost": 0.000265,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav05",
+            "cost": 0.0005840000000000001,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav06",
+            "cost": 0.0003915,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav07",
+            "cost": 0.00037825,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav08",
+            "cost": 0.0005575,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav09",
+            "cost": 0.00020175,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav10",
+            "cost": 0.0003425,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav11",
+            "cost": 0.00032275,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav12",
+            "cost": 0.00044475,
+            "calls": 2,
+            "resolved": false,
+            "errored": true,
+            "rungs": [
+              "economy",
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav13",
+            "cost": 0.000448,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav14",
+            "cost": 0.00134175,
+            "calls": 2,
+            "resolved": false,
+            "errored": false,
+            "rungs": [
+              "economy",
+              "frontier"
+            ]
+          },
+          {
+            "task_id": "nav15",
+            "cost": 0.00039225,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav16",
+            "cost": 0.00054025,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav17",
+            "cost": 0.00038175,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          },
+          {
+            "task_id": "nav18",
+            "cost": 0.000419,
+            "calls": 1,
+            "resolved": true,
+            "errored": false,
+            "rungs": [
+              "economy"
+            ]
+          }
+        ],
+        "spend": 0.008236499999999999,
+        "calls": 20,
+        "resolved": 16,
+        "errored": 0,
+        "task_count": 18,
+        "cost_per_call": 0.00041182499999999994,
+        "cost_per_task": 0.0004575833333333333,
+        "cost_per_resolved_task": 0.0005147812499999999,
+        "resolution_rate": 0.8888888888888888
+      }
+    },
+    "break_even_resolution_rate": 0.7826402427405051,
+    "split_tasks": [
+      {
+        "task_id": "nav06",
+        "difficulty": "easy",
+        "economy": {
+          "resolved": true,
+          "cost": 0.0003915
+        },
+        "frontier": {
+          "resolved": false,
+          "cost": 0.0,
+          "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}"
+        }
+      },
+      {
+        "task_id": "nav17",
+        "difficulty": "hard",
+        "economy": {
+          "resolved": true,
+          "cost": 0.00038175
+        },
+        "frontier": {
+          "resolved": false,
+          "cost": 0.0,
+          "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}"
+        }
+      }
+    ],
+    "tasks_neither_rung_resolved": [
+      "nav12",
+      "nav14"
+    ],
+    "repeatability": {
+      "attempted": 3,
+      "compared": 3,
+      "identical": 3,
+      "results": [
+        {
+          "task_id": "nav01",
+          "digests": [
+            "933ec13bff40",
+            "933ec13bff40"
+          ],
+          "errors": [],
+          "identical": true,
+          "lengths": [
+            437,
+            437
+          ]
+        },
+        {
+          "task_id": "nav02",
+          "digests": [
+            "778d545a752f",
+            "778d545a752f"
+          ],
+          "errors": [],
+          "identical": true,
+          "lengths": [
+            552,
+            552
+          ]
+        },
+        {
+          "task_id": "nav03",
+          "digests": [
+            "907d0d249fef",
+            "907d0d249fef"
+          ],
+          "errors": [],
+          "identical": true,
+          "lengths": [
+            791,
+            791
+          ]
+        }
+      ],
+      "seconds": 81.32334399223328
+    },
+    "source_audit": "proofs/out/p10_judge_audit_navigation.json",
+    "economics": {
+      "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+      "currency": "USD",
+      "tier_order": [
+        "economy",
+        "frontier"
+      ],
+      "default_tier": "economy",
+      "tier_models": {
+        "economy": "gemini-3.1-flash-lite",
+        "frontier": "gemini-3.5-flash"
+      },
+      "default_budget": 0.02,
+      "thresholds": {
+        "downgrade_at": 0.55,
+        "refuse_at": 0.85,
+        "headroom_fraction": 0.02,
+        "reserve_fraction": 0.25,
+        "max_calls_per_run": 24,
+        "max_calls_per_node": 3
+      }
+    }
+  }
+}

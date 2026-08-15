@@ -11,8 +11,9 @@
 #
 #   model                     result
 #   gemini-3.1-flash-lite     answers                                    ✓
-#   gemini-3.5-flash          answers, 12/12                             ✓
-#   gemini-3.7-flash          answers, but 3 of 12 calls return HTTP 503
+#   gemini-3.5-flash          12/12 in the morning — THE RUNG; by evening HTTP
+#                             429, its free-tier daily quota spent
+#   gemini-3.7-flash          9/12 and 6/8; failures are HTTP 503 capacity
 #   gemini-3-flash-preview    answers                                    ✓
 #   gemini-3.5-flash-lite     answers                                    ✓
 #   gemini-3.1-flash          HTTP 404 — no such model exists at 3.1
@@ -72,17 +73,24 @@ tiers:
   frontier:
     request:
       provider: gemini
-      # gemini-3.7-flash is newer, cheaper in latency (mean 6.8 s against 11.7 s)
-      # and identically priced, and it is NOT the rung, because it is not
-      # available enough to be a baseline: 9 of 12 calls succeeded, the other 3
-      # returning HTTP 503 "this model is currently experiencing high demand",
-      # against 12 of 12 for the model below. A 25% transport-failure rate on the
-      # rung that every other number is compared against does not measure a
-      # model's quality, it measures Google's capacity planning, and it would
-      # have shown up in the results as the frontier baseline mysteriously
-      # failing tasks the cheap rung solved. Availability chose this rung, not
-      # capability — and the newest model being the least available is worth
-      # knowing before it is the one your production ladder is pinned to.
+      # Chosen on measured AVAILABILITY, not capability. gemini-3.7-flash is
+      # newer, faster (mean 6.8 s against 11.7 s) and identically priced, and it
+      # is not this rung because it returned HTTP 503 "currently experiencing
+      # high demand" on 3 of 12 calls, against 12 of 12 here. A 25% transport
+      # failure rate on the rung every other number is compared against measures
+      # Google's capacity planning, not a model's quality, and it would have
+      # surfaced as the frontier baseline mysteriously failing tasks the cheap
+      # rung solved.
+      #
+      # THE OTHER HALF OF THAT LESSON, learned twelve hours later. This rung's
+      # free-tier DAILY quota ran out mid-study: every call began returning HTTP
+      # 429 while gemini-3.1-flash-lite still answered. A 503 and a 429 are not
+      # the same failure — a retry fixes the first and nothing fixes the second
+      # until midnight Pacific — and a ladder pinned to one provider has no
+      # answer to the second, because every rung shares the quota. That is the
+      # cost of the single-provider constraint stated at the top of this file,
+      # and it is the reason the README reports Part 2 from measurements taken
+      # before the wall rather than from a p1 run that could not finish.
       model: gemini-3.5-flash
       # Reasoning is turned ON here, unlike the rung below, and it is a third of
       # what this rung is bought for — the other two being a larger model and a

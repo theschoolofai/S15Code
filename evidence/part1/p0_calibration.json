@@ -1,6 +1,6 @@
 {
   "proof": "p0_calibration",
-  "ok": true,
+  "ok": false,
   "mode": "live",
   "mode_detail": {
     "base_url": "http://127.0.0.1:8111"
@@ -22,7 +22,7 @@
     "default_tier": "economy",
     "tier_models": {
       "economy": "gemini-3.1-flash-lite",
-      "frontier": "gemini-3.5-flash"
+      "frontier": "gemini-3.7-flash"
     },
     "default_budget": 0.02,
     "thresholds": {
@@ -35,20 +35,22 @@
     }
   },
   "facts": {
-    "rung economy": "gemini-3.1-flash-lite  38in/87out  $0.00014000 measured  $0.00082300 projected  1382 ms  518 chars",
-    "rung frontier": "gemini-3.5-flash  38in/80out  $0.00025900 measured  $0.01239800 projected  5432 ms  512 chars",
-    "judge judge_local": "phi4:latest  6322 ms  $0.00000000",
-    "judge judge_hosted": "gemini-3-flash-preview  4931 ms  $0.00010000",
+    "rung economy": "gemini-3.1-flash-lite  38in/87out  $0.00014000 measured  $0.00082300 projected  5478 ms  518 chars",
+    "rung frontier": "UNREACHABLE  0in/0out  $0.00000000 measured  $0.01239800 projected  359 ms  0 chars  ERROR RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini ",
+    "judge judge_local": "phi4:latest  5213 ms  $0.00000000",
+    "judge judge_hosted": "UNREACHABLE  383 ms  $0.00000000  ERROR RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_2 failed: gemini ",
     "projected spread": "15.1x (worst case, what admission prices)",
-    "measured spread": "1.9x (this prompt, what the ledger charged)",
-    "latency spread": "3.9x",
-    "FINDING measured order matches projected order": "YES"
+    "measured spread": "n/a",
+    "latency spread": "0.1x",
+    "FINDING measured order matches projected order": "NO \u2014 a dearer rung answered more cheaply on this prompt than the ladder predicts"
   },
   "checks": [
     {
       "claim": "every rung of the ladder is reachable",
-      "ok": true,
-      "observed": "2 rungs answered"
+      "ok": false,
+      "observed": [
+        "frontier"
+      ]
     },
     {
       "claim": "no rung returns an empty answer at full price",
@@ -70,24 +72,22 @@
     },
     {
       "claim": "each rung is a DIFFERENT model, so a downgrade changes the model",
-      "ok": true,
+      "ok": false,
       "observed": [
-        "gemini-3.1-flash-lite",
-        "gemini-3.5-flash"
+        "gemini-3.1-flash-lite"
       ]
     },
     {
       "claim": "every judge on the panel answers",
-      "ok": true,
+      "ok": false,
       "observed": [
-        "phi4:latest",
-        "gemini-3-flash-preview"
+        "judge_hosted"
       ]
     },
     {
       "claim": "no judge shares a model with any rung of the ladder",
       "ok": true,
-      "observed": "ladder ['gemini-3.1-flash-lite', 'gemini-3.5-flash'] vs judges ['gemini-3-flash-preview', 'phi4:latest']"
+      "observed": "ladder ['gemini-3.1-flash-lite'] vs judges ['phi4:latest']"
     }
   ],
   "detail": {
@@ -103,7 +103,7 @@
         "input_tokens": 38,
         "output_tokens": 87,
         "measured_cost": 0.00014,
-        "latency_ms": 1382.0,
+        "latency_ms": 5478.0,
         "answer_chars": 518,
         "non_empty": true,
         "answer_excerpt": "Measuring by cost per call fails to account for the efficiency of the routing logic, as it ignores whether the initial contact successfully addressed the customer's underlying issue. In contrast, cost per resolved task incentivizes the syst",
@@ -115,19 +115,19 @@
         "label": "frontier",
         "kind": "rung",
         "requested_provider": "gemini",
-        "requested_model": "gemini-3.5-flash",
-        "served_provider": "gemini_2",
-        "served_model": "gemini-3.5-flash",
-        "model_matches_request": true,
-        "input_tokens": 38,
-        "output_tokens": 80,
-        "measured_cost": 0.000259,
-        "latency_ms": 5432.0,
-        "answer_chars": 512,
-        "non_empty": true,
-        "answer_excerpt": "Measuring routing policies by cost per call incentivizes brief, ineffective interactions that often fail to address the user's underlying issue, leading to expensive repeat contacts. Conversely, cost per resolved task evaluates the entire l",
-        "stop_reason": "end_turn",
-        "error": null,
+        "requested_model": "gemini-3.7-flash",
+        "served_provider": null,
+        "served_model": null,
+        "model_matches_request": false,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "measured_cost": 0.0,
+        "latency_ms": 358.654260635376,
+        "answer_chars": 0,
+        "non_empty": false,
+        "answer_excerpt": "",
+        "stop_reason": null,
+        "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}",
         "projected_cost": 0.012398000000000001
       }
     ],
@@ -143,7 +143,7 @@
         "input_tokens": 53,
         "output_tokens": 99,
         "measured_cost": 0.0,
-        "latency_ms": 6322.0,
+        "latency_ms": 5213.0,
         "answer_chars": 626,
         "non_empty": true,
         "answer_excerpt": "Measuring a routing policy by cost per resolved task provides a more accurate reflection of efficiency and effectiveness because it accounts for the entire resolution process, including follow-up interactions that may occur after the initia",
@@ -155,18 +155,18 @@
         "kind": "judge",
         "requested_provider": "gemini",
         "requested_model": "gemini-3-flash-preview",
-        "served_provider": "gemini_1",
-        "served_model": "gemini-3-flash-preview",
-        "model_matches_request": true,
-        "input_tokens": 38,
-        "output_tokens": 27,
-        "measured_cost": 0.0001,
-        "latency_ms": 4931.0,
-        "answer_chars": 179,
-        "non_empty": true,
-        "answer_excerpt": "Measuring cost per call incentivizes brief interactions that may fail to address the root cause, leading to expensive repeat contacts and inflated operational overhead. Conversely",
-        "stop_reason": "max_tokens",
-        "error": null
+        "served_provider": null,
+        "served_model": null,
+        "model_matches_request": false,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "measured_cost": 0.0,
+        "latency_ms": 383.1207752227783,
+        "answer_chars": 0,
+        "non_empty": false,
+        "answer_excerpt": "",
+        "stop_reason": null,
+        "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_2 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}"
       }
     ],
     "prompt": {
@@ -183,7 +183,7 @@
       "default_tier": "economy",
       "tier_models": {
         "economy": "gemini-3.1-flash-lite",
-        "frontier": "gemini-3.5-flash"
+        "frontier": "gemini-3.7-flash"
       },
       "default_budget": 0.02,
       "thresholds": {
@@ -197,7 +197,7 @@
     },
     "spreads": {
       "projected": 15.064398541919806,
-      "measured": 1.8500000000000003
+      "measured": 0.0
     }
   }
 }

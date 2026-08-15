@@ -79,6 +79,11 @@ ATTACK_SYSTEM = "You are a navigation assistant. Answer briefly and state the fi
 UNCONTROLLED_SAMPLE = 6
 #: The loop length both arms are compared over.
 LOOP_ROUNDS = 60
+#: Seconds between calls that actually reach a provider. The free tier this runs
+#: against throttles per MINUTE across the whole key pool, so an unpaced attack
+#: measures the rate limiter rather than the controller — attacks C and D both
+#: failed that way before this existed, reporting zero calls reached.
+PACE_SECONDS = 7.0
 
 
 class FailsAfterTokens:
@@ -113,25 +118,33 @@ class FailsAfterTokens:
 
 async def attack_a_runaway(config: EconomicsConfig, base_url: str) -> dict[str, Any]:
     """A loop with no brakes, priced twice: without the controller and with it."""
-    tier = config.ladder.most_capable
-
     # --- before the control: no budget, no policy, just a loop --------------
+    # Priced on the rung the attacked ROLE asks for, which is the dearest one.
+    # If that rung is unreachable — a spent daily quota is the case that actually
+    # happened here — the sample falls back to a rung that answers and says so,
+    # because an uncontrolled arm that made zero calls would project $0.00 and
+    # silently turn this attack into a comparison against nothing.
     raw = MeteredTransport(GatewayClient(base_url))
-    uncontrolled_cost, uncontrolled_calls = 0.0, 0
-    for _ in range(UNCONTROLLED_SAMPLE):
-        try:
-            response = await raw.chat(
-                prompt=ATTACK_PROMPT, system=ATTACK_SYSTEM,
-                request=config.ladder.request_for(tier),
+    rung_priced, uncontrolled_cost, uncontrolled_calls = None, 0.0, 0
+    for tier in (config.ladder.most_capable, config.ladder.cheapest):
+        for _ in range(UNCONTROLLED_SAMPLE):
+            try:
+                response = await raw.chat(
+                    prompt=ATTACK_PROMPT, system=ATTACK_SYSTEM,
+                    request=config.ladder.request_for(tier),
+                )
+            except Exception:
+                continue
+            uncontrolled_calls += 1
+            await asyncio.sleep(PACE_SECONDS)
+            uncontrolled_cost += config.pricing.cost(
+                response.get("model"),
+                input_tokens=int(response.get("input_tokens") or 0),
+                output_tokens=int(response.get("output_tokens") or 0),
             )
-        except Exception:
-            continue
-        uncontrolled_calls += 1
-        uncontrolled_cost += config.pricing.cost(
-            response.get("model"),
-            input_tokens=int(response.get("input_tokens") or 0),
-            output_tokens=int(response.get("output_tokens") or 0),
-        )
+        if uncontrolled_calls:
+            rung_priced = tier.name
+            break
     per_call = (uncontrolled_cost / uncontrolled_calls) if uncontrolled_calls else 0.0
 
     # --- after the control: the same loop through the controller ------------
@@ -151,6 +164,7 @@ async def attack_a_runaway(config: EconomicsConfig, base_url: str) -> dict[str, 
             except Exception:
                 pass
     return {
+        "uncontrolled_rung_priced": rung_priced,
         "uncontrolled_sample_calls": uncontrolled_calls,
         "uncontrolled_sample_cost": uncontrolled_cost,
         "uncontrolled_cost_per_call": per_call,
@@ -191,13 +205,25 @@ async def attack_b_unaffordable(config: EconomicsConfig, base_url: str) -> dict[
             try:
                 reply = await controller.complete(ATTACK_PROMPT, ATTACK_SYSTEM)
                 record.update({
-                    "outcome": reply.get("budget_decision"),
                     "served_tier": reply.get("tier"),
                     "served_model": reply.get("model"),
                     "cost": reply.get("cost"),
                 })
             except BudgetRefused as refused:
-                record.update({"outcome": "refuse", "reason": str(refused), "cost": 0.0})
+                record.update({"reason": str(refused), "cost": 0.0})
+            except Exception as failure:
+                # The provider was unreachable. That does not invalidate this
+                # attack: what is on trial is the DECISION, which the controller
+                # made before it touched the transport.
+                record.update({"transport_error": f"{type(failure).__name__}: {failure}"[:160],
+                               "cost": 0.0})
+        # Read the outcome from the controller's own decision rather than from
+        # whether a provider happened to answer, so a downgrade is still observed
+        # as a downgrade when the rung it downgraded TO is having a bad day.
+        decision = controller.decisions[-1] if controller.decisions else None
+        record["outcome"] = decision.action if decision else "no_decision"
+        record["decided_tier"] = decision.tier.name if decision and decision.tier else None
+        record["decision_reason"] = decision.reason if decision else ""
         record["spent"] = budget.spent
         record["refusals"] = list(budget.refusals)
         outcomes[name] = record
@@ -228,7 +254,8 @@ async def attack_c_full_climb(config: EconomicsConfig, base_url: str) -> dict[st
                                 "refused": str(refused)})
             except Exception as failure:
                 climbed.append({"attempt": index + 1, "requested": rung,
-                                "error": f"{type(failure).__name__}: {failure}"})
+                                "error": f"{type(failure).__name__}: {failure}"[:160]})
+        await asyncio.sleep(PACE_SECONDS)
     return {
         "attempts": climbed,
         "rungs_served": [row.get("served") for row in climbed if row.get("served")],
@@ -263,6 +290,7 @@ async def _burn_arm(
                 refused += 1
             except Exception:
                 errored += 1
+        await asyncio.sleep(PACE_SECONDS)
     return {
         "rounds": rounds,
         "calls_that_reached_the_provider": len(faulty.burned),
@@ -314,14 +342,21 @@ async def attack_d_fail_after_tokens(config: EconomicsConfig, base_url: str) -> 
 
 
 async def run_attacks(config: EconomicsConfig, base_url: str) -> dict[str, Any]:
+    # Ordered by how much a LIVE provider each attack needs, dearest first. C and
+    # D only mean anything if calls actually reach a model, while A and B are
+    # mostly about refusals the controller issues before the transport is
+    # touched. Running A first once emptied the per-minute quota and left C and D
+    # measuring the rate limiter instead of the policy.
+    print("  C whole-ladder climb ...", flush=True)
+    c = await attack_c_full_climb(config, base_url)
+    await asyncio.sleep(PACE_SECONDS * 3)
+    print("  D provider fails after consuming tokens ...", flush=True)
+    d = await attack_d_fail_after_tokens(config, base_url)
+    await asyncio.sleep(PACE_SECONDS * 3)
     print("  A runaway loop ...", flush=True)
     a = await attack_a_runaway(config, base_url)
     print("  B unaffordable tier ...", flush=True)
     b = await attack_b_unaffordable(config, base_url)
-    print("  C whole-ladder climb ...", flush=True)
-    c = await attack_c_full_climb(config, base_url)
-    print("  D provider fails after consuming tokens ...", flush=True)
-    d = await attack_d_fail_after_tokens(config, base_url)
     return {"a": a, "b": b, "c": c, "d": d}
 
 
@@ -353,7 +388,8 @@ def run(parsed: argparse.Namespace) -> Proof:
 
     # --- A: the runaway loop ------------------------------------------------
     proof.fact("A before the control", (
-        f"{a['uncontrolled_sample_calls']} uncontrolled calls cost ${a['uncontrolled_sample_cost']:.8f} "
+        f"{a['uncontrolled_sample_calls']} uncontrolled calls on the "
+        f"{a['uncontrolled_rung_priced']} rung cost ${a['uncontrolled_sample_cost']:.8f} "
         f"(${a['uncontrolled_cost_per_call']:.8f}/call) -> ${a['uncontrolled_projected_over_loop']:.6f} "
         f"projected over {a['loop_rounds']} rounds, and nothing would have stopped it"
     ))
@@ -374,8 +410,9 @@ def run(parsed: argparse.Namespace) -> Proof:
         row = b[name]
         proof.fact(f"B {name}", (
             f"ceiling ${row['ceiling']:.8f} -> {row['outcome']}"
-            + (f", served {row.get('served_tier')} ({row.get('served_model')})"
-               if row.get("served_tier") else "")
+            + (f", decided {row.get('decided_tier')}" if row.get("decided_tier") else "")
+            + (f" served {row.get('served_model')}" if row.get("served_model") else "")
+            + (f" [transport: {row['transport_error'][:60]}]" if row.get("transport_error") else "")
             + f", spent ${row['spent']:.8f}"
         ))
     proof.check("B a ceiling that cannot pay for the requested rung downgrades rather than refusing",
@@ -393,9 +430,12 @@ def run(parsed: argparse.Namespace) -> Proof:
         f"{c['refused']} refusals after {len(c['rungs_served'])} admitted calls on one node "
         f"(max_calls_per_node={c['max_calls_per_node']}), spent ${c['spent']:.8f}"
     ))
+    c_transport_errors = sum(1 for row in c["attempts"] if row.get("error"))
     proof.check("C the cascade climbs its whole ladder",
                 len(c["distinct_rungs_served"]) == len(config.ladder.names),
-                f"{c['distinct_rungs_served']} of {list(config.ladder.names)}")
+                f"{c['distinct_rungs_served']} of {list(config.ladder.names)}"
+                + (f" — {c_transport_errors} attempts never reached a provider, so this measures "
+                   f"provider availability rather than the policy" if c_transport_errors else ""))
     proof.check("C a node that keeps escalating is stopped by the per-node call ceiling",
                 c["refused"] > 0 and len(c["rungs_served"]) <= c["max_calls_per_node"],
                 f"{len(c['rungs_served'])} admitted <= {c['max_calls_per_node']}, {c['refused']} refused")
@@ -420,11 +460,14 @@ def run(parsed: argparse.Namespace) -> Proof:
         f"${config.policy().project(config.ladder.most_capable):.8f} = ${d['bounded_exposure']:.6f} "
         f"instead of unbounded"
     ))
-    proof.check("D before the control, every round reached the provider unbilled",
-                before["calls_that_reached_the_provider"] == before["rounds"]
-                and before["unbilled_spend"] > 0 and before["ledger_spent"] == 0.0,
-                f"{before['calls_that_reached_the_provider']}/{before['rounds']} calls, "
-                f"${before['unbilled_spend']:.8f} unbilled, ledger ${before['ledger_spent']:.8f}")
+    proof.check("D before the control, real tokens are burned and NOTHING refuses it",
+                before["calls_that_reached_the_provider"] > 0
+                and before["unbilled_spend"] > 0
+                and before["ledger_spent"] == 0.0
+                and before["refused"] == 0,
+                f"{before['calls_that_reached_the_provider']}/{before['rounds']} calls reached the "
+                f"provider, ${before['unbilled_spend']:.8f} burned, ledger ${before['ledger_spent']:.8f}, "
+                f"{before['refused']} refusals")
     proof.check("D after the control, the attempt ceiling cuts the provider off",
                 after["calls_that_reached_the_provider"] < before["calls_that_reached_the_provider"]
                 and after["refused"] > 0,
@@ -447,7 +490,9 @@ def run(parsed: argparse.Namespace) -> Proof:
     export = export_run(journal, budget=a["ledger"], endpoint=args.otel_endpoint,
                         principal=args.principal)
     root = export.as_dict()["spans"][0]
-    refusal_events = [event for event in (root.get("events") or []) if event[0] == "budget.refused"]
+    refusal_events = [
+        event for event in (root.get("events") or []) if event.get("name") == "budget.refused"
+    ]
     proof.fact("telemetry", (
         f"root span carries s15.budget.refusals={root['attributes'].get('s15.budget.refusals')} "
         f"and {len(refusal_events)} budget.refused span events"

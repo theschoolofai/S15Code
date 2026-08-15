@@ -31,6 +31,11 @@ models:
   # MEASURED cost per call, which is the number the README reports. The gap
   # between those two is the honest part: projections bound the worst case, and
   # neither rung ever writes 512 or 4096 tokens of answer to these tasks.
+  gemini-3.7-flash:
+    input: 0.50
+    output: 3.00
+  # Kept priced after the rung moved off it: its daily free-tier quota ran out
+  # mid-study, and evidence collected while it WAS the rung still has to price.
   gemini-3.5-flash:
     input: 0.50
     output: 3.00
