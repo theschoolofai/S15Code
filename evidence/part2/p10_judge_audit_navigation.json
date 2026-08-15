@@ -1,0 +1,1116 @@
+{
+  "proof": "p10_judge_audit",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "judge audit over 18 tasks x 2 rungs",
+    "budget": 0.02,
+    "principal": "nav/s15/p10",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "answers graded": "36 of 36 (0 judge failures)",
+    "panel agrees with the key": "36/36 = 100.0%",
+    "FALSE RESOLVE (panel passed a wrong answer)": "0 \u2014 inflates resolution rate, UNDERSTATES cost per resolved task: ",
+    "FALSE UNRESOLVE (panel failed a right answer)": "0 \u2014 deflates resolution rate, OVERSTATES cost per resolved task: ",
+    "judge judge_hosted vs key": "32/32 = 100.0%",
+    "judge judge_local vs key": "33/33 = 100.0%",
+    "panel members disagreed with each other": "0/36",
+    "resolution rate by rung, key vs panel": "{\"economy\": {\"key_resolution_rate\": 0.889, \"judge_resolution_rate\": 0.889}, \"frontier\": {\"key_resolution_rate\": 0.778, \"judge_resolution_rate\": 0.778}}",
+    "wall clock": "893.4s"
+  },
+  "checks": [
+    {
+      "claim": "every task in the set has a key entry",
+      "ok": true,
+      "observed": "all keyed"
+    },
+    {
+      "claim": "the panel produced a verdict for every answer",
+      "ok": true,
+      "observed": "0 judge failures"
+    },
+    {
+      "claim": "the panel is not systematically generous: false resolves are the minority",
+      "ok": true,
+      "observed": "0 false resolves of 36 graded"
+    }
+  ],
+  "detail": {
+    "rows": [
+      {
+        "task_id": "nav01",
+        "difficulty": "trivial",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 437,
+        "error": null,
+        "cost": 0.00028425,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine the value displayed, follow these steps:\n\n1.  **Convert km/h to mph:** The conversion factor is 1 km/h \u2248 0.621371 mph.\n    80 km/h \u00d7 0.621371 = 49.70968 mph.\n\n2.  **Round to the nearest 5 mph:**\n    *   The calculated speed is approximately 49.71 mph.\n    *   The multiples of 5 closest to 49.71 are 45 and 50.\n    *   Since 49.71 is closer to 50 than it is to 45, the value rounds to 50.\n\nThe head unit displays **50 mph**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly converts km/h to mph, rounds appropriately, and states the final result as 50 mph, meeting all criteria.",
+          "judge_hosted": "The answer correctly converts 80 km/h to mph (approx. 49.71) and rounds it to the nearest multiple of 5, resulting in 50 mph as required by the success criterion."
+        }
+      },
+      {
+        "task_id": "nav01",
+        "difficulty": "trivial",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 486,
+        "error": null,
+        "cost": 0.0005835,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the value displayed on the head unit, we need to convert the speed limit from kilometers per hour (km/h) to miles per hour (mph) and then round it to the nearest 5 mph.\n\n1. **Convert km/h to mph:**\n   $$\\text{Speed in mph} = 80 \\text{ km/h} \\times 0.621371 \\text{ mph/km/h} \\approx 49.71 \\text{ mph}$$\n\n2. **Round to the nearest 5 mph:**\n   The closest multiples of 5 to 49.71 are 45 and 50. Since 49.71 is much closer to 50, it rounds to 50.\n\nThe head unit displays **50 mph**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly converts km/h to mph, rounds appropriately, and states the final result as 50 mph, meeting all criteria.",
+          "judge_hosted": "The model correctly converted 80 km/h to mph (approximately 49.71) and rounded it to the nearest 5 mph, resulting in the correct value of 50 mph."
+        }
+      },
+      {
+        "task_id": "nav02",
+        "difficulty": "trivial",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 552,
+        "error": null,
+        "cost": 0.00039825,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the free-flow traversal time in seconds, follow these steps:\n\n1.  **Convert the free-flow speed from km/h to m/s:**\n    *   Speed = 60 km/h\n    *   Since 1 km = 1000 m and 1 hour = 3600 seconds:\n    *   Speed = (60 * 1000) / 3600 m/s\n    *   Speed = 60,000 / 3,600 m/s = 16.666... m/s (or 50/3 m/s)\n\n2.  **Calculate the traversal time:**\n    *   Time = Distance / Speed\n    *   Time = 2400 m / (50/3 m/s)\n    *   Time = 2400 * (3 / 50) s\n    *   Time = 48 * 3 s\n    *   Time = 144 s\n\nThe free-flow traversal time for the segment is 144 seconds.",
+        "judge_notes": {
+          "judge_local": "The answer correctly converts speed, calculates time, and states the result as 144 seconds.",
+          "judge_hosted": "The answer correctly calculates the traversal time by converting the speed to m/s and dividing the distance by that speed, arriving at the correct result of 144 seconds."
+        }
+      },
+      {
+        "task_id": "nav02",
+        "difficulty": "trivial",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 656,
+        "error": null,
+        "cost": 0.0007815,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the free-flow traversal time for the road segment, we can use the formula:\n\n$$\\text{Time} = \\frac{\\text{Distance}}{\\text{Speed}}$$\n\nFirst, convert the speed from kilometers per hour ($\\text{km/h}$) to meters per second ($\\text{m/s}$):\n\n$$\\text{Speed} = 60 \\text{ km/h} = \\frac{60 \\times 1000 \\text{ m}}{3600 \\text{ s}} = \\frac{50}{3} \\text{ m/s} \\approx 16.67 \\text{ m/s}$$\n\nNext, calculate the traversal time using the length of the road segment ($2400 \\text{ m}$):\n\n$$\\text{Time} = \\frac{2400 \\text{ m}}{\\frac{50}{3} \\text{ m/s}} = 2400 \\times \\frac{3}{50} = 144 \\text{ seconds}$$\n\nThe free-flow traversal time for the segment is **144 seconds**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the traversal time as 144 seconds, addressing the task directly and specifically. It is consistent in its calculations and presentation, complete with a final result, a",
+          "judge_hosted": "The model correctly calculated the traversal time by converting the speed to m/s and dividing the distance by that speed, arriving at the correct result of 144 seconds."
+        }
+      },
+      {
+        "task_id": "nav03",
+        "difficulty": "easy",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 791,
+        "error": null,
+        "cost": 0.000543,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 0.9464285714285714,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 0.8928571428571428,
+          "judge_hosted": 1.0
+        },
+        "answer": "To calculate the curvature and lateral acceleration, we use the following steps:\n\n### 1. Curvature\nThe curvature ($\\kappa$) is the reciprocal of the radius ($R$):\n$$\\kappa = \\frac{1}{R}$$\nGiven $R = 250\\text{ m}$:\n$$\\kappa = \\frac{1}{250\\text{ m}} = 0.004\\text{ m}^{-1}$$\n\n### 2. Lateral Acceleration\nFirst, convert the vehicle speed ($v$) from km/h to m/s:\n$$v = 100\\text{ km/h} = \\frac{100,000\\text{ m}}{3,600\\text{ s}} \\approx 27.778\\text{ m/s}$$\n\nThe formula for lateral acceleration ($a_y$) is:\n$$a_y = \\frac{v^2}{R}$$\nSubstituting the values:\n$$a_y = \\frac{(27.778\\text{ m/s})^2}{250\\text{ m}}$$\n$$a_y = \\frac{771.605\\text{ m}^2/\\text{s}^2}{250\\text{ m}}$$\n$$a_y \\approx 3.086\\text{ m/s}^2$$\n\n***\n\n**Final Result:**\n*   **Curvature:** 0.004 1/m\n*   **Lateral Acceleration:** 3.086 m/s\u00b2",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates curvature and lateral acceleration, providing specific values. It is consistent and complete. The lateral acceleration value of 3.086 m/s\u00b2 slightly misses the success c",
+          "judge_hosted": "The answer correctly calculates the curvature as 0.004 1/m and the lateral acceleration as approximately 3.086 m/s\u00b2, which falls within the accepted range of 3.0-3.2 m/s\u00b2."
+        }
+      },
+      {
+        "task_id": "nav03",
+        "difficulty": "easy",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 989,
+        "error": null,
+        "cost": 0.001263,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 0.9464285714285714,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 0.8928571428571428,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the curvature and the lateral acceleration, we can use the following calculations:\n\n### 1. Curvature\nCurvature ($\\kappa$) is the reciprocal of the radius of curvature ($R$):\n$$\\kappa = \\frac{1}{R}$$\n\nGiven $R = 250\\text{ m}$:\n$$\\kappa = \\frac{1}{250\\text{ m}} = 0.004\\text{ m}^{-1}$$\n\n**Curvature:** $0.004\\text{ 1/m}$\n\n---\n\n### 2. Lateral Acceleration\nLateral acceleration ($a_{\\text{lat}}$) is calculated using the formula:\n$$a_{\\text{lat}} = \\frac{v^2}{R}$$\n\nFirst, convert the vehicle speed ($v$) from km/h to m/s:\n$$v = 100\\text{ km/h} = \\frac{100}{3.6}\\text{ m/s} \\approx 27.78\\text{ m/s}$$\n\nNow, calculate the lateral acceleration:\n$$a_{\\text{lat}} = \\frac{(27.78\\text{ m/s})^2}{250\\text{ m}} \\approx \\frac{771.6\\text{ m}^2/\\text{s}^2}{250\\text{ m}} \\approx 3.09\\text{ m/s}^2$$\n\n*(In terms of g-force, where $1\\text{ g} \\approx 9.81\\text{ m/s}^2$, this is approximately $0.315\\text{ g}$.)*\n\n**Lateral Acceleration:** $\\approx 3.09\\text{ m/s}^2$ (or $\\approx 0.315\\text{ g}$)",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates curvature and lateral acceleration, providing specific values. It is consistent and complete. The lateral acceleration value of approximately 3.09 m/s^2 falls within th",
+          "judge_hosted": "The answer correctly calculates the curvature as 0.004 1/m and the lateral acceleration as 3.09 m/s^2, which is within the accepted range of 3.0-3.2 m/s^2. All calculations and units are correct."
+        }
+      },
+      {
+        "task_id": "nav04",
+        "difficulty": "easy",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 629,
+        "error": null,
+        "cost": 0.000265,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "In OpenStreetMap, the tag `oneway=-1` indicates that the way is a one-way street, but the direction of travel is **opposite** to the direction in which the way was drawn (i.e., opposite to the order of the nodes in the way's list).\n\n### Permitted Travel\nTravel is permitted only in the direction from the **last node** of the way to the **first node** of the way. Travel from the first node to the last node is prohibited.\n\n### Routing Graph Construction\nA routing graph should build **exactly one directed edge** for this way.\n\n*   **From:** The last node (the end of the way).\n*   **To:** The first node (the start of the way).",
+        "judge_notes": {
+          "judge_local": "The answer correctly explains the meaning of `oneway=-1`, specifies permitted travel direction, and details routing graph construction as per task requirements.",
+          "judge_hosted": "The answer correctly identifies the meaning of oneway=-1, specifies the single directed edge, and correctly identifies the start and end nodes relative to the way's digitisation direction."
+        }
+      },
+      {
+        "task_id": "nav04",
+        "difficulty": "easy",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 800,
+        "error": null,
+        "cost": 0.0005960000000000001,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "### Permitted Travel\nIn OpenStreetMap (OSM), a way is defined as an ordered list of nodes, which establishes a digitized direction (from the first node to the last node). \n\nThe tag `oneway=-1` means that travel is permitted **only in the direction opposite to the way's digitized direction**. That is, traffic is allowed to flow only from the last node of the way toward the first node of the way.\n\n---\n\n### Routing Graph Representation\n\n* **Number of directed edges:** A routing graph should build exactly **one** directed edge for this way (or, if the way is split into segments between its constituent nodes, exactly one directed edge per segment).\n* **Between which endpoints:** The directed edge must be built **from the last node (the end of the way) to the first node (the start of the way)**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly explains the meaning of `oneway=-1` and specifies one directed edge from last to first node, meeting all criteria.",
+          "judge_hosted": "The answer correctly identifies the travel direction and the number of edges required, matching the success criterion exactly. It provides a clear and accurate explanation of the OSM tag's effect on r"
+        }
+      },
+      {
+        "task_id": "nav05",
+        "difficulty": "easy",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 859,
+        "error": null,
+        "cost": 0.0005840000000000001,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine the sector for a heading of 247 degrees using an 8-point compass rose, we first define the center points and the boundaries for each sector.\n\nThe 8-point compass rose divides the 360 degrees into 45-degree segments. With West (W) centered at 270 degrees, the sectors are defined as follows:\n\n*   **N (North):** 337.5\u00b0 to 22.5\u00b0 (centered at 0\u00b0)\n*   **NE (Northeast):** 22.5\u00b0 to 67.5\u00b0 (centered at 45\u00b0)\n*   **E (East):** 67.5\u00b0 to 112.5\u00b0 (centered at 90\u00b0)\n*   **SE (Southeast):** 112.5\u00b0 to 157.5\u00b0 (centered at 135\u00b0)\n*   **S (South):** 157.5\u00b0 to 202.5\u00b0 (centered at 180\u00b0)\n*   **SW (Southwest):** 202.5\u00b0 to 247.5\u00b0 (centered at 225\u00b0)\n*   **W (West):** 247.5\u00b0 to 292.5\u00b0 (centered at 270\u00b0)\n*   **NW (Northwest):** 292.5\u00b0 to 337.5\u00b0 (centered at 315\u00b0)\n\nA heading of 247 degrees falls within the range of 202.5\u00b0 to 247.5\u00b0.\n\nThe sector is **Southwest (SW)**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly identifies the sector as SW, matching the task's requirement and success criterion.",
+          "judge_hosted": "The answer correctly identifies the SW sector and provides the accurate degree ranges for an 8-point compass rose centered on West at 270 degrees."
+        }
+      },
+      {
+        "task_id": "nav05",
+        "difficulty": "easy",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 555,
+        "error": null,
+        "cost": 0.000658,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the sector for a heading of 247 degrees on a standard 8-point compass rose, we can determine the boundaries of each 45-degree sector. Each sector is centered on its cardinal or intercardinal direction and extends 22.5 degrees to either side:\n\n* **South (S):** Centered on 180\u00b0 (spanning 157.5\u00b0 to 202.5\u00b0)\n* **Southwest (SW):** Centered on 225\u00b0 (spanning 202.5\u00b0 to 247.5\u00b0)\n* **West (W):** Centered on 270\u00b0 (spanning 247.5\u00b0 to 292.5\u00b0)\n\nSince 247 degrees falls between 202.5 degrees and 247.5 degrees, the heading is in the **Southwest (SW)** sector.",
+        "judge_notes": {
+          "judge_local": "The answer correctly identifies the sector as Southwest (SW) for a heading of 247 degrees, meeting all rubric criteria.",
+          "judge_hosted": "The answer correctly identifies the Southwest (SW) sector and provides the accurate mathematical boundaries (202.5&deg; to 247.5&deg;) for an 8-point compass rose centered on cardinal directions."
+        }
+      },
+      {
+        "task_id": "nav06",
+        "difficulty": "easy",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 706,
+        "error": null,
+        "cost": 0.0003915,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To calculate the delay, we first determine the time taken for each scenario.\n\n**1. Free-flow travel time:**\nTime = Distance / Speed\nTime = 5 km / 100 km/h = 0.05 hours\n0.05 hours \u00d7 60 minutes/hour = **3 minutes**\n\n**2. Current travel time:**\nTime = Distance / Speed\nTime = 5 km / 35 km/h = 1/7 hours\n1/7 hours \u00d7 60 minutes/hour \u2248 8.5714 minutes\n\n**3. Calculate the delay:**\nDelay = Current time - Free-flow time\nDelay = 8.5714 minutes - 3 minutes = 5.5714 minutes\n\n**4. Convert the decimal portion to seconds:**\n0.5714 minutes \u00d7 60 seconds/minute \u2248 34.28 seconds\n\nRounding to the nearest second, the delay is 5 minutes and 34 seconds.\n\n**Final Result:**\nThe incident adds 5 minutes and 34 seconds of delay.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the delay as approximately 5 minutes and 34 seconds, matching the success criterion.",
+          "judge_hosted": "The model correctly calculated the free-flow time, the current travel time, and the resulting delay. The conversion to minutes and seconds is accurate and matches the success criterion."
+        }
+      },
+      {
+        "task_id": "nav06",
+        "difficulty": "easy",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 0,
+        "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}",
+        "cost": 0.0,
+        "key_resolved": false,
+        "key_reasons": [
+          "empty answer"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.0,
+        "judge_status": "unresolved",
+        "agreement": null,
+        "disputed": false,
+        "per_judge": {},
+        "per_judge_overall": {},
+        "answer": "",
+        "judge_notes": {}
+      },
+      {
+        "task_id": "nav07",
+        "difficulty": "easy",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 645,
+        "error": null,
+        "cost": 0.00037825,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the average speed over the whole trip, we use the formula:\n**Average Speed = Total Distance / Total Time**\n\n**1. Calculate the time for each leg of the trip:**\n*   **First leg:** 30 km at 60 km/h\n    Time = Distance / Speed = 30 km / 60 km/h = 0.5 hours\n*   **Second leg:** 30 km at 20 km/h\n    Time = Distance / Speed = 30 km / 20 km/h = 1.5 hours\n\n**2. Calculate the total distance and total time:**\n*   Total Distance = 30 km + 30 km = 60 km\n*   Total Time = 0.5 hours + 1.5 hours = 2.0 hours\n\n**3. Calculate the average speed:**\n*   Average Speed = 60 km / 2.0 hours = 30 km/h\n\nThe average speed over the whole 60 km trip is 30 km/h.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the average speed using total distance and time, providing a specific result of 30 km/h. It is coherent, complete, and meets the success criterion.",
+          "judge_hosted": "The answer correctly calculates the time for each leg, sums them to find the total time, and divides the total distance by the total time to arrive at the correct average speed of 30 km/h."
+        }
+      },
+      {
+        "task_id": "nav07",
+        "difficulty": "easy",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 819,
+        "error": null,
+        "cost": 0.0009335000000000001,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the average speed over the entire 60 km trip, we need to calculate the total time taken for the trip.\n\n1. **Calculate the time for the first part of the trip:**\n   $$\\text{Time}_1 = \\frac{\\text{Distance}_1}{\\text{Speed}_1} = \\frac{30\\text{ km}}{60\\text{ km/h}} = 0.5\\text{ hours}$$\n\n2. **Calculate the time for the second part of the trip:**\n   $$\\text{Time}_2 = \\frac{\\text{Distance}_2}{\\text{Speed}_2} = \\frac{30\\text{ km}}{20\\text{ km/h}} = 1.5\\text{ hours}$$\n\n3. **Calculate the total time:**\n   $$\\text{Total Time} = 0.5\\text{ hours} + 1.5\\text{ hours} = 2.0\\text{ hours}$$\n\n4. **Calculate the average speed:**\n   $$\\text{Average Speed} = \\frac{\\text{Total Distance}}{\\text{Total Time}} = \\frac{60\\text{ km}}{2.0\\text{ hours}} = 30\\text{ km/h}$$\n\nThe average speed over the whole 60 km trip is **30 km/h**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the average speed as 30 km/h, addressing the task directly and specifically. It is consistent in its calculations and reasoning, providing a complete solution with no m",
+          "judge_hosted": "The answer correctly calculates the time for each segment, sums them to find the total time, and divides the total distance by the total time to reach the correct average speed of 30 km/h."
+        }
+      },
+      {
+        "task_id": "nav08",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 840,
+        "error": null,
+        "cost": 0.0005575,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine the arrival time, we calculate the duration of each segment of the journey:\n\n1.  **First leg:** 42 km at 90 km/h\n    *   Time = Distance / Speed = 42 / 90 hours = 7/15 hours.\n    *   (7/15) * 60 minutes = **28 minutes**.\n\n2.  **Second leg:** 18 km at 60 km/h\n    *   Time = 18 / 60 hours = 0.3 hours.\n    *   0.3 * 60 minutes = **18 minutes**.\n\n3.  **Mandatory rest:**\n    *   **20 minutes**.\n\n4.  **Third leg:** 7 km at 30 km/h\n    *   Time = 7 / 30 hours = 7/30 hours.\n    *   (7/30) * 60 minutes = **14 minutes**.\n\n**Total duration:**\n28 minutes + 18 minutes + 20 minutes + 14 minutes = 80 minutes.\n\n**Calculation of arrival time:**\n*   Departure time: 09:15\n*   Add 80 minutes (1 hour and 20 minutes):\n    *   09:15 + 1 hour = 10:15\n    *   10:15 + 20 minutes = 10:35\n\nThe arrival time at the end of the third leg is 10:35.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the total travel time, including rest, and provides a specific arrival time of 10:35. It is coherent, complete, and meets the success criterion exactly.",
+          "judge_hosted": "The model correctly calculated the duration of each leg and the rest period, summed them to 80 minutes, and accurately determined the arrival time as 10:35, meeting all criteria."
+        }
+      },
+      {
+        "task_id": "nav08",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 1009,
+        "error": null,
+        "cost": 0.0013160000000000001,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the arrival time at the end of the third leg, we can calculate the duration of each part of the journey:\n\n1. **First Leg:**\n   * Distance: $42\\text{ km}$\n   * Speed: $90\\text{ km/h}$\n   * Time: $\\frac{42}{90}\\text{ hours} = \\frac{7}{15}\\text{ hours} \\times 60\\text{ minutes/hour} = 28\\text{ minutes}$\n\n2. **Second Leg:**\n   * Distance: $18\\text{ km}$\n   * Speed: $60\\text{ km/h}$\n   * Time: $\\frac{18}{60}\\text{ hours} = 0.3\\text{ hours} \\times 60\\text{ minutes/hour} = 18\\text{ minutes}$\n\n3. **Mandatory Rest:**\n   * Time: $20\\text{ minutes}$\n\n4. **Third Leg:**\n   * Distance: $7\\text{ km}$\n   * Speed: $30\\text{ km/h}$\n   * Time: $\\frac{7}{30}\\text{ hours} \\times 60\\text{ minutes/hour} = 14\\text{ minutes}$\n\n**Total Journey Duration:**\n$$\\text{Total Time} = 28\\text{ mins} + 18\\text{ mins} + 20\\text{ mins} + 14\\text{ mins} = 80\\text{ minutes} \\text{ (1 hour and 20 minutes)}$$\n\n**Arrival Time:**\n* Departure time: $09:15$\n* Adding $1\\text{ hour and } 20\\text{ minutes}$ to $09:15$ gives **10:35**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the total travel time, including rest, and states the arrival time as 10:35. It is specific, consistent, complete, and meets the success criterion.",
+          "judge_hosted": "The model correctly calculated the duration of each leg and the rest period, summed them to 80 minutes, and accurately determined the final arrival time of 10:35."
+        }
+      },
+      {
+        "task_id": "nav09",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 424,
+        "error": null,
+        "cost": 0.00020175,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "A router must forbid a left turn from way A onto way B at node N.\n\nRegarding the U-turn: No, this relation does not forbid a U-turn at node N that leaves along way A. A `no_left_turn` restriction specifically targets the transition from the 'from' member (way A) to the 'to' member (way B). A U-turn would require a different restriction relation (typically `no_u_turn`) or a restriction where the 'to' member is also way A.",
+        "judge_notes": {
+          "judge_local": "The answer correctly identifies the forbidden maneuver and clarifies that a U-turn is not restricted by this relation, meeting all criteria precisely.",
+          "judge_hosted": "The answer correctly identifies the forbidden maneuver and accurately states that the U-turn is not forbidden, fulfilling all parts of the task and the success criterion."
+        }
+      },
+      {
+        "task_id": "nav09",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 762,
+        "error": null,
+        "cost": 0.0006615,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "Based on the OpenStreetMap (OSM) relation definition, here are the answers to your questions:\n\n### 1. The Forbidden Manoeuvre\nA router must forbid a vehicle from traveling along **way A**, passing through **node N**, and turning left onto **way B**. \n\n### 2. Does it forbid a U-turn?\n**No**, this relation does not forbid a U-turn at node N that leaves along way A. \n\nIn OSM, turn restrictions are explicit and only apply to the specific path from the `from` member to the `to` member. Because a U-turn at node N back onto way A does not involve way B as the destination (`to` member), this relation has no effect on it. To forbid a U-turn, a separate restriction (such as `restriction=no_u_turn` with way A as both the `from` and `to` member) would be required.",
+        "judge_notes": {
+          "judge_local": "The answer correctly identifies the forbidden maneuver and clarifies that a U-turn is not restricted by this relation, meeting all rubric criteria.",
+          "judge_hosted": "The answer correctly identifies the forbidden manoeuvre and accurately states that the U-turn is not forbidden, providing the correct reasoning as per the success criterion."
+        }
+      },
+      {
+        "task_id": "nav10",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 636,
+        "error": null,
+        "cost": 0.0003425,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine whether the vehicle may pass under the bridge, we first calculate the total height of the vehicle and its load:\n\n*   **Unladen height:** 4.0 m\n*   **Load height:** 0.30 m\n*   **Total vehicle height:** 4.0 m + 0.30 m = 4.30 m\n\nThe bridge has a maximum clearance height of 4.2 m.\n\nComparing the two:\n*   **Vehicle height:** 4.30 m\n*   **Bridge clearance:** 4.2 m\n\nSince the vehicle height (4.30 m) is greater than the bridge clearance (4.2 m), the vehicle may not pass under the bridge.\n\n**Shortfall:** 4.30 m - 4.2 m = 0.10 m\n\n**Final Result:** The vehicle may not pass under the bridge; there is a shortfall of 0.10 metres.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the total height, compares it with the bridge clearance, and states the shortfall. It meets all criteria including the success criterion.",
+          "judge_hosted": "The answer correctly calculates the total height, identifies the clearance limit, determines the vehicle cannot pass, and accurately calculates the shortfall of 0.10 metres."
+        }
+      },
+      {
+        "task_id": "nav10",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 346,
+        "error": null,
+        "cost": 0.00041200000000000004,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "Based on the measurements provided:\n\n* **Overall height of the truck:** 4.0 m (unladen height) + 0.30 m (load) = **4.30 m**\n* **Bridge height limit (maxheight):** **4.2 m**\n\n**Decision:** \nThe vehicle **may not** pass under the bridge. \n\n**Shortfall:** \nThere is a shortfall of **0.10 metres** (the truck is 0.10 m too tall for the bridge limit).",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the truck's height, states it cannot pass under the bridge, and identifies a shortfall of 0.10 m, meeting all criteria.",
+          "judge_hosted": "The answer correctly calculates the total height (4.3m), identifies that it exceeds the limit (4.2m), and accurately states the shortfall (0.1m)."
+        }
+      },
+      {
+        "task_id": "nav11",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 419,
+        "error": null,
+        "cost": 0.00032275,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "In the standard web map tiling scheme (such as the Web Mercator projection), the number of tiles covering the world at a given zoom level $n$ is calculated as $4^n$.\n\nFor zoom level 14:\n$4^{14} = (2^2)^{14} = 2^{28}$\n\nCalculating $2^{28}$:\n$2^{10} = 1,024$\n$2^{20} = 1,048,576$\n$2^{28} = 1,048,576 \\times 2^8 = 1,048,576 \\times 256 = 268,435,456$\n\nThe number of tiles covering the world at zoom level 14 is 268,435,456.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates and states the number of tiles at zoom level 14 as 268,435,456. It is specific, consistent, complete, and meets the success criterion exactly.",
+          "judge_hosted": "The model correctly identified the geometric progression, performed the arithmetic accurately, and provided the exact integer required by the success criterion."
+        }
+      },
+      {
+        "task_id": "nav11",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 138,
+        "error": null,
+        "cost": 0.0002435,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "At zoom level 14, the number of tiles covering the world is $4^{14}$ (or $2^{28}$). \n\nThe exact integer is **268435456** (or 268,435,456).",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates and states the number of tiles at zoom level 14 as 268435456. It is specific, consistent, complete, and meets the success criterion exactly.",
+          "judge_hosted": "The answer correctly identifies the formula 4^14 and provides the exact integer 268,435,456, which matches the success criterion."
+        }
+      },
+      {
+        "task_id": "nav12",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 925,
+        "error": null,
+        "cost": 0.00044475,
+        "key_resolved": false,
+        "key_reasons": [
+          "missing: 4\\.[5-9][0-9]?|4\\.8"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.5714285714285714,
+        "judge_status": "unresolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": false,
+          "judge_hosted": null
+        },
+        "per_judge_overall": {
+          "judge_local": 0.5714285714285714,
+          "judge_hosted": null
+        },
+        "answer": "To calculate the radius and reach of the 15-minute isochrone, we perform the following calculations:\n\n**1. Straight-line radius (as the crow flies)**\nThe straight-line radius is the distance covered if the vehicle could travel in a direct line at the average speed.\n*   Time = 15 minutes = 0.25 hours\n*   Average speed = 25 km/h\n*   Radius = Speed \u00d7 Time = 25 km/h \u00d7 0.25 h = **6.25 km**\n\n**2. Realistic reach along the road network**\nThe \"detour factor\" (also known as the circuity factor) represents the ratio of the actual network distance to the straight-line distance. Given a detour factor of 1.3, the network distance is 1.3 times the straight-line distance.\n*   Network Reach = Straight-line radius \u00d7 Detour factor\n*   Network Reach = 6.25 km \u00d7 1.3 = **8.125 km**\n\n**Final Result:**\n*   The straight-line radius that bounds the isochrone is **6.25 km**.\n*   The realistic reach along the road network is **8.125 km**.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the straight-line radius and network reach, but the realistic reach does not match the success criterion's expected value of roughly 4.8 km.",
+          "judge_hosted": ""
+        }
+      },
+      {
+        "task_id": "nav12",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 0,
+        "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}",
+        "cost": 0.0,
+        "key_resolved": false,
+        "key_reasons": [
+          "empty answer"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.0,
+        "judge_status": "unresolved",
+        "agreement": null,
+        "disputed": false,
+        "per_judge": {},
+        "per_judge_overall": {},
+        "answer": "",
+        "judge_notes": {}
+      },
+      {
+        "task_id": "nav13",
+        "difficulty": "moderate",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 848,
+        "error": null,
+        "cost": 0.000448,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine the status of the vehicle relative to the geofence, we compare its distance from the depot centre to the geofence radius of 300 m.\n\n**1. Before the move:**\nThe vehicle is 250 m from the depot centre.\nSince 250 m < 300 m, the vehicle is **inside** the geofence.\n\n**2. After the move:**\nThe vehicle travels 90 m further along the same bearing.\nNew distance = 250 m + 90 m = 340 m.\nSince 340 m > 300 m, the vehicle is **outside** the geofence.\n\n**3. Distance at which it crosses the boundary:**\nThe vehicle crosses the boundary when its distance from the centre is exactly 300 m.\nThe vehicle starts at 250 m and needs to reach 300 m.\nDistance to travel = 300 m - 250 m = 50 m.\n\n**Final Result:**\n*   **Before the move:** Inside the geofence.\n*   **After the move:** Outside the geofence.\n*   **Distance to cross the boundary:** 50 metres.",
+        "judge_notes": {
+          "judge_local": "The answer correctly addresses the task, is specific and committed, internally consistent, complete, and meets the success criterion.",
+          "judge_hosted": "The model correctly identified the initial and final states relative to the geofence and accurately calculated the distance at which the boundary was crossed. All parts of the task were addressed clea"
+        }
+      },
+      {
+        "task_id": "nav13",
+        "difficulty": "moderate",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 581,
+        "error": null,
+        "cost": 0.00056,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "Based on the information provided, here is the status of the vehicle:\n\n* **Before the move:** The vehicle is **inside** the geofence, as its initial distance of 250 m from the depot is less than the geofence radius of 300 m.\n* **After the move:** The vehicle is **outside** the geofence. Traveling 90 m directly away from the center puts it at a final distance of 340 m (250 m + 90 m), which is greater than the 300 m radius.\n* **Boundary crossing:** The vehicle crosses the geofence boundary after **50 metres** of travel (when its distance from the center reaches exactly 300 m).",
+        "judge_notes": {
+          "judge_local": "The answer correctly addresses the task, is specific and committed, internally consistent, complete, and meets the success criterion exactly.",
+          "judge_hosted": "The model correctly identified the initial and final states and calculated the exact distance to the boundary crossing, satisfying all parts of the task and the success criterion."
+        }
+      },
+      {
+        "task_id": "nav14",
+        "difficulty": "hard",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 1068,
+        "error": null,
+        "cost": 0.00079525,
+        "key_resolved": false,
+        "key_reasons": [
+          "missing: \\b3[3-7](\\.[0-9]+)?\\s*km"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.1964285714285714,
+        "judge_status": "unresolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": false,
+          "judge_hosted": false
+        },
+        "per_judge_overall": {
+          "judge_local": 0.3571428571428571,
+          "judge_hosted": 0.03571428571428571
+        },
+        "answer": "To compute the great-circle distance between two points on the Earth, we use the **Haversine formula**.\n\n### 1. Identify the coordinates\n*   Point 1 ($\\phi_1, \\lambda_1$): $52.3740^\\circ \\text{ N}, 4.8897^\\circ \\text{ E}$\n*   Point 2 ($\\phi_2, \\lambda_2$): $52.0907^\\circ \\text{ N}, 5.1214^\\circ \\text{ E}$\n\nConvert these to radians:\n*   $\\phi_1 = 52.3740 \\times (\\pi / 180) \\approx 0.91408 \\text{ rad}$\n*   $\\lambda_1 = 4.8897 \\times (\\pi / 180) \\approx 0.08535 \\text{ rad}$\n*   $\\phi_2 = 52.0907 \\times (\\pi / 180) \\approx 0.90913 \\text{ rad}$\n*   $\\lambda_2 = 5.1214 \\times (\\pi / 180) \\approx 0.08939 \\text{ rad}$\n\n### 2. The Haversine Formula\nThe formula is:\n$a = \\sin^2\\left(\\frac{\\Delta\\phi}{2}\\right) + \\cos(\\phi_1)\\cos(\\phi_2)\\sin^2\\left(\\frac{\\Delta\\lambda}{2}\\right)$\n$c = 2 \\cdot \\operatorname{atan2}(\\sqrt{a}, \\sqrt{1-a})$\n$d = R \\cdot c$\n\nWhere:\n*   $\\Delta\\phi = \\phi_2 - \\phi_1 = 52.0907^\\circ - 52.3740^\\circ = -0.2833^\\circ \\approx -0.004944 \\text{ rad}$\n*   $\\Delta\\lambda = \\lambda_2 - \\lambda_1 = 5.1214^\\circ - 4.8897^\\circ = 0.2317^\\circ \\approx",
+        "judge_notes": {
+          "judge_local": "The answer uses the Haversine formula, addressing the task. It is specific in its calculations but incomplete as it cuts off mid-calculation without providing a final distance. The method is consisten",
+          "judge_hosted": "The answer is truncated mid-sentence and fails to provide the final distance or complete the calculation, making it entirely unusable for the task."
+        }
+      },
+      {
+        "task_id": "nav14",
+        "difficulty": "hard",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 212,
+        "error": null,
+        "cost": 0.0005465,
+        "key_resolved": false,
+        "key_reasons": [
+          "missing: \\b3[3-7](\\.[0-9]+)?\\s*km"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.03571428571428571,
+        "judge_status": "unresolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": false,
+          "judge_hosted": false
+        },
+        "per_judge_overall": {
+          "judge_local": 0.03571428571428571,
+          "judge_hosted": 0.03571428571428571
+        },
+        "answer": "0.615187$\n$0.615187 - 0.0007843 = 0.6144027$.\nWait, $0.5867203 + 0.0284667 = 0.615187$. Yes.\nSo $\\cos(52.0907^\\circ) \\approx 0.6144027$.\n\nNow for $\\sin(x)$:\n$\\sin(x) = x - x^3/6 + x^5/120$\n$= 0.9091531 - 0.751469",
+        "judge_notes": {
+          "judge_local": "The answer does not compute the great-circle distance or use a relevant method. It lacks coherence and completeness, failing to provide a final result.",
+          "judge_hosted": "The answer is a truncated fragment of a calculation. It fails to provide a final distance, complete the method, or even finish the sentence, making it entirely unusable for the task."
+        }
+      },
+      {
+        "task_id": "nav15",
+        "difficulty": "hard",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 760,
+        "error": null,
+        "cost": 0.00039225,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To determine the status of the delivery, we analyze the restriction: `motor_vehicle=no` applies from Monday to Friday, between 07:00 and 10:00.\n\n1.  **May the vehicle enter on arrival?**\n    No. The vehicle arrives at 09:40 on a Wednesday, which falls within the restricted period (07:00\u201310:00).\n\n2.  **Earliest time it may legally enter:**\n    The restriction ends at 10:00. Therefore, the earliest time the vehicle may legally enter is 10:00.\n\n3.  **Time it finishes unloading:**\n    The vehicle begins unloading at 10:00 and takes 25 minutes to complete the task. It will finish unloading at 10:25.\n\n**Final Result:**\n*   **May the vehicle enter on arrival:** No.\n*   **Earliest time it may legally enter:** 10:00.\n*   **Time it finishes unloading:** 10:25.",
+        "judge_notes": {
+          "judge_local": "The answer directly addresses the task, provides specific and definite results, maintains internal consistency, covers all parts of the multi-part question, and meets the success criterion exactly.",
+          "judge_hosted": "The model correctly identified the restriction period, determined the vehicle could not enter at 09:40, calculated the earliest entry as 10:00, and correctly calculated the finish time as 10:25."
+        }
+      },
+      {
+        "task_id": "nav15",
+        "difficulty": "hard",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 480,
+        "error": null,
+        "cost": 0.0005595,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "Based on the restriction **motor_vehicle=no @ (Mo-Fr 07:00-10:00)** and the arrival details:\n\n1. **May the vehicle enter on arrival?** \n   **No.** The ETA is Wednesday at 09:40, which falls within the restricted period of Monday\u2013Friday, 07:00\u201310:00.\n\n2. **The earliest time it may legally enter:** \n   **10:00** (once the restriction ends).\n\n3. **The time it finishes unloading:** \n   **10:25** (entering at the earliest legal time of 10:00 plus the 25-minute unloading duration).",
+        "judge_notes": {
+          "judge_local": "The answer directly addresses the task, provides specific and definite results, maintains internal consistency, covers all parts of the multi-part question, and meets the success criterion exactly.",
+          "judge_hosted": "The answer correctly identifies that the vehicle cannot enter at 09:40, determines the earliest entry is 10:00, and calculates the finish time as 10:25, meeting all criteria."
+        }
+      },
+      {
+        "task_id": "nav16",
+        "difficulty": "hard",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 750,
+        "error": null,
+        "cost": 0.00054025,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To compute the total cost of each route, we must account for fuel costs, time costs, and tolls.\n\n**Constants:**\n*   Fuel cost: 0.14 EUR/km\n*   Time cost: 18.00 EUR/hour (0.30 EUR/minute)\n\n### Route A\n*   **Fuel cost:** 48 km \u00d7 0.14 EUR/km = 6.72 EUR\n*   **Time cost:** 62 minutes \u00d7 0.30 EUR/minute = 18.60 EUR\n*   **Tolls:** 4.20 EUR\n*   **Total Cost:** 6.72 + 18.60 + 4.20 = **29.52 EUR**\n\n### Route B\n*   **Fuel cost:** 51 km \u00d7 0.14 EUR/km = 7.14 EUR\n*   **Time cost:** 74 minutes \u00d7 0.30 EUR/minute = 22.20 EUR\n*   **Tolls:** 0.00 EUR\n*   **Total Cost:** 7.14 + 22.20 + 0.00 = **29.34 EUR**\n\n**Comparison:**\n*   Route A: 29.52 EUR\n*   Route B: 29.34 EUR\n\n**Conclusion:**\nThe router should choose **Route B**, as it is 0.18 EUR cheaper than Route A.",
+        "judge_notes": {
+          "judge_local": "The answer correctly computes and compares the total costs of both routes, including all specified components. It clearly states Route B as cheaper, meeting the success criterion exactly.",
+          "judge_hosted": "The model correctly calculated all components of the cost for both routes, identified the cheaper route, and provided the exact values required by the success criterion."
+        }
+      },
+      {
+        "task_id": "nav16",
+        "difficulty": "hard",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 1321,
+        "error": null,
+        "cost": 0.0017135,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 1.0,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 1.0,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the total cost of each route, we calculate the sum of the fuel cost, driver time cost, and tolls. \n\nThe operator's rates are:\n* **Driver time value:** 18.00 EUR per hour (or 0.30 EUR per minute)\n* **Fuel cost:** 0.14 EUR per kilometre\n\n---\n\n### **Route A Calculations**\n* **Distance:** 48 km\n* **Time:** 62 minutes\n* **Tolls:** 4.20 EUR\n\n1. **Fuel Cost:**  \n   $$48 \\text{ km} \\times 0.14 \\text{ EUR/km} = 6.72 \\text{ EUR}$$\n\n2. **Time Cost:**  \n   $$62 \\text{ minutes} \\times 0.30 \\text{ EUR/minute} = 18.60 \\text{ EUR}$$\n\n3. **Tolls:**  \n   $$4.20 \\text{ EUR}$$\n\n* **Total Cost for Route A:**  \n   $$6.72 \\text{ EUR} + 18.60 \\text{ EUR} + 4.20 \\text{ EUR} = 29.52 \\text{ EUR}$$\n\n---\n\n### **Route B Calculations**\n* **Distance:** 51 km\n* **Time:** 74 minutes\n* **Tolls:** 0.00 EUR\n\n1. **Fuel Cost:**  \n   $$51 \\text{ km} \\times 0.14 \\text{ EUR/km} = 7.14 \\text{ EUR}$$\n\n2. **Time Cost:**  \n   $$74 \\text{ minutes} \\times 0.30 \\text{ EUR/minute} = 22.20 \\text{ EUR}$$\n\n3. **Tolls:**  \n   $$0.00 \\text{ EUR}$$\n\n* **Total Cost for Route B:**  \n   $$7.14 \\text{ EUR} + 22.20 \\text{ EUR} + 0.00 \\text{ EUR} = 29.34 \\text{ EUR}$$\n\n---\n\n### **Conclusion**\n* **Route A Total Cost:** 29.52 EUR\n* **Route B Total Cost:** 29.34 EUR\n\nThe router should choose **Route B**, as it is the more cost-effective option by 0.18 EUR.",
+        "judge_notes": {
+          "judge_local": "The answer correctly computes and compares the total costs for both routes, clearly stating Route B as cheaper. All calculations are shown with no contradictions or omissions.",
+          "judge_hosted": "The model correctly calculated all components of the cost for both routes, arrived at the correct totals, and correctly identified Route B as the cheaper option, satisfying all success criteria."
+        }
+      },
+      {
+        "task_id": "nav17",
+        "difficulty": "hard",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 1166,
+        "error": null,
+        "cost": 0.00038175,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 0.9821428571428571,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 0.9642857142857142,
+          "judge_hosted": 1.0
+        },
+        "answer": "Positional accuracy alone cannot decide which of the two carriageways the vehicle is on. Because the horizontal accuracy (15 m) is greater than the distance between the motorway and the service road (12 m), the GPS signal is not precise enough to distinguish between the two paths; the vehicle's reported position could realistically fall on either road regardless of its actual location.\n\nTo resolve this, a map-matcher should use **topological constraints** (or **map-matching algorithms**). This evidence includes:\n\n*   **Road network connectivity:** Analyzing the vehicle's previous and subsequent GPS points to determine which road segment is logically reachable.\n*   **Heading/Directional data:** Comparing the vehicle's GPS-derived heading (bearing) with the orientation of the road segments.\n*   **Speed profiles:** Comparing the vehicle's speed with the typical speed limits or traffic flow characteristics of the motorway versus the service road.\n*   **Historical path analysis:** Using a Hidden Markov Model (HMM) or similar probabilistic approach to determine the most likely path based on the sequence of points rather than a single isolated coordinate.",
+        "judge_notes": {
+          "judge_local": "The answer correctly states that positional accuracy alone cannot distinguish between the carriageways and suggests appropriate map-matching evidence. It is specific, consistent, and meets the success",
+          "judge_hosted": "The answer correctly identifies that positional accuracy is insufficient, provides the correct reasoning based on the provided distances, and lists the appropriate alternative evidence as required by "
+        }
+      },
+      {
+        "task_id": "nav17",
+        "difficulty": "hard",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 0,
+        "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,\"}",
+        "cost": 0.0,
+        "key_resolved": false,
+        "key_reasons": [
+          "empty answer"
+        ],
+        "judge_resolved": false,
+        "judge_overall": 0.0,
+        "judge_status": "unresolved",
+        "agreement": null,
+        "disputed": false,
+        "per_judge": {},
+        "per_judge_overall": {},
+        "answer": "",
+        "judge_notes": {}
+      },
+      {
+        "task_id": "nav18",
+        "difficulty": "hard",
+        "rung": "economy",
+        "model": "gemini-3.1-flash-lite",
+        "answer_chars": 755,
+        "error": null,
+        "cost": 0.000419,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 0.9464285714285714,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 0.8928571428571428,
+          "judge_hosted": 1.0
+        },
+        "answer": "To calculate the maximum distance the van can be routed, follow these steps:\n\n1.  **Calculate the usable battery capacity after the reserve requirement:**\n    The van must arrive with 12% of its 58 kWh capacity in reserve.\n    Reserve capacity = 58 kWh \u00d7 0.12 = 6.96 kWh.\n    Available capacity for driving = 58 kWh - 6.96 kWh = 51.04 kWh.\n\n2.  **Calculate the distance based on consumption:**\n    The van consumes 18.5 kWh per 100 km.\n    Distance = (Available capacity / Consumption per 100 km) \u00d7 100\n    Distance = (51.04 kWh / 18.5 kWh) \u00d7 100\n    Distance = 2.7589189... \u00d7 100\n    Distance = 275.89189... km\n\nRounding to two decimal places, the maximum distance is 275.89 km.\n\n**Final Result:**\nThe maximum distance the van may be routed is 275.89 km.",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the maximum distance as 275.89 km, which is within the acceptable range of 275-276 km specified in the success criterion.",
+          "judge_hosted": "The model followed the correct logic and arithmetic, arriving at a result of 275.89 km, which falls within the range specified in the success criterion."
+        }
+      },
+      {
+        "task_id": "nav18",
+        "difficulty": "hard",
+        "rung": "frontier",
+        "model": "gemini-3.5-flash",
+        "answer_chars": 970,
+        "error": null,
+        "cost": 0.001036,
+        "key_resolved": true,
+        "key_reasons": [],
+        "judge_resolved": true,
+        "judge_overall": 0.9464285714285714,
+        "judge_status": "resolved",
+        "agreement": 1.0,
+        "disputed": false,
+        "per_judge": {
+          "judge_local": true,
+          "judge_hosted": true
+        },
+        "per_judge_overall": {
+          "judge_local": 0.8928571428571428,
+          "judge_hosted": 1.0
+        },
+        "answer": "To find the maximum distance the electric van can be routed on a single full charge under the fleet policy, we can follow these steps:\n\n1. **Calculate the energy available for the journey:**\n   The van starts with a full charge (100% of its usable capacity) and must arrive with at least 12% in reserve. This means it can use up to 88% of its usable battery capacity.\n   $$\\text{Available Energy} = 58\\text{ kWh} \\times (1 - 0.12) = 58\\text{ kWh} \\times 0.88 = 51.04\\text{ kWh}$$\n\n2. **Calculate the maximum distance:**\n   The van consumes $18.5\\text{ kWh}$ per $100\\text{ km}$. \n   $$\\text{Maximum Distance} = \\frac{\\text{Available Energy}}{\\text{Consumption Rate}} \\times 100\\text{ km}$$\n   $$\\text{Maximum Distance} = \\frac{51.04\\text{ kWh}}{18.5\\text{ kWh}} \\times 100\\text{ km} \\approx 2.7589 \\times 100\\text{ km} \\approx 275.89\\text{ km}$$\n\nThe maximum distance the van may be routed is approximately **275.89 km** (or **276 km** rounded to the nearest kilometer).",
+        "judge_notes": {
+          "judge_local": "The answer correctly calculates the maximum distance as approximately 275.89 km, which rounds to 276 km, meeting the success criterion.",
+          "judge_hosted": "The model correctly calculated the available energy and the resulting maximum distance, providing a final answer within the range specified by the success criterion."
+        }
+      }
+    ],
+    "false_resolve": [],
+    "false_unresolve": [],
+    "by_rung": {
+      "economy": {
+        "key_resolution_rate": 0.8888888888888888,
+        "judge_resolution_rate": 0.8888888888888888
+      },
+      "frontier": {
+        "key_resolution_rate": 0.7777777777777778,
+        "judge_resolution_rate": 0.7777777777777778
+      }
+    },
+    "agreement": {
+      "graded": 36,
+      "agree": 36,
+      "false_resolve": 0,
+      "false_unresolve": 0
+    }
+  }
+}
