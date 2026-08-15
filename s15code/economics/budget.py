@@ -78,6 +78,12 @@ class RunBudget:
     charges: list[Charge] = field(default_factory=list)
     refusals: list[dict[str, Any]] = field(default_factory=list)
     calls_by_node: dict[str, int] = field(default_factory=dict)
+    #: Admitted calls handed to the transport, whether or not one came back. See
+    #: :meth:`record_attempt`: charges count what was billed, attempts count what
+    #: was tried, and only the second bounds a provider that fails after
+    #: consuming tokens.
+    attempts: int = 0
+    attempts_by_node: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.total < 0:
@@ -219,6 +225,29 @@ class RunBudget:
     def node_calls(self, node_id: str) -> int:
         return self.calls_by_node.get(node_id, 0)
 
+    # --- attempts, which are not the same thing as calls ------------------- #
+
+    def record_attempt(self, node_id: str) -> None:
+        """Count a call that was ADMITTED and handed to the transport.
+
+        ``calls`` counts charges, and a charge only exists once a response came
+        back with token counts on it. That leaves a gap: a provider that
+        generates an answer, consumes the tokens and then fails returns nothing
+        to charge from, so it never increments ``calls`` and never moves the
+        call ceilings. Real money is spent and no counter notices.
+
+        An attempt is recorded before the transport is touched, so it counts the
+        try rather than the success, and ``max_attempts_per_*`` in budgets.yaml
+        bounds the number of times a failing provider can be handed work. It is
+        deliberately a separate counter rather than a redefinition of ``calls``:
+        the ledger's meaning — what was actually billed — must not change.
+        """
+        self.attempts += 1
+        self.attempts_by_node[node_id] = self.attempts_by_node.get(node_id, 0) + 1
+
+    def node_attempts(self, node_id: str) -> int:
+        return self.attempts_by_node.get(node_id, 0)
+
     # --- reporting -------------------------------------------------------- #
 
     def by_tier(self) -> dict[str, dict[str, float]]:
@@ -243,6 +272,7 @@ class RunBudget:
             "pressure": self.pressure,
             "reserve": self.reserve,
             "calls": self.calls,
+            "attempts": self.attempts,
             "downgrades": sum(1 for c in self.charges if c.decision == "downgrade"),
             "branches": sum(1 for c in self.charges if c.decision == "branch"),
             "refusals": len(self.refusals),

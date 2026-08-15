@@ -1,0 +1,432 @@
+{
+  "proof": "p9_run_capture",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "A truck with an unladen height of 4.0 m carries a load adding 0.30 m. Its route passes under a bridge tagged maxheight=4.2. May it pass, and by what margin?",
+    "budget": 0.02,
+    "principal": "nav/s15/run1",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "prompt": "A truck with an unladen height of 4.0 m carries a load adding 0.30 m. Its route passes under a bridge tagged maxheight=4.2. May it pass, and by what margin?",
+    "budget / principal": "0.02 USD  nav/s15/run1",
+    "call 1 tier/model": "role answer_with_evidence  requested frontier -> served frontier  (proceed)  gemini_1 / gemini-3.5-flash",
+    "journal events": "8 events, sequences 1..8",
+    "event kinds": "{\"run_started\": 1, \"graph_patched\": 3, \"task_started\": 2, \"task_succeeded\": 2}",
+    "jaeger trace id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+    "jaeger url": "http://localhost:16686/trace/4d81f168733e6ebd6a23f96b4a9f56a3",
+    "jaeger spans": 10,
+    "ledger row 1": "255in/127out  $0.00050850 charged  $0.01248050 projected  12238 ms  node answer",
+    "ledger total": "spent $0.00050850 of $0.02000000  pressure 0.025  calls 1  refusals 0",
+    "final answer": "No, the truck may not pass.   Here is the breakdown of the calculation: * **Total truck height:** 4.0 m (unladen height) + 0.30 m (load) = **4.30 m** * **Bridge limit (`maxheight`):** **4.2 m**  Since the truck's total height of 4.30 m exceeds the bridge's maximum height limit of 4.2 m, it cannot safely pass. It exceeds the limit by a margin of **0.10 m** (or 10 cm).",
+    "wall clock": "12.3s"
+  },
+  "checks": [
+    {
+      "claim": "the run produced a final answer",
+      "ok": true,
+      "observed": "369 characters"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "1 transport calls, 1 ledger rows, 0 transport failures"
+    },
+    {
+      "claim": "the run stayed inside its ceiling",
+      "ok": true,
+      "observed": "0.00050850 <= 0.02000000"
+    },
+    {
+      "claim": "span costs sum to the ledger",
+      "ok": true,
+      "observed": "spans 0.00050850 vs ledger 0.00050850"
+    },
+    {
+      "claim": "the trace is retrievable from Jaeger by id",
+      "ok": true,
+      "observed": "http://localhost:16686/api/traces/4d81f168733e6ebd6a23f96b4a9f56a3"
+    }
+  ],
+  "detail": {
+    "prompt": "A truck with an unladen height of 4.0 m carries a load adding 0.30 m. Its route passes under a bridge tagged maxheight=4.2. May it pass, and by what margin?",
+    "events": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "first frontier selected for memory"
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "authorized retrieval completed"
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer",
+        "model": "gemini-3.5-flash",
+        "provider": "gemini_1",
+        "decision": "proceed",
+        "requested_tier": "frontier",
+        "tier": "frontier"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "grounded answer produced"
+      }
+    ],
+    "ledger": {
+      "run_id": "run-d7ae3df9ca2b",
+      "principal": "nav/s15/run1",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.0005085,
+      "remaining": 0.019491500000000002,
+      "pressure": 0.025424999999999996,
+      "reserve": 0.005,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.0005085,
+          "input_tokens": 255,
+          "output_tokens": 127
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.5-flash",
+          "input_tokens": 255,
+          "output_tokens": 127,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0005085,
+          "projected_cost": 0.0124805,
+          "latency_ms": 12238.0,
+          "started_at": 1786812342.531208,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "33b2a7b8894c2923",
+        "parent_span_id": "aa19e80deb3607f7",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342532207872,
+        "end_time": 1786812342532207872,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "ccdea460e26bf7e2",
+        "parent_span_id": "aa19e80deb3607f7",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342533208064,
+        "end_time": 1786812342534208000,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-d7ae3df9ca2b",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "aa19e80deb3607f7",
+        "parent_span_id": "29d1c09df09d7eae",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342532207872,
+        "end_time": 1786812342534208000,
+        "duration_ns": 2000128,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 1
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "a77eaf86a887d51c",
+        "parent_span_id": "39ff28a33d11d4d0",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342535207936,
+        "end_time": 1786812342535207936,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat gemini-3.5-flash",
+        "kind": "provider_call",
+        "span_id": "70af02fed548ad5a",
+        "parent_span_id": "1d3c1fa0ac89b015",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342531207936,
+        "end_time": 1786812354769207936,
+        "duration_ns": 12238000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "gemini_1",
+          "gen_ai.request.model": "gemini-3.5-flash",
+          "gen_ai.response.model": "gemini-3.5-flash",
+          "gen_ai.usage.input_tokens": 255,
+          "gen_ai.usage.output_tokens": 127,
+          "s15.cost": 0.0005085,
+          "s15.currency": "USD",
+          "s15.tier": "frontier",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "proceed",
+          "s15.budget.remaining": 0.019491500000000002,
+          "s15.cost.projected": 0.0124805,
+          "gen_ai.request.reasoning_effort": "low"
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "1d3c1fa0ac89b015",
+        "parent_span_id": "39ff28a33d11d4d0",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342531207936,
+        "end_time": 1786812354769207936,
+        "duration_ns": 12238000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-d7ae3df9ca2b",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "proceed",
+              "s15.budget.reason": "requested tier fits the node allowance",
+              "s15.tier": "frontier",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.0124805
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "39ff28a33d11d4d0",
+        "parent_span_id": "29d1c09df09d7eae",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342531207936,
+        "end_time": 1786812354769207936,
+        "duration_ns": 12238000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 4
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "fcd66b5792fd8e68",
+        "parent_span_id": "b9b87e9d6f23993e",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342538208000,
+        "end_time": 1786812342538208000,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "b9b87e9d6f23993e",
+        "parent_span_id": "29d1c09df09d7eae",
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342538208000,
+        "end_time": 1786812342538208000,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 7
+        },
+        "events": []
+      },
+      {
+        "name": "run run-d7ae3df9ca2b",
+        "kind": "run",
+        "span_id": "29d1c09df09d7eae",
+        "parent_span_id": null,
+        "trace_id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+        "start_time": 1786812342531207936,
+        "end_time": 1786812354769207936,
+        "duration_ns": 12238000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-d7ae3df9ca2b",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.principal": "nav/s15/run1",
+          "s15.budget.total": 0.02,
+          "s15.budget.spent": 0.0005085,
+          "s15.budget.remaining": 0.019491500000000002,
+          "s15.currency": "USD",
+          "s15.budget.refusals": 0,
+          "s15.budget.downgrades": 0,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.0005085
+        },
+        "events": []
+      }
+    ],
+    "trace": {
+      "id": "4d81f168733e6ebd6a23f96b4a9f56a3",
+      "query_base": "http://localhost:16686",
+      "ui": "http://localhost:16686/trace/4d81f168733e6ebd6a23f96b4a9f56a3",
+      "backend_spans": 10
+    },
+    "answer": "No, the truck may not pass. \n\nHere is the breakdown of the calculation:\n* **Total truck height:** 4.0 m (unladen height) + 0.30 m (load) = **4.30 m**\n* **Bridge limit (`maxheight`):** **4.2 m**\n\nSince the truck's total height of 4.30 m exceeds the bridge's maximum height limit of 4.2 m, it cannot safely pass. It exceeds the limit by a margin of **0.10 m** (or 10 cm).",
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 255,
+      "output_tokens": 127,
+      "cost": 0.0005085,
+      "trace_ids": [
+        "4d81f168733e6ebd6a23f96b4a9f56a3"
+      ]
+    }
+  }
+}

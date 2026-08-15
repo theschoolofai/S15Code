@@ -1,0 +1,40 @@
+# An ANSWER KEY for proofs/tasks/navigation.jsonl — for auditing the JUDGE only.
+#
+# Read this next to the rule it appears to break. The whole repository argues
+# that an answer key welds a use case into the harness, and it is right: nothing
+# in s15code reads this file, no routing decision consults it, and p1 never sees
+# it. It exists for one job that a generic rubric cannot do for itself — telling
+# us whether the JUDGE is any good.
+#
+# The argument for measuring cost per resolved task rests entirely on the word
+# "resolved", and that word is produced by a 14B model running locally and a
+# hosted flash model. If those two are wrong often enough, every cost per
+# resolved task in the README is wrong by the same factor and no amount of
+# careful metering downstream repairs it. So p10_judge_audit.py takes real
+# answers, labels them mechanically here, asks the panel to label them too, and
+# reports how often the two agree — including which way they disagree, because a
+# judge that is too generous and a judge that is too harsh break the measurement
+# in opposite directions.
+#
+# `must` patterns all have to match (case-insensitive, whitespace-flexible).
+# `must_not` patterns must all fail. Patterns are deliberately loose about
+# formatting and strict about the value, because formatting is the judge's job
+# to forgive and the value is what makes the answer right or wrong.
+{"id": "nav01", "must": ["\\b50\\b\\s*(mph|miles)"], "must_not": ["\\b(45|55|49\\.7\\s*mph)\\b\\s*(mph|miles)?\\s*(is|as|the)?\\s*(the\\s+)?(answer|display|value)"], "note": "80 km/h = 49.71 mph, rounded to nearest 5 = 50"}
+{"id": "nav02", "must": ["\\b144\\b"], "must_not": [], "note": "2.4 km at 60 km/h = 0.04 h = 144 s"}
+{"id": "nav03", "must": ["0\\.004|4\\s*(x|\\*|×)\\s*10\\s*\\^?\\s*-3|4e-3", "3\\.0[0-9]|3\\.1[0-9]?|3\\.09|\\b3\\.1\\b"], "must_not": [], "note": "curvature 1/250 = 0.004 /m; a = v^2/R = 27.78^2/250 = 3.09 m/s^2"}
+{"id": "nav04", "must": ["(one|1|single|exactly one)\\s+(directed\\s+)?edge", "(last|final|end).{0,40}(first|start|begin)|reverse|opposite"], "must_not": ["two\\s+(directed\\s+)?edges"], "note": "oneway=-1 -> a single edge running against the digitisation direction"}
+{"id": "nav05", "must": ["\\bSW\\b|south-?west"], "must_not": ["\\bWSW\\b|west-?south-?west", "answer\\s*(is|:)\\s*\\**\\s*W\\b"], "note": "8-point rose: SW spans 202.5-247.5, so 247 is SW; WSW is not a sector of an 8-point rose"}
+{"id": "nav06", "must": ["5\\s*(min|minutes?)\\s*(and\\s*)?3[34]|5\\.5[0-9]|33[0-9]\\s*(s|sec)|5:3[34]"], "must_not": [], "note": "8 min 34 s at 35 km/h minus 3 min free-flow = 5 min 34 s"}
+{"id": "nav07", "must": ["\\b30\\b\\s*km/?h"], "must_not": ["(answer|average speed)\\D{0,20}\\b40\\b\\s*km/?h"], "note": "60 km in 2 h = 30 km/h; 40 km/h is the arithmetic-mean trap"}
+{"id": "nav08", "must": ["10:35"], "must_not": [], "note": "09:15 + 28 + 18 + 14 driving + 20 rest = 10:35"}
+{"id": "nav09", "must": ["(only|solely|just|specific)", "(not|no).{0,60}(u-?turn)|u-?turn.{0,60}(not|no|separate|different|another)"], "must_not": [], "note": "forbids A->N->B only; the U-turn A->N->A needs its own no_u_turn restriction"}
+{"id": "nav10", "must": ["(may not|cannot|can not|not\\s+pass|no,)", "0\\.1\\b|0\\.10\\b|10\\s*cm"], "must_not": [], "note": "4.30 m against a 4.2 m limit: short by 0.10 m"}
+{"id": "nav11", "must": ["268[,.\\s]?435[,.\\s]?456"], "must_not": [], "note": "4^14 = 2^28 = 268435456"}
+{"id": "nav12", "must": ["6\\.25", "4\\.[5-9][0-9]?|4\\.8"], "must_not": [], "note": "25 km/h for 15 min = 6.25 km straight line; /1.3 = 4.81 km network reach"}
+{"id": "nav13", "must": ["\\b50\\b\\s*(m|metres|meters)", "(340|inside.{0,40}outside|outside)"], "must_not": [], "note": "250 m inside, 340 m outside, boundary crossed after 50 m"}
+{"id": "nav14", "must": ["\\b3[3-7](\\.[0-9]+)?\\s*km"], "must_not": [], "note": "haversine gives 35.2 km; the expectation accepts 33-37 km"}
+{"id": "nav15", "must": ["10:00", "10:25"], "must_not": [], "note": "restricted at 09:40, earliest entry 10:00, unloading done 10:25"}
+{"id": "nav16", "must": ["route\\s*B|\\bB\\b\\s*(is|should|wins)", "29\\.3[0-9]", "29\\.5[0-9]"], "must_not": [], "note": "A 29.52 against B 29.34: B wins by 0.18"}
+{"id": "nav17", "must": ["(cannot|can not|can't|not\\s+(be\\s+)?(possible|sufficient|enough)|insufficient|no,)", "(connectivity|topolog|entry|exit|heading|speed profile|trajectory)"], "must_not": [], "note": "12 m separation inside a 15 m error radius; topology and behaviour disambiguate"}
+{"id": "nav18", "must": ["27[456](\\.[0-9]+)?\\s*km|\\b276\\b"], "must_not": [], "note": "58 x 0.88 = 51.04 kWh at 18.5 kWh/100 km = 275.9 km"}

@@ -163,6 +163,11 @@ class BudgetedGateway:
             )
 
         body = self.ladder.request_for(decision.tier, overrides=request)
+        # Recorded BEFORE the transport is touched, so a call that consumes
+        # tokens and then fails is still counted. Charges cannot do this job:
+        # a charge needs a response to price, and this is exactly the case where
+        # no response arrives.
+        self.budget.record_attempt(site.node_id)
         started = time.time()
         response = await self.transport.chat(prompt=prompt, system=system, request=body)
         latency_ms = (time.time() - started) * 1000.0

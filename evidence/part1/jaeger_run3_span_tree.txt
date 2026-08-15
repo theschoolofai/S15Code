@@ -1,0 +1,13 @@
+run run-61a3a672c90e                         [run]       7.0 ms  $0.00000000
+  └─ agent loop 1                                 [agent_loop]       2.0 ms
+    └─ plan                                         [plan]       0.0 ms
+    └─ node recall                                  [node]       1.0 ms
+  └─ agent loop 2                                 [agent_loop]       2.0 ms
+    └─ plan                                         [plan]       0.0 ms
+    └─ node answer                                  [node]       1.0 ms
+  └─ agent loop 3                                 [agent_loop]       0.0 ms
+    └─ plan                                         [plan]       0.0 ms
+
+sum of provider_call span costs                 $0.00000000
+run span s15.cost (the ledger total)            $0.00000000
+they agree                                      yes

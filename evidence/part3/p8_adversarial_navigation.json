@@ -1,0 +1,949 @@
+{
+  "proof": "p8_adversarial",
+  "ok": false,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "four attacks on the navigation budget policy",
+    "budget": 0.02,
+    "principal": "nav/s15/adversary",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "A before the control": "0 uncontrolled calls on the None rung cost $0.00000000 ($0.00000000/call) -> $0.000000 projected over 60 rounds, and nothing would have stopped it",
+    "A after the control": "60 rounds, 0 admitted, 30 refused, spent $0.00000000 of $0.00200000",
+    "B downgrade_expected": "ceiling $0.00468133 -> downgrade, decided economy [transport: RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all ], spent $0.00000000",
+    "B refuse_expected": "ceiling $0.00041150 -> refuse, spent $0.00000000",
+    "C ladder climb": "economy:economy -> frontier:REFUSED -> frontier:REFUSED -> frontier:REFUSED -> frontier:REFUSED",
+    "C stopped by": "0 refusals after 1 admitted calls on one node (max_calls_per_node=3), spent $0.00009300",
+    "D BEFORE the control (attempt ceilings off)": "8 rounds -> 6 calls reached the provider and burned 252in/330out = $0.00055800 of real tokens, while the ledger recorded 0 charges and $0.00000000. Nothing refused it: 0 refusals.",
+    "D AFTER the control (attempt ceilings on)": "8 rounds -> 5 calls reached the provider ($0.00046500 burned), then 3 refusals. Reason: node attempt ceiling reached (5/5); 0 of those attempts were billable",
+    "D what the ceiling bought": "$0.00009300 of unbilled spend avoided over 8 rounds; worst-case exposure now bounded at 30 attempts x $0.01239800 = $0.371940 instead of unbounded",
+    "telemetry": "root span carries s15.budget.refusals=30 and 30 budget.refused span events",
+    "wall clock": "242.6s"
+  },
+  "checks": [
+    {
+      "claim": "A the runaway loop is stopped by the controller, not by luck",
+      "ok": true,
+      "observed": "30 refusals, spent 0.00000000 <= ceiling 0.00200000"
+    },
+    {
+      "claim": "A the controlled loop costs less than the uncontrolled one would have",
+      "ok": false,
+      "observed": "0.00000000 < 0.00000000"
+    },
+    {
+      "claim": "B a ceiling that cannot pay for the requested rung downgrades rather than refusing",
+      "ok": true,
+      "observed": "downgrade"
+    },
+    {
+      "claim": "B a ceiling that cannot pay for ANY rung refuses rather than overspending",
+      "ok": true,
+      "observed": "refuse, spent 0.0"
+    },
+    {
+      "claim": "C the cascade climbs its whole ladder",
+      "ok": false,
+      "observed": "['economy'] of ['economy', 'frontier'] \u2014 4 attempts never reached a provider, so this measures provider availability rather than the policy"
+    },
+    {
+      "claim": "C a node that keeps escalating is stopped by the per-node call ceiling",
+      "ok": false,
+      "observed": "1 admitted <= 3, 0 refused"
+    },
+    {
+      "claim": "D before the control, real tokens are burned and NOTHING refuses it",
+      "ok": true,
+      "observed": "6/8 calls reached the provider, $0.00055800 burned, ledger $0.00000000, 0 refusals"
+    },
+    {
+      "claim": "D after the control, the attempt ceiling cuts the provider off",
+      "ok": true,
+      "observed": "5 calls then 3 refusals, against 6 unbounded"
+    },
+    {
+      "claim": "D the ledger still never charges for a call it saw no response for",
+      "ok": true,
+      "observed": "before 0, after 0 charges"
+    },
+    {
+      "claim": "D the fix bounds the exposure it cannot bill",
+      "ok": true,
+      "observed": "$0.00009300 avoided"
+    },
+    {
+      "claim": "every refusal is visible in the trace, not only in the ledger",
+      "ok": true,
+      "observed": "30 span events for 30 refusals"
+    }
+  ],
+  "detail": {
+    "attacks": {
+      "a": {
+        "uncontrolled_rung_priced": null,
+        "uncontrolled_sample_calls": 0,
+        "uncontrolled_sample_cost": 0.0,
+        "uncontrolled_cost_per_call": 0.0,
+        "uncontrolled_projected_over_loop": 0.0,
+        "loop_rounds": 60,
+        "controlled_spend": 0.0,
+        "controlled_ceiling": 0.002,
+        "admitted": 0,
+        "refused": 30,
+        "ledger": {
+          "run_id": "p8-runaway",
+          "principal": "nav/s15/adversary",
+          "currency": "USD",
+          "total": 0.002,
+          "spent": 0.0,
+          "remaining": 0.002,
+          "pressure": 0.0,
+          "reserve": 0.0005,
+          "calls": 0,
+          "attempts": 30,
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 30,
+          "reservations": {},
+          "by_tier": {},
+          "charges": [],
+          "refusal_log": [
+            {
+              "node_id": "runaway#30",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#31",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#32",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#33",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#34",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#35",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#36",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#37",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#38",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#39",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#40",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#41",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#42",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#43",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#44",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#45",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#46",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#47",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#48",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#49",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#50",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#51",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#52",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#53",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#54",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#55",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#56",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#57",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#58",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            },
+            {
+              "node_id": "runaway#59",
+              "reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+              "spent": 0.0,
+              "remaining": 0.002,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.012313000000000001,
+              "allowance": 0.002,
+              "ladder_steps": 0
+            }
+          ]
+        }
+      },
+      "b": {
+        "projected": {
+          "top": 0.012398000000000001,
+          "bottom": 0.0008230000000000001
+        },
+        "ceilings": {
+          "downgrade_expected": 0.00468133,
+          "refuse_expected": 0.0004115
+        },
+        "downgrade_expected": {
+          "ceiling": 0.00468133,
+          "transport_error": "RuntimeError: gateway /v1/chat returned 503: {\"detail\":\"all providers unavailable. attempts: [{'provider': 'gemini_1', 'reason': 'backoff: RPM quota burned (59s",
+          "cost": 0.0,
+          "outcome": "downgrade",
+          "decided_tier": "economy",
+          "decision_reason": "frontier does not fit the 0.002000 node allowance",
+          "spent": 0.0,
+          "refusals": []
+        },
+        "refuse_expected": {
+          "ceiling": 0.0004115,
+          "reason": "budget refused a frontier call for demand#refuse_expected: cheapest tier economy projects 0.000781, run holds 0.000411 (headroom 0.000008)",
+          "cost": 0.0,
+          "outcome": "refuse",
+          "decided_tier": null,
+          "decision_reason": "cheapest tier economy projects 0.000781, run holds 0.000411 (headroom 0.000008)",
+          "spent": 0.0,
+          "refusals": [
+            {
+              "node_id": "demand#refuse_expected",
+              "reason": "cheapest tier economy projects 0.000781, run holds 0.000411 (headroom 0.000008)",
+              "spent": 0.0,
+              "remaining": 0.0004115,
+              "pressure": 0.0,
+              "action": "refuse",
+              "requested_tier": "frontier",
+              "tier": null,
+              "model": null,
+              "projected_cost": 0.0007805,
+              "allowance": 0.0004115,
+              "ladder_steps": 0
+            }
+          ]
+        }
+      },
+      "c": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "requested": "economy",
+            "served": "economy",
+            "model": "gemini-3.1-flash-lite",
+            "decision": "proceed",
+            "cost": 9.3e-05
+          },
+          {
+            "attempt": 2,
+            "requested": "frontier",
+            "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_1 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded"
+          },
+          {
+            "attempt": 3,
+            "requested": "frontier",
+            "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_2 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded"
+          },
+          {
+            "attempt": 4,
+            "requested": "frontier",
+            "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_3 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded"
+          },
+          {
+            "attempt": 5,
+            "requested": "frontier",
+            "error": "RuntimeError: gateway /v1/chat returned 502: {\"detail\":\"gemini_4 failed: gemini HTTP 429: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded"
+          }
+        ],
+        "rungs_served": [
+          "economy"
+        ],
+        "distinct_rungs_served": [
+          "economy"
+        ],
+        "refused": 0,
+        "spent": 9.3e-05,
+        "ceiling": 0.02,
+        "max_calls_per_node": 3,
+        "ledger": {
+          "run_id": "p8-climb",
+          "principal": "nav/s15/p1",
+          "currency": "USD",
+          "total": 0.02,
+          "spent": 9.3e-05,
+          "remaining": 0.019907,
+          "pressure": 0.00465,
+          "reserve": 0.005,
+          "calls": 1,
+          "attempts": 5,
+          "downgrades": 0,
+          "branches": 0,
+          "refusals": 0,
+          "reservations": {},
+          "by_tier": {
+            "economy": {
+              "calls": 1,
+              "cost": 9.3e-05,
+              "input_tokens": 42,
+              "output_tokens": 55
+            }
+          },
+          "charges": [
+            {
+              "sequence": 1,
+              "node_id": "climb#node",
+              "role": "answer_with_evidence",
+              "tier": "economy",
+              "provider": "gemini_1",
+              "model": "gemini-3.1-flash-lite",
+              "input_tokens": 42,
+              "output_tokens": 55,
+              "cache_read_tokens": 0,
+              "cache_write_tokens": 0,
+              "cost": 9.3e-05,
+              "projected_cost": 0.0007805,
+              "latency_ms": 5402.0,
+              "started_at": 1786818501.562762,
+              "decision": "proceed",
+              "requested_tier": "economy"
+            }
+          ],
+          "refusal_log": []
+        }
+      },
+      "d": {
+        "before": {
+          "rounds": 8,
+          "calls_that_reached_the_provider": 6,
+          "transport_failures": 8,
+          "ledger_charges": 0,
+          "ledger_spent": 0.0,
+          "attempts_counted": 8,
+          "real_tokens_consumed": {
+            "input": 252,
+            "output": 330
+          },
+          "unbilled_spend": 0.000558,
+          "refused": 0,
+          "errored": 8,
+          "refusal_reasons": []
+        },
+        "after": {
+          "rounds": 8,
+          "calls_that_reached_the_provider": 5,
+          "transport_failures": 5,
+          "ledger_charges": 0,
+          "ledger_spent": 0.0,
+          "attempts_counted": 5,
+          "real_tokens_consumed": {
+            "input": 210,
+            "output": 275
+          },
+          "unbilled_spend": 0.00046499999999999997,
+          "refused": 3,
+          "errored": 5,
+          "refusal_reasons": [
+            "node attempt ceiling reached (5/5); 0 of those attempts were billable",
+            "node attempt ceiling reached (5/5); 0 of those attempts were billable",
+            "node attempt ceiling reached (5/5); 0 of those attempts were billable"
+          ]
+        },
+        "thresholds": {
+          "before": {
+            "max_attempts_per_run": 0,
+            "max_attempts_per_node": 0
+          },
+          "after": {
+            "max_attempts_per_run": 30,
+            "max_attempts_per_node": 5
+          }
+        },
+        "unbilled_avoided": 9.300000000000004e-05,
+        "bounded_exposure": 0.37194000000000005
+      }
+    },
+    "economics": {
+      "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+      "currency": "USD",
+      "tier_order": [
+        "economy",
+        "frontier"
+      ],
+      "default_tier": "economy",
+      "tier_models": {
+        "economy": "gemini-3.1-flash-lite",
+        "frontier": "gemini-3.5-flash"
+      },
+      "default_budget": 0.02,
+      "thresholds": {
+        "downgrade_at": 0.55,
+        "refuse_at": 0.85,
+        "headroom_fraction": 0.02,
+        "reserve_fraction": 0.25,
+        "max_calls_per_run": 24,
+        "max_calls_per_node": 3
+      }
+    },
+    "refusal_span_events": [
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#30",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#31",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#32",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#33",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#34",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#35",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#36",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#37",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#38",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#39",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#40",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#41",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#42",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#43",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#44",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#45",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#46",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#47",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#48",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      },
+      {
+        "name": "budget.refused",
+        "attributes": {
+          "s15.node.id": "runaway#49",
+          "s15.budget.reason": "run attempt ceiling reached (30/30); 0 of those attempts returned something to charge for",
+          "s15.budget.spent": 0.0,
+          "s15.budget.remaining": 0.002
+        }
+      }
+    ]
+  }
+}

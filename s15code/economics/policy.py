@@ -43,6 +43,13 @@ class PolicyThresholds:
     headroom_fraction: float = 0.0
     max_calls_per_run: int = 0
     max_calls_per_node: int = 0
+    #: Ceilings on ATTEMPTS rather than charges. A call that reaches a provider,
+    #: consumes tokens and then fails never becomes a charge, so the call
+    #: ceilings above cannot see it — see :meth:`RunBudget.record_attempt`. Zero
+    #: disables them, which keeps the ladder's behaviour identical for any config
+    #: that does not ask for this.
+    max_attempts_per_run: int = 0
+    max_attempts_per_node: int = 0
     reserve_fraction: float = 0.0
     chars_per_token: float = 4.0
     input_estimate_safety: float = 1.25
@@ -55,6 +62,8 @@ class PolicyThresholds:
             headroom_fraction=float(data.get("headroom_fraction", 0.0)),
             max_calls_per_run=int(data.get("max_calls_per_run", 0)),
             max_calls_per_node=int(data.get("max_calls_per_node", 0)),
+            max_attempts_per_run=int(data.get("max_attempts_per_run", 0)),
+            max_attempts_per_node=int(data.get("max_attempts_per_node", 0)),
             reserve_fraction=float(data.get("reserve_fraction", 0.0)),
             chars_per_token=float(data.get("chars_per_token", 4.0)),
             input_estimate_safety=float(data.get("input_estimate_safety", 1.25)),
@@ -168,6 +177,26 @@ class BudgetPolicy:
         if thresholds.max_calls_per_node and budget.node_calls(node_id) >= thresholds.max_calls_per_node:
             return refusal(
                 f"node call ceiling reached ({budget.node_calls(node_id)}/{thresholds.max_calls_per_node})"
+            )
+
+        # 1b. Attempt ceilings. These bound calls that reached a provider and
+        #     came back with nothing to charge — a timeout after generation, a
+        #     dropped connection, a 5xx behind a load balancer. Those consume
+        #     real tokens and never become charges, so the ceilings above are
+        #     blind to them and only this pair can stop the bleeding.
+        if thresholds.max_attempts_per_run and budget.attempts >= thresholds.max_attempts_per_run:
+            return refusal(
+                f"run attempt ceiling reached ({budget.attempts}/{thresholds.max_attempts_per_run}); "
+                f"{budget.calls} of those attempts returned something to charge for"
+            )
+        if (
+            thresholds.max_attempts_per_node
+            and budget.node_attempts(node_id) >= thresholds.max_attempts_per_node
+        ):
+            return refusal(
+                f"node attempt ceiling reached "
+                f"({budget.node_attempts(node_id)}/{thresholds.max_attempts_per_node}); "
+                f"{budget.node_calls(node_id)} of those attempts were billable"
             )
 
         # 2. Exhaustion: at or past the refuse ratio nothing is admitted at any

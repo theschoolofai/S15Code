@@ -1,0 +1,149 @@
+# The capability ladder for the map/navigation workload.
+#
+# Same contract as config/tiers.yaml: a tier is a NAME plus the gateway request
+# fields that name expands to. `order` is the ladder, cheapest first, and it is
+# the only thing that defines what "downgrade" means.
+#
+# ── Two rungs, and why the number is two ─────────────────────────────────────
+# The shipped ladder spans three providers (groq / gemini / github). This one
+# does not, and the reason is a constraint that was MEASURED rather than
+# assumed. Against the only key this deployment has, on 2026-08-15:
+#
+#   model                     result
+#   gemini-3.1-flash-lite     answers                                    ✓
+#   gemini-3.5-flash          12/12 in the morning — THE RUNG; by evening HTTP
+#                             429, its free-tier daily quota spent
+#   gemini-3.7-flash          9/12 and 6/8; failures are HTTP 503 capacity
+#   gemini-3-flash-preview    answers                                    ✓
+#   gemini-3.5-flash-lite     answers                                    ✓
+#   gemini-3.1-flash          HTTP 404 — no such model exists at 3.1
+#   gemini-3.1-pro            HTTP 404 — the id is gemini-3.1-pro-preview
+#   gemini-3.1-pro-preview    HTTP 429 — free_tier_input_token_count exhausted
+#   gemini-2.5-flash / -pro   HTTP 404 — retired
+#
+# Everything reachable is a flash or a flash-lite, and Google publishes exactly
+# two rates across them: 0.25/1.50 for flash-lite and 0.50/3.00 for flash. Two
+# distinct prices is two rungs. A third rung could have been manufactured by
+# putting a second flash model on the ladder at the same rate and a different
+# output ceiling, and it was not, because a rung whose price separation comes
+# entirely from max_tokens is the same-model ladder this session already
+# criticised, wearing a different model's name.
+#
+# What that costs the result, stated plainly:
+#
+#   Kept. Two genuinely different models, two genuinely different published
+#   rates, and a downgrade that changes which model answers rather than how hard
+#   one model may think. The measured spread is real money.
+#
+#   Lost. Provider diversity — one outage or one quota takes both rungs down
+#   together, so this ladder buys price separation, not availability. And the
+#   spread is NARROW: a 2x rate difference, against the 79x of the shipped
+#   ladder. A narrow spread does not make the cascade pointless, it raises the
+#   bar the cheap rung has to clear — see the break-even resolution rate in the
+#   README, which is high precisely because this ladder is short.
+#
+# ── Measured before being written down ───────────────────────────────────────
+# Every rate and latency in pricing.yaml was measured against this gateway with
+# one identical prompt at temperature 0 before it was recorded. See
+# proofs/out/p0_calibration.json for the run that produced them.
+
+order: [economy, frontier]
+default_tier: economy
+
+tiers:
+  economy:
+    # Every key under `request` is merged verbatim into the gateway's /v1/chat
+    # body, so repointing a rung at another provider is an edit here and nothing
+    # else.
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    # What the estimator assumes before a call returns; real usage replaces it
+    # the moment the response lands. Sized for THIS workload: the tasks in
+    # proofs/tasks/navigation.jsonl average 244 characters and the answering
+    # system prompt is 460, so ~220 input tokens after the safety factor in
+    # budgets.yaml — not the 1200 a long-context workload would assume.
+    projected_input_tokens: 220
+    projected_output_tokens: 400
+
+  frontier:
+    request:
+      provider: gemini
+      # Chosen on measured AVAILABILITY, not capability. gemini-3.7-flash is
+      # newer, faster (mean 6.8 s against 11.7 s) and identically priced, and it
+      # is not this rung because it returned HTTP 503 "currently experiencing
+      # high demand" on 3 of 12 calls, against 12 of 12 here. A 25% transport
+      # failure rate on the rung every other number is compared against measures
+      # Google's capacity planning, not a model's quality, and it would have
+      # surfaced as the frontier baseline mysteriously failing tasks the cheap
+      # rung solved.
+      #
+      # THE OTHER HALF OF THAT LESSON, learned twelve hours later. This rung's
+      # free-tier DAILY quota ran out mid-study: every call began returning HTTP
+      # 429 while gemini-3.1-flash-lite still answered. A 503 and a 429 are not
+      # the same failure — a retry fixes the first and nothing fixes the second
+      # until midnight Pacific — and a ladder pinned to one provider has no
+      # answer to the second, because every rung shares the quota. That is the
+      # cost of the single-provider constraint stated at the top of this file,
+      # and it is the reason the README reports Part 2 from measurements taken
+      # before the wall rather than from a p1 run that could not finish.
+      model: gemini-3.5-flash
+      # Reasoning is turned ON here, unlike the rung below, and it is a third of
+      # what this rung is bought for — the other two being a larger model and a
+      # larger output ceiling. It has to be set EXPLICITLY: the gateway client
+      # defaults every request to `reasoning: "off"` and a tier only overrides
+      # what it names, so a rung that says nothing about reasoning is a rung with
+      # thinking disabled, whatever its comments claim.
+      #
+      # MEASURED on this model before being written down: off -> 171 output
+      # tokens, low -> 248, high -> 248 and byte-identical to low. So the dial is
+      # real but saturates immediately here; "low" is recorded rather than "high"
+      # because paying for a distinction the provider does not make is exactly
+      # the kind of unexamined cost this session is about.
+      reasoning: "low"
+      # The output ceiling is raised to 4096 so the thinking channel has
+      # somewhere to go. The failure mode the shipped ladder documented — a
+      # thinking model spending its entire output budget in the reasoning channel
+      # and returning content "" at full price — is a function of a tight
+      # max_tokens, not of thinking itself, and p0_calibration.py asserts this
+      # rung comes back non-empty before any measurement may depend on it.
+      max_tokens: 4096
+      temperature: 0
+    price_model: gemini-3.5-flash
+    projected_input_tokens: 220
+    projected_output_tokens: 2000
+
+# Which tier a graph ROLE asks for. Keys are the runtime's own role names, never
+# task content, so a node declares the tier it needs by declaring its role.
+#
+# The policy in one line: everything opens cheap except the node that actually
+# answers. On this workload the mechanical roles — pulling a fact back out of
+# memory, reformatting, summarising what another node produced — are not where a
+# wrong answer comes from, and paying the dearer rung for them buys nothing
+# measurable. Arithmetic and rule interpretation is where the money belongs.
+role_tiers:
+  default: economy
+  memory_recall: economy
+  remember_explicit_fact: economy
+  web_search: economy
+  fetch_url: economy
+  index_file: economy
+  list_directory: economy
+  read_file: economy
+  create_reminder: economy
+  researcher: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  distiller: economy
+  content: economy
+  compose_surface: economy
+  # A validator that waves through a wrong unit conversion is worse than no
+  # validator, so this one supporting role is bought at the top rung outright
+  # rather than escalated into.
+  coder_validator: frontier
+  answer_with_evidence: frontier
