@@ -40,6 +40,7 @@ task set until the story came out right.
 from __future__ import annotations
 
 import argparse
+import asyncio
 import hashlib
 import json
 import os
@@ -216,6 +217,50 @@ class SimulatedGateway:
                 "output_tokens": min(needed, ceiling),
                 "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
                 "latency_ms": self.latency_ms}
+
+
+class RetryingTransport:
+    """Retries a call the TRANSPORT failed, and paces calls to respect a quota.
+
+    ``evals.yaml`` already states the principle for the judge: "a rate limit is a
+    TRANSPORT failure, not a verdict: retry it rather than let it become an
+    unresolved task." The same reasoning applies to the ANSWER path and was not
+    applied to it, so on a rate-limited tier a 429 becomes a row reading
+    ``unresolved, cost=0.00000000`` — indistinguishable in the aggregate from a
+    model that answered badly for free. That does not merely add noise, it biases:
+    the rung under the most sustained load loses the most rows, and cost per
+    resolved task is computed from what survives.
+
+    Wrapping OUTSIDE :class:`MeteredTransport` is deliberate. Every individual
+    attempt still reaches the meter, so ``calls`` remains the number of calls that
+    returned something to charge for and ``failures`` remains the number that did
+    not. The retry is visible in those counters rather than hidden behind them.
+
+    Both knobs default to off, so a run that does not ask for them behaves exactly
+    as the proof always has.
+    """
+
+    def __init__(self, inner: Any, *, attempts: int = 0, backoff: float = 10.0,
+                 pace: float = 0.0) -> None:
+        self.inner, self.attempts, self.backoff, self.pace = inner, attempts, backoff, pace
+        self.retries = 0
+        self.last_call = 0.0
+
+    async def chat(self, *, prompt: str, system: str, request: dict[str, Any] | None = None):
+        for attempt in range(max(self.attempts, 0) + 1):
+            if self.pace > 0:
+                elapsed = time.time() - self.last_call
+                if elapsed < self.pace:
+                    await asyncio.sleep(self.pace - elapsed)
+            self.last_call = time.time()
+            try:
+                return await self.inner.chat(prompt=prompt, system=system, request=request)
+            except Exception:
+                if attempt >= self.attempts:
+                    raise
+                self.retries += 1
+                await asyncio.sleep(self.backoff * (attempt + 1))
+        raise RuntimeError("unreachable")
 
 
 def gateway_reachable(base_url: str, *, timeout: float = 3.0) -> bool:
@@ -608,6 +653,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="deterministic SIMULATION: exercises every path, proves nothing economic")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--config-dir", default=os.getenv("S15_CONFIG_DIR"))
+    parser.add_argument("--answer-retries", type=int, default=0,
+                        help="retry an ANSWER call this many times when the TRANSPORT fails "
+                             "(a 429 or a 5xx). 0 keeps the original behaviour, where a rate "
+                             "limit is scored as an unresolved task.")
+    parser.add_argument("--retry-backoff", type=float, default=10.0,
+                        help="seconds to wait before the first answer retry; grows linearly")
+    parser.add_argument("--pace-seconds", type=float, default=0.0,
+                        help="minimum seconds between answer calls, to stay inside a per-minute quota")
     parser.add_argument("--label", default="", help="suffix for the JSON written to proofs/out/")
     return parser.parse_args(argv)
 
@@ -646,7 +699,12 @@ def run(parsed: argparse.Namespace) -> Proof:
         detail = {"reason": "--offline requested" if parsed.offline else f"{args.base_url} unreachable",
                   "simulated": True,
                   "warning": "offline numbers are a deterministic simulation, NOT evidence"}
-    transport = MeteredTransport(client)
+    metered = MeteredTransport(client)
+    # Retry OUTSIDE the meter, so every attempt is still counted by it.
+    transport = RetryingTransport(
+        metered, attempts=parsed.answer_retries,
+        backoff=parsed.retry_backoff, pace=parsed.pace_seconds,
+    )
 
     panel = evals.rubric.panel
     if parsed.judge_provider:
@@ -724,11 +782,12 @@ def run(parsed: argparse.Namespace) -> Proof:
                 missing or f"{len(chosen)} strategies x {len(tasks)} tasks")
 
     ledger_calls = sum(row["calls"] for rows in results.values() for row in rows)
-    answer_calls = transport.calls
+    answer_calls = metered.calls
     proof.check("every answering provider call that returned is metered",
                 ledger_calls == answer_calls,
                 f"{answer_calls} transport calls, {ledger_calls} ledger charges, "
-                f"{transport.failures} transport failures (no tokens reported, so not charged)")
+                f"{metered.failures} transport failures, {transport.retries} of them retried "
+                f"(no tokens reported, so not charged)")
 
     judge_failed = sum(row["judge_failed"] for row in summaries.values())
     proof.check("no verdict was unparseable (an unparseable judge is a JUDGE failure)",
