@@ -138,7 +138,13 @@ judge:
       request:
         provider: ollama
         model: phi4:latest
-        max_tokens: 800
+        # 400, not the 800 the hosted member gets, and the reason is wall clock
+        # rather than taste. This model generates at roughly 13 tokens/second on
+        # this machine, so an 800-token ceiling it actually fills costs about 27
+        # seconds per verdict and three hours per p1 run. The verdict itself is a
+        # small JSON object — five integers and a short note — so the ceiling was
+        # cut to what the schema needs rather than what the panel partner gets.
+        max_tokens: 400
         temperature: 0
     - name: judge_hosted
       request:
@@ -152,9 +158,15 @@ judge:
   # allowed to become an unresolved task, which would silently attribute the
   # judge's quota to the answering model's quality. Pacing keeps a per-minute
   # allowance from being spent in the first five seconds.
+  # Pacing is set against THIS panel's limits rather than copied: judge_local is
+  # unmetered local weights with no rate limit at all, and judge_hosted draws on
+  # a pool of four Gemini keys at 15 requests per minute each. A full p1 run
+  # makes a few hundred judge calls, so a 1-second pace is already conservative
+  # against 60 rpm, and the 5-second pace this was copied from would have added
+  # roughly 17 minutes of pure sleeping to every run.
   retries: 5
-  retry_backoff_seconds: 15
-  pace_seconds: 5
+  retry_backoff_seconds: 10
+  pace_seconds: 1
 
 # What the compared strategies may do after an unresolved verdict.
 strategies:

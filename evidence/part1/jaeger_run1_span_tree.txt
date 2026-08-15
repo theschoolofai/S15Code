@@ -1,0 +1,14 @@
+run run-d7ae3df9ca2b                         [run]   12238.0 ms  $0.00050850
+  └─ agent loop 2                                 [agent_loop]   12238.0 ms
+    └─ node answer                                  [node]   12238.0 ms
+      └─ chat gemini-3.5-flash                        [provider_call]   12238.0 ms  gemini_1/gemini-3.5-flash  255in/127out  $0.00050850
+    └─ plan                                         [plan]       0.0 ms
+  └─ agent loop 1                                 [agent_loop]       2.0 ms
+    └─ plan                                         [plan]       0.0 ms
+    └─ node recall                                  [node]       1.0 ms
+  └─ agent loop 3                                 [agent_loop]       0.0 ms
+    └─ plan                                         [plan]       0.0 ms
+
+sum of provider_call span costs                 $0.00050850
+run span s15.cost (the ledger total)            $0.00050850
+they agree                                      yes

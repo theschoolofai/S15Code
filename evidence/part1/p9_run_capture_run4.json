@@ -1,0 +1,432 @@
+{
+  "proof": "p9_run_capture",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "A delivery vehicle reaches an address restricted by motor_vehicle=no @ (Mo-Fr 07:00-10:00). It is Wednesday, ETA 09:40, unloading takes 25 minutes. May it enter on arrival, when may it legally enter, and when does unloading finish?",
+    "budget": 0.02,
+    "principal": "nav/s15/run4",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "prompt": "A delivery vehicle reaches an address restricted by motor_vehicle=no @ (Mo-Fr 07:00-10:00). It is Wednesday, ETA 09:40, unloading takes 25 minutes. May it enter on arrival, when may it legally enter, and when does unloading finish?",
+    "budget / principal": "0.02 USD  nav/s15/run4",
+    "call 1 tier/model": "role answer_with_evidence  requested frontier -> served frontier  (proceed)  gemini_1 / gemini-3.5-flash",
+    "journal events": "8 events, sequences 1..8",
+    "event kinds": "{\"run_started\": 1, \"graph_patched\": 3, \"task_started\": 2, \"task_succeeded\": 2}",
+    "jaeger trace id": "bddb7d6c7e6e5129873ecf02697958aa",
+    "jaeger url": "http://localhost:16686/trace/bddb7d6c7e6e5129873ecf02697958aa",
+    "jaeger spans": 10,
+    "ledger row 1": "276in/138out  $0.00055200 charged  $0.01249200 projected  5883 ms  node answer",
+    "ledger total": "spent $0.00055200 of $0.02000000  pressure 0.028  calls 1  refusals 0",
+    "final answer": "Based on the parameters of the restriction and arrival:  * **May it enter on arrival?**    No. The vehicle arrives on Wednesday at 09:40, which falls within the restricted window of Monday through Friday between 07:00 and 10:00.  * **When may it legally enter?**    It may legally enter starting at **10:00**, as soon as the restriction ends.  * **When does unloading finish?**    If the vehicle ente...",
+    "wall clock": "5.9s"
+  },
+  "checks": [
+    {
+      "claim": "the run either answered or recorded why it did not",
+      "ok": true,
+      "observed": "470 answer characters, 0 refusals"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "1 transport calls, 1 ledger rows, 0 transport failures"
+    },
+    {
+      "claim": "the run stayed inside its ceiling",
+      "ok": true,
+      "observed": "0.00055200 <= 0.02000000"
+    },
+    {
+      "claim": "span costs sum to the ledger",
+      "ok": true,
+      "observed": "spans 0.00055200 vs ledger 0.00055200"
+    },
+    {
+      "claim": "the trace is retrievable from Jaeger by id",
+      "ok": true,
+      "observed": "http://localhost:16686/api/traces/bddb7d6c7e6e5129873ecf02697958aa"
+    }
+  ],
+  "detail": {
+    "prompt": "A delivery vehicle reaches an address restricted by motor_vehicle=no @ (Mo-Fr 07:00-10:00). It is Wednesday, ETA 09:40, unloading takes 25 minutes. May it enter on arrival, when may it legally enter, and when does unloading finish?",
+    "events": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "first frontier selected for memory"
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "authorized retrieval completed"
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer",
+        "model": "gemini-3.5-flash",
+        "provider": "gemini_1",
+        "decision": "proceed",
+        "requested_tier": "frontier",
+        "tier": "frontier"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "grounded answer produced"
+      }
+    ],
+    "ledger": {
+      "run_id": "run-5c1d8031d5d2",
+      "principal": "nav/s15/run4",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.000552,
+      "remaining": 0.019448,
+      "pressure": 0.0276,
+      "reserve": 0.005,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.000552,
+          "input_tokens": 276,
+          "output_tokens": 138
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.5-flash",
+          "input_tokens": 276,
+          "output_tokens": 138,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.000552,
+          "projected_cost": 0.012492,
+          "latency_ms": 5883.0,
+          "started_at": 1786812427.781981,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "c9f49e1536bb924f",
+        "parent_span_id": "3ccd339373f0f297",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427782980864,
+        "end_time": 1786812427782980864,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "237c33d5ed70f9d6",
+        "parent_span_id": "3ccd339373f0f297",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427783981056,
+        "end_time": 1786812427784980992,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-5c1d8031d5d2",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "3ccd339373f0f297",
+        "parent_span_id": "a25475827884ef7f",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427782980864,
+        "end_time": 1786812427784980992,
+        "duration_ns": 2000128,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 1
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "cf6df479b406120c",
+        "parent_span_id": "eef385dcc3d58c71",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427785980928,
+        "end_time": 1786812427785980928,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat gemini-3.5-flash",
+        "kind": "provider_call",
+        "span_id": "b6058f058c13d9ae",
+        "parent_span_id": "7cc5bbc1baf168ac",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427781980928,
+        "end_time": 1786812433664980928,
+        "duration_ns": 5883000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "gemini_1",
+          "gen_ai.request.model": "gemini-3.5-flash",
+          "gen_ai.response.model": "gemini-3.5-flash",
+          "gen_ai.usage.input_tokens": 276,
+          "gen_ai.usage.output_tokens": 138,
+          "s15.cost": 0.000552,
+          "s15.currency": "USD",
+          "s15.tier": "frontier",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "proceed",
+          "s15.budget.remaining": 0.019448,
+          "s15.cost.projected": 0.012492,
+          "gen_ai.request.reasoning_effort": "low"
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "7cc5bbc1baf168ac",
+        "parent_span_id": "eef385dcc3d58c71",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427781980928,
+        "end_time": 1786812433664980928,
+        "duration_ns": 5883000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-5c1d8031d5d2",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "proceed",
+              "s15.budget.reason": "requested tier fits the node allowance",
+              "s15.tier": "frontier",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.012492
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "eef385dcc3d58c71",
+        "parent_span_id": "a25475827884ef7f",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427781980928,
+        "end_time": 1786812433664980928,
+        "duration_ns": 5883000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 4
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "510363e74a8222b5",
+        "parent_span_id": "36d1297f52cfb3fd",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427788980992,
+        "end_time": 1786812427788980992,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "36d1297f52cfb3fd",
+        "parent_span_id": "a25475827884ef7f",
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427788980992,
+        "end_time": 1786812427788980992,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 7
+        },
+        "events": []
+      },
+      {
+        "name": "run run-5c1d8031d5d2",
+        "kind": "run",
+        "span_id": "a25475827884ef7f",
+        "parent_span_id": null,
+        "trace_id": "bddb7d6c7e6e5129873ecf02697958aa",
+        "start_time": 1786812427781980928,
+        "end_time": 1786812433664980928,
+        "duration_ns": 5883000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-5c1d8031d5d2",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.principal": "nav/s15/run4",
+          "s15.budget.total": 0.02,
+          "s15.budget.spent": 0.000552,
+          "s15.budget.remaining": 0.019448,
+          "s15.currency": "USD",
+          "s15.budget.refusals": 0,
+          "s15.budget.downgrades": 0,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.000552
+        },
+        "events": []
+      }
+    ],
+    "trace": {
+      "id": "bddb7d6c7e6e5129873ecf02697958aa",
+      "query_base": "http://localhost:16686",
+      "ui": "http://localhost:16686/trace/bddb7d6c7e6e5129873ecf02697958aa",
+      "backend_spans": 10
+    },
+    "answer": "Based on the parameters of the restriction and arrival:\n\n* **May it enter on arrival?** \n  No. The vehicle arrives on Wednesday at 09:40, which falls within the restricted window of Monday through Friday between 07:00 and 10:00.\n\n* **When may it legally enter?** \n  It may legally enter starting at **10:00**, as soon as the restriction ends.\n\n* **When does unloading finish?** \n  If the vehicle enters at 10:00, the 25-minute unloading process will finish at **10:25**.",
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 276,
+      "output_tokens": 138,
+      "cost": 0.000552,
+      "trace_ids": [
+        "bddb7d6c7e6e5129873ecf02697958aa"
+      ]
+    }
+  }
+}

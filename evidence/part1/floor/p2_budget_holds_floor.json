@@ -1,0 +1,165 @@
+{
+  "proof": "p2_budget_holds",
+  "ok": true,
+  "mode": "offline",
+  "mode_detail": {
+    "reason": "--offline requested"
+  },
+  "arguments": {
+    "task": "summarise the attached notes",
+    "budget": 0.01,
+    "principal": "proofs/s15/reviewer",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "declared": "ceiling 0.01000000  spent 0.00160475  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "generous": "ceiling 0.67152000  spent 0.03255000  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "tight": "ceiling 0.02933063  spent 0.00160475  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "impossible": "ceiling 0.00000056  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -",
+    "currency": "USD",
+    "ladder": "economy < standard < frontier",
+    "models charged": [
+      "gemini-3.1-flash-lite",
+      "openai/gpt-4.1"
+    ],
+    "transport failures": "0 (gateway errors; no tokens reported, so not charged)"
+  },
+  "checks": [
+    {
+      "claim": "no run spends past its ceiling",
+      "ok": true,
+      "observed": "0 breaches"
+    },
+    {
+      "claim": "a tight allowance downgrades the tier the node asked for",
+      "ok": true,
+      "observed": "1 downgrades, 0 branches, requested ['frontier'] -> charged ['standard']"
+    },
+    {
+      "claim": "an unaffordable ceiling refuses instead of overspending",
+      "ok": true,
+      "observed": "0 calls, 1 refusals, spent 0.0"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "3 calls, all charged"
+    },
+    {
+      "claim": "the declared budget produced a metered run",
+      "ok": true,
+      "observed": "1 calls, spent 0.00160475"
+    }
+  ],
+  "detail": {
+    "runs": {
+      "declared": {
+        "ceiling": 0.01,
+        "spent": 0.00160475,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 0.01,
+        "run_id": "run-15f07806e8e8"
+      },
+      "generous": {
+        "ceiling": 0.67152,
+        "spent": 0.03255,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "openai/gpt-4.1"
+        ],
+        "seconds": 0.008,
+        "run_id": "run-f6c435ae65f2"
+      },
+      "tight": {
+        "ceiling": 0.029330625000000003,
+        "spent": 0.00160475,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 0.008,
+        "run_id": "run-aef02beaa05a"
+      },
+      "impossible": {
+        "ceiling": 5.64e-07,
+        "spent": 0.0,
+        "calls": 0,
+        "transport_calls": 0,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 1,
+        "status": "failed",
+        "tiers_charged": [],
+        "tiers_requested": [],
+        "models": [],
+        "seconds": 0.007,
+        "run_id": "run-674ad3a25e79"
+      }
+    }
+  }
+}

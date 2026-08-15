@@ -1,0 +1,172 @@
+{
+  "proof": "p7_cross_model_ladder",
+  "ok": false,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "Compute the great-circle distance between (52.3740 N, 4.8897 E) and (52.0907 N, 5.1214 E).",
+    "budget": 0.02,
+    "principal": "nav/s15/p7",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "ladder": "economy < frontier",
+    "rung economy": "gemini_1 / gemini-3.1-flash-lite  projected 0.00077825  charged 0.00052200  54in/339out  754 chars",
+    "rung frontier": "gemini_2 / gemini-3.5-flash  projected 0.01230850  charged 0.00011100  54in/28out  111 chars",
+    "asked frontier, allowance for economy": "served economy on gemini_1 / gemini-3.1-flash-lite  (downgrade, charged 0.00052200)",
+    "projected spread": "15.8x  (0.00077825 -> 0.01230850)",
+    "measured spread": "0.21x  (0.00052200 -> 0.00011100)"
+  },
+  "checks": [
+    {
+      "claim": "every rung answered",
+      "ok": true,
+      "observed": "2 rungs"
+    },
+    {
+      "claim": "each rung is served by the model its config names",
+      "ok": true,
+      "observed": {
+        "economy": "gemini-3.1-flash-lite",
+        "frontier": "gemini-3.5-flash"
+      }
+    },
+    {
+      "claim": "no two rungs are the same model",
+      "ok": true,
+      "observed": [
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash"
+      ]
+    },
+    {
+      "claim": "the rungs are spread across providers, not one provider's menu",
+      "ok": false,
+      "observed": {
+        "configured": {
+          "economy": "gemini",
+          "frontier": "gemini"
+        },
+        "reported": {
+          "economy": "gemini_1",
+          "frontier": "gemini_2"
+        }
+      }
+    },
+    {
+      "claim": "no rung returns empty text",
+      "ok": true,
+      "observed": "2 rungs answered"
+    },
+    {
+      "claim": "a node allowance below the requested rung is served lower down the ladder",
+      "ok": true,
+      "observed": {
+        "economy": "economy"
+      }
+    },
+    {
+      "claim": "every downgrade is recorded as one",
+      "ok": true,
+      "observed": {
+        "economy": "downgrade"
+      }
+    },
+    {
+      "claim": "a downgrade changes the MODEL, not just the token budget",
+      "ok": true,
+      "observed": {
+        "requested_model": "gemini-3.5-flash",
+        "served_models": {
+          "economy": "gemini-3.1-flash-lite"
+        }
+      }
+    },
+    {
+      "claim": "projected cost rises monotonically along the ladder",
+      "ok": true,
+      "observed": {
+        "economy": 0.00077825,
+        "frontier": 0.0123085
+      }
+    },
+    {
+      "claim": "the top rung measurably costs more than the bottom rung",
+      "ok": false,
+      "observed": "0.00011100 > 0.00052200"
+    }
+  ],
+  "detail": {
+    "observed": {
+      "est_input_tokens": 41,
+      "per_rung": {
+        "economy": {
+          "requested_tier": "economy",
+          "served_tier": "economy",
+          "configured_model": "gemini-3.1-flash-lite",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.000522,
+          "input_tokens": 54,
+          "output_tokens": 339,
+          "text_chars": 754,
+          "projected": 0.00077825,
+          "decision": "proceed"
+        },
+        "frontier": {
+          "requested_tier": "frontier",
+          "served_tier": "frontier",
+          "configured_model": "gemini-3.5-flash",
+          "provider": "gemini_2",
+          "model": "gemini-3.5-flash",
+          "cost": 0.00011100000000000001,
+          "input_tokens": 54,
+          "output_tokens": 28,
+          "text_chars": 111,
+          "projected": 0.0123085,
+          "decision": "proceed"
+        }
+      },
+      "walk": {
+        "economy": {
+          "requested_tier": "frontier",
+          "served_tier": "economy",
+          "allowance": 0.006543375,
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.000522,
+          "decision": "downgrade"
+        }
+      }
+    },
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    }
+  }
+}

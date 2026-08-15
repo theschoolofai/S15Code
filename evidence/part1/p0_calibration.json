@@ -1,0 +1,203 @@
+{
+  "proof": "p0_calibration",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "In exactly three sentences, explain why a routing policy should be measured by cost per resolved task rather than cost per call.",
+    "budget": 0.0,
+    "principal": "proofs/s15/p0",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "rung economy": "gemini-3.1-flash-lite  38in/87out  $0.00014000 measured  $0.00082300 projected  1382 ms  518 chars",
+    "rung frontier": "gemini-3.5-flash  38in/80out  $0.00025900 measured  $0.01239800 projected  5432 ms  512 chars",
+    "judge judge_local": "phi4:latest  6322 ms  $0.00000000",
+    "judge judge_hosted": "gemini-3-flash-preview  4931 ms  $0.00010000",
+    "projected spread": "15.1x (worst case, what admission prices)",
+    "measured spread": "1.9x (this prompt, what the ledger charged)",
+    "latency spread": "3.9x",
+    "FINDING measured order matches projected order": "YES"
+  },
+  "checks": [
+    {
+      "claim": "every rung of the ladder is reachable",
+      "ok": true,
+      "observed": "2 rungs answered"
+    },
+    {
+      "claim": "no rung returns an empty answer at full price",
+      "ok": true,
+      "observed": "every rung returned non-empty content"
+    },
+    {
+      "claim": "every rung is served by the model its config names",
+      "ok": true,
+      "observed": "no silent model substitution"
+    },
+    {
+      "claim": "projected cost is monotone along the ladder order",
+      "ok": true,
+      "observed": {
+        "economy": "0.00082300",
+        "frontier": "0.01239800"
+      }
+    },
+    {
+      "claim": "each rung is a DIFFERENT model, so a downgrade changes the model",
+      "ok": true,
+      "observed": [
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash"
+      ]
+    },
+    {
+      "claim": "every judge on the panel answers",
+      "ok": true,
+      "observed": [
+        "phi4:latest",
+        "gemini-3-flash-preview"
+      ]
+    },
+    {
+      "claim": "no judge shares a model with any rung of the ladder",
+      "ok": true,
+      "observed": "ladder ['gemini-3.1-flash-lite', 'gemini-3.5-flash'] vs judges ['gemini-3-flash-preview', 'phi4:latest']"
+    }
+  ],
+  "detail": {
+    "rungs": [
+      {
+        "label": "economy",
+        "kind": "rung",
+        "requested_provider": "gemini",
+        "requested_model": "gemini-3.1-flash-lite",
+        "served_provider": "gemini_1",
+        "served_model": "gemini-3.1-flash-lite",
+        "model_matches_request": true,
+        "input_tokens": 38,
+        "output_tokens": 87,
+        "measured_cost": 0.00014,
+        "latency_ms": 1382.0,
+        "answer_chars": 518,
+        "non_empty": true,
+        "answer_excerpt": "Measuring by cost per call fails to account for the efficiency of the routing logic, as it ignores whether the initial contact successfully addressed the customer's underlying issue. In contrast, cost per resolved task incentivizes the syst",
+        "stop_reason": "end_turn",
+        "error": null,
+        "projected_cost": 0.0008230000000000001
+      },
+      {
+        "label": "frontier",
+        "kind": "rung",
+        "requested_provider": "gemini",
+        "requested_model": "gemini-3.5-flash",
+        "served_provider": "gemini_2",
+        "served_model": "gemini-3.5-flash",
+        "model_matches_request": true,
+        "input_tokens": 38,
+        "output_tokens": 80,
+        "measured_cost": 0.000259,
+        "latency_ms": 5432.0,
+        "answer_chars": 512,
+        "non_empty": true,
+        "answer_excerpt": "Measuring routing policies by cost per call incentivizes brief, ineffective interactions that often fail to address the user's underlying issue, leading to expensive repeat contacts. Conversely, cost per resolved task evaluates the entire l",
+        "stop_reason": "end_turn",
+        "error": null,
+        "projected_cost": 0.012398000000000001
+      }
+    ],
+    "judges": [
+      {
+        "label": "judge_local",
+        "kind": "judge",
+        "requested_provider": "ollama",
+        "requested_model": "phi4:latest",
+        "served_provider": "ollama",
+        "served_model": "phi4:latest",
+        "model_matches_request": true,
+        "input_tokens": 53,
+        "output_tokens": 99,
+        "measured_cost": 0.0,
+        "latency_ms": 6322.0,
+        "answer_chars": 626,
+        "non_empty": true,
+        "answer_excerpt": "Measuring a routing policy by cost per resolved task provides a more accurate reflection of efficiency and effectiveness because it accounts for the entire resolution process, including follow-up interactions that may occur after the initia",
+        "stop_reason": "end_turn",
+        "error": null
+      },
+      {
+        "label": "judge_hosted",
+        "kind": "judge",
+        "requested_provider": "gemini",
+        "requested_model": "gemini-3-flash-preview",
+        "served_provider": "gemini_1",
+        "served_model": "gemini-3-flash-preview",
+        "model_matches_request": true,
+        "input_tokens": 38,
+        "output_tokens": 27,
+        "measured_cost": 0.0001,
+        "latency_ms": 4931.0,
+        "answer_chars": 179,
+        "non_empty": true,
+        "answer_excerpt": "Measuring cost per call incentivizes brief interactions that may fail to address the root cause, leading to expensive repeat contacts and inflated operational overhead. Conversely",
+        "stop_reason": "max_tokens",
+        "error": null
+      }
+    ],
+    "prompt": {
+      "prompt": "In exactly three sentences, explain why a routing policy should be measured by cost per resolved task rather than cost per call.",
+      "system": "You are a precise technical writer. Answer in exactly three sentences."
+    },
+    "economics": {
+      "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+      "currency": "USD",
+      "tier_order": [
+        "economy",
+        "frontier"
+      ],
+      "default_tier": "economy",
+      "tier_models": {
+        "economy": "gemini-3.1-flash-lite",
+        "frontier": "gemini-3.5-flash"
+      },
+      "default_budget": 0.02,
+      "thresholds": {
+        "downgrade_at": 0.55,
+        "refuse_at": 0.85,
+        "headroom_fraction": 0.02,
+        "reserve_fraction": 0.25,
+        "max_calls_per_run": 24,
+        "max_calls_per_node": 3
+      }
+    },
+    "spreads": {
+      "projected": 15.064398541919806,
+      "measured": 1.8500000000000003
+    }
+  }
+}

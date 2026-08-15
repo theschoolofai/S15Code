@@ -1,0 +1,2 @@
+usage: render_trace.py [-h] [--query QUERY] trace_id
+render_trace.py: error: the following arguments are required: trace_id

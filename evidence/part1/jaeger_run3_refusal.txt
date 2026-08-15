@@ -1,0 +1,13 @@
+trace 1cb82699efb9a145f511dbc60d0b08fe  (9 spans in the backend)
+
+ERROR span node answer                          [node]  BudgetRefused: budget refused a frontier call for answer: cheapest tier economy projects 0.000858, run holds 0.000400 (headroom 0.000008)
+run span   run run-61a3a672c90e
+             s15.budget.downgrades = 0
+             s15.budget.refusals = 1
+             s15.budget.remaining = 0.0004
+             s15.budget.spent = 0
+             s15.budget.total = 0.0004
+REFUSAL    node answer: cheapest tier economy projects 0.000858, run holds 0.000400 (headroom 0.000008)
+             spent 0, remaining 0.0004
+
+1 budget.refused event(s) present in the backend's copy of this trace

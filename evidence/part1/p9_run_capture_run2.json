@@ -1,0 +1,432 @@
+{
+  "proof": "p9_run_capture",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "Two routes: A is 48 km, 62 min, 4.20 EUR tolls; B is 51 km, 74 min, no tolls. Driver time is 18.00 EUR/h and fuel 0.14 EUR/km. Which should the router choose?",
+    "budget": 0.001,
+    "principal": "nav/s15/run2",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "prompt": "Two routes: A is 48 km, 62 min, 4.20 EUR tolls; B is 51 km, 74 min, no tolls. Driver time is 18.00 EUR/h and fuel 0.14 EUR/km. Which should the router choose?",
+    "budget / principal": "0.001 USD  nav/s15/run2",
+    "call 1 tier/model": "role answer_with_evidence  requested frontier -> served economy  (branch)  gemini_1 / gemini-3.1-flash-lite",
+    "journal events": "8 events, sequences 1..8",
+    "event kinds": "{\"run_started\": 1, \"graph_patched\": 3, \"task_started\": 2, \"task_succeeded\": 2}",
+    "jaeger trace id": "03f6c7d4cdb014ce895d432732048c12",
+    "jaeger url": "http://localhost:16686/trace/03f6c7d4cdb014ce895d432732048c12",
+    "jaeger spans": 10,
+    "ledger row 1": "275in/322out  $0.00055175 charged  $0.00086425 projected  1647 ms  node answer",
+    "ledger total": "spent $0.00055175 of $0.00100000  pressure 0.552  calls 1  refusals 0",
+    "final answer": "To determine the most cost-effective route, we must calculate the total cost for each option, including fuel and the value of the driver's time.  **Cost Calculation Parameters:** *   **Driver Time Cost:** 18.00 EUR/h (0.30 EUR/min) *   **Fuel Cost:** 0.14 EUR/km  ### Route A *   **Fuel Cost:** 48 km \u00d7 0.14 EUR/km = 6.72 EUR *   **Time Cost:** 62 min \u00d7 0.30 EUR/min = 18.60 EUR *   **Tolls:** 4.20 E...",
+    "wall clock": "1.7s"
+  },
+  "checks": [
+    {
+      "claim": "the run produced a final answer",
+      "ok": true,
+      "observed": "781 characters"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "1 transport calls, 1 ledger rows, 0 transport failures"
+    },
+    {
+      "claim": "the run stayed inside its ceiling",
+      "ok": true,
+      "observed": "0.00055175 <= 0.00100000"
+    },
+    {
+      "claim": "span costs sum to the ledger",
+      "ok": true,
+      "observed": "spans 0.00055175 vs ledger 0.00055175"
+    },
+    {
+      "claim": "the trace is retrievable from Jaeger by id",
+      "ok": true,
+      "observed": "http://localhost:16686/api/traces/03f6c7d4cdb014ce895d432732048c12"
+    }
+  ],
+  "detail": {
+    "prompt": "Two routes: A is 48 km, 62 min, 4.20 EUR tolls; B is 51 km, 74 min, no tolls. Driver time is 18.00 EUR/h and fuel 0.14 EUR/km. Which should the router choose?",
+    "events": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "first frontier selected for memory"
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "authorized retrieval completed"
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer",
+        "model": "gemini-3.1-flash-lite",
+        "provider": "gemini_1",
+        "decision": "branch",
+        "requested_tier": "frontier",
+        "tier": "economy"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null,
+        "reason": "grounded answer produced"
+      }
+    ],
+    "ledger": {
+      "run_id": "run-c0246bc190ab",
+      "principal": "nav/s15/run2",
+      "currency": "USD",
+      "total": 0.001,
+      "spent": 0.00055175,
+      "remaining": 0.00044824999999999997,
+      "pressure": 0.5517500000000001,
+      "reserve": 0.00025,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 1,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "economy": {
+          "calls": 1,
+          "cost": 0.00055175,
+          "input_tokens": 275,
+          "output_tokens": 322
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "economy",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 275,
+          "output_tokens": 322,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00055175,
+          "projected_cost": 0.00086425,
+          "latency_ms": 1647.0,
+          "started_at": 1786812369.7968059,
+          "decision": "branch",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "bcd90395e859beaf",
+        "parent_span_id": "a57d108815dcd6d9",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369797805824,
+        "end_time": 1786812369797805824,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "c0a4b165cd100583",
+        "parent_span_id": "a57d108815dcd6d9",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369798806016,
+        "end_time": 1786812369799805952,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-c0246bc190ab",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "a57d108815dcd6d9",
+        "parent_span_id": "67119fc321594896",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369797805824,
+        "end_time": 1786812369799805952,
+        "duration_ns": 2000128,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 1
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "e834570940b700e5",
+        "parent_span_id": "1c562903ef92ffad",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369800805888,
+        "end_time": 1786812369800805888,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat gemini-3.1-flash-lite",
+        "kind": "provider_call",
+        "span_id": "ba3c944cc8d0ceb9",
+        "parent_span_id": "8594f6ede397be2f",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369796805888,
+        "end_time": 1786812371443805888,
+        "duration_ns": 1647000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "gemini_1",
+          "gen_ai.request.model": "gemini-3.1-flash-lite",
+          "gen_ai.response.model": "gemini-3.1-flash-lite",
+          "gen_ai.usage.input_tokens": 275,
+          "gen_ai.usage.output_tokens": 322,
+          "s15.cost": 0.00055175,
+          "s15.currency": "USD",
+          "s15.tier": "economy",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "branch",
+          "s15.budget.remaining": 0.00044824999999999997,
+          "s15.cost.projected": 0.00086425,
+          "gen_ai.request.reasoning_effort": "off"
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "8594f6ede397be2f",
+        "parent_span_id": "1c562903ef92ffad",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369796805888,
+        "end_time": 1786812371443805888,
+        "duration_ns": 1647000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-c0246bc190ab",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "branch",
+              "s15.budget.reason": "no tier fits the 0.000750 node allocation, but the run still holds 0.001000: re-allocate the frontier and take economy",
+              "s15.tier": "economy",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.00086425
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "1c562903ef92ffad",
+        "parent_span_id": "67119fc321594896",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369796805888,
+        "end_time": 1786812371443805888,
+        "duration_ns": 1647000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 4
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "238f4b61040d9136",
+        "parent_span_id": "15c4ec3b8719da07",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369803805952,
+        "end_time": 1786812369803805952,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "15c4ec3b8719da07",
+        "parent_span_id": "67119fc321594896",
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369803805952,
+        "end_time": 1786812369803805952,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 7
+        },
+        "events": []
+      },
+      {
+        "name": "run run-c0246bc190ab",
+        "kind": "run",
+        "span_id": "67119fc321594896",
+        "parent_span_id": null,
+        "trace_id": "03f6c7d4cdb014ce895d432732048c12",
+        "start_time": 1786812369796805888,
+        "end_time": 1786812371443805888,
+        "duration_ns": 1647000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-c0246bc190ab",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.principal": "nav/s15/run2",
+          "s15.budget.total": 0.001,
+          "s15.budget.spent": 0.00055175,
+          "s15.budget.remaining": 0.00044824999999999997,
+          "s15.currency": "USD",
+          "s15.budget.refusals": 0,
+          "s15.budget.downgrades": 0,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.00055175
+        },
+        "events": []
+      }
+    ],
+    "trace": {
+      "id": "03f6c7d4cdb014ce895d432732048c12",
+      "query_base": "http://localhost:16686",
+      "ui": "http://localhost:16686/trace/03f6c7d4cdb014ce895d432732048c12",
+      "backend_spans": 10
+    },
+    "answer": "To determine the most cost-effective route, we must calculate the total cost for each option, including fuel and the value of the driver's time.\n\n**Cost Calculation Parameters:**\n*   **Driver Time Cost:** 18.00 EUR/h (0.30 EUR/min)\n*   **Fuel Cost:** 0.14 EUR/km\n\n### Route A\n*   **Fuel Cost:** 48 km \u00d7 0.14 EUR/km = 6.72 EUR\n*   **Time Cost:** 62 min \u00d7 0.30 EUR/min = 18.60 EUR\n*   **Tolls:** 4.20 EUR\n*   **Total Cost:** 6.72 + 18.60 + 4.20 = **29.52 EUR**\n\n### Route B\n*   **Fuel Cost:** 51 km \u00d7 0.14 EUR/km = 7.14 EUR\n*   **Time Cost:** 74 min \u00d7 0.30 EUR/min = 22.20 EUR\n*   **Tolls:** 0.00 EUR\n*   **Total Cost:** 7.14 + 22.20 + 0.00 = **29.34 EUR**\n\n**Conclusion:**\nRoute B is 0.18 EUR cheaper than Route A. Based on these calculations, Route B is the more economical choice.",
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 275,
+      "output_tokens": 322,
+      "cost": 0.00055175,
+      "trace_ids": [
+        "03f6c7d4cdb014ce895d432732048c12"
+      ]
+    }
+  }
+}

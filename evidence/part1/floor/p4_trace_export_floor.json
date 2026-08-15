@@ -1,0 +1,422 @@
+{
+  "proof": "p4_trace_export",
+  "ok": true,
+  "mode": "offline",
+  "mode_detail": {
+    "reason": "--offline requested"
+  },
+  "arguments": {
+    "task": "compare two options",
+    "budget": 0.01,
+    "principal": "proofs/s15/reviewer",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-120b",
+      "standard": "gemini-3.1-flash-lite",
+      "frontier": "openai/gpt-4.1"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "journal events": 8,
+    "spans": 10,
+    "span kinds": {
+      "plan": 3,
+      "node": 2,
+      "agent_loop": 3,
+      "provider_call": 1,
+      "run": 1
+    },
+    "provider calls": 1,
+    "input tokens": 272,
+    "output tokens": 1024,
+    "span cost total": "0.00160400",
+    "ledger spent": "0.00160400",
+    "trace ids": [
+      "73f05ac279d696ddfdc0a9cc6787a448"
+    ],
+    "otlp endpoint": "(none: spans built, nothing sent)",
+    "trace query url": "(none: no backend to ask)",
+    "backend round trip": "not attempted"
+  },
+  "checks": [
+    {
+      "claim": "every level of the hierarchy is present",
+      "ok": true,
+      "observed": [
+        "agent_loop",
+        "node",
+        "plan",
+        "provider_call",
+        "run"
+      ]
+    },
+    {
+      "claim": "run -> agent loop -> plan -> node -> provider call",
+      "ok": true,
+      "observed": "every parent is the expected kind"
+    },
+    {
+      "claim": "one run is one trace",
+      "ok": true,
+      "observed": [
+        "73f05ac279d696ddfdc0a9cc6787a448"
+      ]
+    },
+    {
+      "claim": "gen_ai.* usage attributes on every provider call",
+      "ok": true,
+      "observed": "1 spans carry all of ['gen_ai.provider.name', 'gen_ai.request.model', 'gen_ai.usage.input_tokens', 'gen_ai.usage.output_tokens']"
+    },
+    {
+      "claim": "cost per provider-call span",
+      "ok": true,
+      "observed": "all 1 priced"
+    },
+    {
+      "claim": "span costs sum to the ledger",
+      "ok": true,
+      "observed": "delta 0.000e+00"
+    },
+    {
+      "claim": "span token counts match the ledger",
+      "ok": true,
+      "observed": "272 == 272"
+    },
+    {
+      "claim": "content capture is off by default",
+      "ok": true,
+      "observed": "capture_content=False, message attrs on 0 spans, task text present: False"
+    },
+    {
+      "claim": "the tape alone rebuilds the trace",
+      "ok": true,
+      "observed": "1 provider calls from events only"
+    },
+    {
+      "claim": "no collector is required",
+      "ok": true,
+      "observed": "exported_over_the_wire=False"
+    },
+    {
+      "claim": "a real trace lands in the backend (skipped: none configured)",
+      "ok": true,
+      "observed": "otel_endpoint=None, query=None"
+    }
+  ],
+  "detail": {
+    "budget": {
+      "run_id": "run-168f81c64143",
+      "principal": "proofs/s15/reviewer",
+      "currency": "USD",
+      "total": 0.01,
+      "spent": 0.001604,
+      "remaining": 0.008396,
+      "pressure": 0.1604,
+      "reserve": 0.002,
+      "calls": 1,
+      "downgrades": 1,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "standard": {
+          "calls": 1,
+          "cost": 0.001604,
+          "input_tokens": 272,
+          "output_tokens": 1024
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "standard",
+          "provider": "offline_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 272,
+          "output_tokens": 1024,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.001604,
+          "projected_cost": 0.0016215000000000001,
+          "latency_ms": 8.0,
+          "started_at": 1786812451.066506,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 272,
+      "output_tokens": 1024,
+      "cost": 0.001604,
+      "trace_ids": [
+        "73f05ac279d696ddfdc0a9cc6787a448"
+      ]
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "936345498ce1d365",
+        "parent_span_id": "0402da209e9ccf1a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451067505920,
+        "end_time": 1786812451067505920,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "0c347a0bed79f05e",
+        "parent_span_id": "0402da209e9ccf1a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451068506112,
+        "end_time": 1786812451069506048,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-168f81c64143",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "0402da209e9ccf1a",
+        "parent_span_id": "921600012a99481a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451067505920,
+        "end_time": 1786812451069506048,
+        "duration_ns": 2000128,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 1
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "c85852fa6457cdd2",
+        "parent_span_id": "6c90a562be6fe568",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451070505984,
+        "end_time": 1786812451070505984,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat gemini-3.1-flash-lite",
+        "kind": "provider_call",
+        "span_id": "015e913bf52d833e",
+        "parent_span_id": "abfc56d4a7b5888c",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451066505984,
+        "end_time": 1786812451074505984,
+        "duration_ns": 8000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "offline_1",
+          "gen_ai.request.model": "gemini-3.1-flash-lite",
+          "gen_ai.response.model": "gemini-3.1-flash-lite",
+          "gen_ai.usage.input_tokens": 272,
+          "gen_ai.usage.output_tokens": 1024,
+          "s15.cost": 0.001604,
+          "s15.currency": "USD",
+          "s15.tier": "standard",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "downgrade",
+          "s15.budget.remaining": 0.008396,
+          "s15.cost.projected": 0.0016215000000000001,
+          "gen_ai.request.reasoning_effort": "off"
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "abfc56d4a7b5888c",
+        "parent_span_id": "6c90a562be6fe568",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451066505984,
+        "end_time": 1786812451074505984,
+        "duration_ns": 8000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-168f81c64143",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "downgrade",
+              "s15.budget.reason": "frontier does not fit the 0.008000 node allowance",
+              "s15.tier": "standard",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.0016215000000000001
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "6c90a562be6fe568",
+        "parent_span_id": "921600012a99481a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451066505984,
+        "end_time": 1786812451074505984,
+        "duration_ns": 8000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 4
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "9c6e081dc2bb8621",
+        "parent_span_id": "4ed1d6839261739a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451073505792,
+        "end_time": 1786812451073505792,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "4ed1d6839261739a",
+        "parent_span_id": "921600012a99481a",
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451073505792,
+        "end_time": 1786812451073505792,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 7
+        },
+        "events": []
+      },
+      {
+        "name": "run run-168f81c64143",
+        "kind": "run",
+        "span_id": "921600012a99481a",
+        "parent_span_id": null,
+        "trace_id": "73f05ac279d696ddfdc0a9cc6787a448",
+        "start_time": 1786812451066505984,
+        "end_time": 1786812451074505984,
+        "duration_ns": 8000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-168f81c64143",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.principal": "proofs/s15/reviewer",
+          "s15.budget.total": 0.01,
+          "s15.budget.spent": 0.001604,
+          "s15.budget.remaining": 0.008396,
+          "s15.currency": "USD",
+          "s15.budget.refusals": 0,
+          "s15.budget.downgrades": 1,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.001604
+        },
+        "events": []
+      }
+    ]
+  }
+}

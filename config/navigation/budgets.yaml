@@ -67,6 +67,23 @@ max_calls_per_run: 24
 # attempt away from getting it right.
 max_calls_per_node: 3
 
+# Ceilings on ATTEMPTS rather than billable calls. p8_adversarial.py found the
+# gap these close, and found it by attacking this policy rather than by reading
+# it: a provider that generates an answer, consumes the tokens and THEN fails
+# returns nothing to price, so it never becomes a charge, never increments the
+# call ceilings above, and burns real money entirely outside the ledger. The
+# call ceilings are blind to it by construction, because a charge needs a
+# response and this is the case where no response arrives.
+#
+# Set slightly above the call ceilings, so an ordinary run with a couple of
+# transient 503s still completes, while a provider failing every time is cut off
+# after a bounded number of tries instead of an unbounded one. The exposure is
+# now (max_attempts_per_run x worst-case call) rather than unlimited: 30 x
+# $0.012398 = $0.372 at the top rung, which is a number that can be written into
+# a risk register.
+max_attempts_per_run: 30
+max_attempts_per_node: 5
+
 # Per-principal ceilings. A principal named here gets this allowance whatever
 # the caller asked for, whichever is smaller — a caller may ask for less than
 # its cap, never for more.

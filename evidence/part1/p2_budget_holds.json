@@ -1,0 +1,163 @@
+{
+  "proof": "p2_budget_holds",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111"
+  },
+  "arguments": {
+    "task": "A truck 4.30 m tall is routed under a bridge tagged maxheight=4.2. May it pass, and by what margin?",
+    "budget": 0.02,
+    "principal": "nav/s15/p2",
+    "respond_as": "text",
+    "otel_endpoint": "http://localhost:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/bindroo/The School Of AI/Session 15 - Model_Routing_Agent_economics_Observability/S15Code/config/navigation",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "frontier"
+    ],
+    "default_tier": "economy",
+    "tier_models": {
+      "economy": "gemini-3.1-flash-lite",
+      "frontier": "gemini-3.5-flash"
+    },
+    "default_budget": 0.02,
+    "thresholds": {
+      "downgrade_at": 0.55,
+      "refuse_at": 0.85,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.25,
+      "max_calls_per_run": 24,
+      "max_calls_per_node": 3
+    }
+  },
+  "facts": {
+    "declared": "ceiling 0.02000000  spent 0.00035650  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "generous": "ceiling 0.13224533  spent 0.00035650  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "tight": "ceiling 0.00881400  spent 0.00013625  calls 1  downgrades 1  branches 0  refusals 0  tiers economy",
+    "impossible": "ceiling 0.00000082  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -",
+    "currency": "USD",
+    "ladder": "economy < frontier",
+    "models charged": [
+      "gemini-3.1-flash-lite",
+      "gemini-3.5-flash"
+    ],
+    "transport failures": "0 (gateway errors; no tokens reported, so not charged)"
+  },
+  "checks": [
+    {
+      "claim": "no run spends past its ceiling",
+      "ok": true,
+      "observed": "0 breaches"
+    },
+    {
+      "claim": "a tight allowance downgrades the tier the node asked for",
+      "ok": true,
+      "observed": "1 downgrades, 0 branches, requested ['frontier'] -> charged ['economy']"
+    },
+    {
+      "claim": "an unaffordable ceiling refuses instead of overspending",
+      "ok": true,
+      "observed": "0 calls, 1 refusals, spent 0.0"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "3 calls, all charged"
+    },
+    {
+      "claim": "the declared budget produced a metered run",
+      "ok": true,
+      "observed": "1 calls, spent 0.00035650"
+    }
+  ],
+  "detail": {
+    "runs": {
+      "declared": {
+        "ceiling": 0.02,
+        "spent": 0.0003565,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.5-flash"
+        ],
+        "seconds": 11.068,
+        "run_id": "run-36897b06ddf8"
+      },
+      "generous": {
+        "ceiling": 0.13224533333333335,
+        "spent": 0.0003565,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.5-flash"
+        ],
+        "seconds": 13.33,
+        "run_id": "run-9d6addc5f7ab"
+      },
+      "tight": {
+        "ceiling": 0.008814,
+        "spent": 0.00013625,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "economy"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 0.981,
+        "run_id": "run-7cd3de36378e"
+      },
+      "impossible": {
+        "ceiling": 8.230000000000001e-07,
+        "spent": 0.0,
+        "calls": 0,
+        "transport_calls": 0,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 1,
+        "status": "failed",
+        "tiers_charged": [],
+        "tiers_requested": [],
+        "models": [],
+        "seconds": 0.013,
+        "run_id": "run-7069bc9ce567"
+      }
+    }
+  }
+}
