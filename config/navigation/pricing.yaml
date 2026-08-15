@@ -1,0 +1,57 @@
+# Per-model pricing for the navigation ladder. No price appears in Python.
+#
+# Prices are per `unit_tokens` tokens in `currency`. Both LADDER rows were called
+# against this gateway before their rates were written down — one identical
+# prompt, temperature 0 — and proofs/out/p0_calibration.json holds the run that
+# produced the `measured_*` keys. The loader reads `input` and `output` and
+# ignores the rest, so re-measuring is a config edit and never a code change.
+#
+# The judge rows are here for the same reason the ladder rows are: a judge whose
+# cost is invisible is a meta-cost nobody can audit, even when that cost is zero.
+
+currency: USD
+unit_tokens: 1000000
+
+# Used when a model has no row below, so an unknown model is never silently
+# free — the failure mode that makes a metering layer useless.
+default:
+  input: 1.00
+  output: 5.00
+
+models:
+  # ── The ladder ─────────────────────────────────────────────────────────────
+  # LADDER rung 1 (economy). Google's published flash-lite rate.
+  gemini-3.1-flash-lite:
+    input: 0.25
+    output: 1.50
+  # LADDER rung 2 (frontier). Google's published flash rate: 2x the input rate
+  # and 2x the output rate of the rung below. With the max_tokens ceilings in
+  # tiers.yaml that becomes a 15x spread in worst-case projected cost per call,
+  # which is the number admission reasons about — but only a ~2x spread in
+  # MEASURED cost per call, which is the number the README reports. The gap
+  # between those two is the honest part: projections bound the worst case, and
+  # neither rung ever writes 512 or 4096 tokens of answer to these tasks.
+  gemini-3.5-flash:
+    input: 0.50
+    output: 3.00
+
+  # ── The judge panel ────────────────────────────────────────────────────────
+  # Local weights. Genuinely $0.00 per token rather than nominally so, and the
+  # reason the judge's meta-cost can be reported as zero without an asterisk.
+  phi4:latest:
+    input: 0.0
+    output: 0.0
+  # The second judge. Priced at the flash rate it would cost if it were not
+  # inside the free tier's daily allowance, so the meta-cost line reports what
+  # this panel WOULD bill a paying deployment rather than flattering itself
+  # with the free tier's zero.
+  gemini-3-flash-preview:
+    input: 0.50
+    output: 3.00
+
+# Cache accounting, applied when the gateway reports cache token counts. Gemini
+# bills a cache read at a quarter of the input rate, not the tenth the shipped
+# file assumes for other providers — using 0.1 here would under-report cache
+# spend on every rung of this ladder.
+cache_read_multiplier: 0.25
+cache_write_multiplier: 1.25

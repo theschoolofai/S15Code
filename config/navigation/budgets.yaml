@@ -1,0 +1,81 @@
+# The budget policy for the map/navigation workload.
+#
+# Every threshold the controller reads lives here. None of it is a prompt: a
+# model asked nicely to stay under a ceiling agrees and then sails through it,
+# so enforcement is deterministic code reading these numbers.
+#
+# ── The arithmetic these numbers were chosen against ─────────────────────────
+# Worst-case projected cost of ONE call, which is what admission actually
+# prices: the tier's max_tokens for output (the provider honours it) and the
+# real prompt for input (~220 tokens after chars_per_token and the safety
+# factor below, for the tasks in proofs/tasks/navigation.jsonl):
+#
+#   rung      model                   projected worst case
+#   economy   gemini-3.1-flash-lite   $0.000823
+#   frontier  gemini-3.7-flash        $0.012398
+#
+# A 15x spread in PROJECTED cost across a ladder whose published rates differ by
+# only 2x — the rest comes from the output ceiling, since a 4096-token budget
+# can cost eight times what a 512-token one can. Every number below follows from
+# those two figures.
+
+# Per-task ceiling. It has to clear the frontier rung's worst case plus headroom
+# or the top rung could never be admitted at all — and a ladder whose top rung
+# is structurally unreachable is not a ladder, it is a cheaper ladder with a
+# decoration on top. $0.012398 / (1 - 0.02) = $0.01265 is the true floor; 0.02
+# leaves room for the cascade to spend a rung on economy first and still afford
+# frontier afterwards.
+default_budget: 0.02
+
+# Held back from frontier allocation so the terminal node that actually answers
+# is never starved by its own upstream work. Raised from the shipped 0.20
+# because on this workload the answering node is the ONLY node whose output the
+# user sees: research and retrieval feed it, and a beautifully funded pipeline
+# that runs out of money at the answer has bought nothing.
+reserve_fraction: 0.25
+
+# Spend ratio at or above which a node's requested tier is downgraded one rung.
+downgrade_at: 0.55
+
+# Spend ratio at or above which nothing is admitted at any tier. Tightened from
+# the shipped 0.90 for a workload-specific reason: these tasks have a single
+# right answer, so a half-funded run that limps to a wrong number has spent the
+# money AND failed. Stopping at 0.85 leaves enough unspent to be worth retrying
+# under a fresh ceiling instead.
+refuse_at: 0.85
+
+# A projected call must leave at least this fraction of the allowance unspent,
+# so the last admitted call never lands exactly on zero.
+headroom_fraction: 0.02
+
+# How the prompt becomes a token count before the call is made. Roughly four
+# characters per token, then a safety factor because the provider's tokeniser is
+# not ours. Deliberately pessimistic: admission must bound the call it is about
+# to make, not describe an average one.
+chars_per_token: 4
+input_estimate_safety: 1.25
+
+# Hard call ceilings. These hold even when every price estimate is wrong, which
+# is exactly the denial-of-wallet case: a loop, not a single large call.
+#
+# 24 per run against the shipped 60, because a navigation answer is reached in
+# one call plus at most a validation pass — a run of this workload asking for a
+# 25th call is looping, not working.
+max_calls_per_run: 24
+# 3 per node, matching strategies.max_attempts in evals.yaml. A node that has
+# produced three unresolved answers to a single arithmetic question is not one
+# attempt away from getting it right.
+max_calls_per_node: 3
+
+# Per-principal ceilings. A principal named here gets this allowance whatever
+# the caller asked for, whichever is smaller — a caller may ask for less than
+# its cap, never for more.
+principals:
+  # The measurement principal: exactly the per-task ceiling above, so no p1 run
+  # can quietly be given a larger budget than the one documented.
+  nav/s15/p1: 0.02
+  # Used by p8_adversarial.py. Sits deliberately BETWEEN the economy rung's
+  # worst case ($0.000823) and the frontier rung's ($0.012398), so a request for
+  # the top rung is unaffordable by construction and must be refused or
+  # downgraded rather than quietly admitted.
+  nav/s15/adversary: 0.002
