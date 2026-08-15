@@ -38,6 +38,7 @@ import asyncio
 import os
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -49,9 +50,11 @@ from harness import OUT, Args, Proof  # noqa: E402
 
 from s15code.economics import (  # noqa: E402
     BudgetedGateway,
+    BudgetPolicy,
     BudgetRefused,
     EconomicsConfig,
     MeteredTransport,
+    PolicyThresholds,
     call_site,
 )
 from s15code.gateway import GatewayClient  # noqa: E402
@@ -238,19 +241,21 @@ async def attack_c_full_climb(config: EconomicsConfig, base_url: str) -> dict[st
     }
 
 
-async def attack_d_fail_after_tokens(config: EconomicsConfig, base_url: str) -> dict[str, Any]:
-    """The attack this controller does not fully stop, measured rather than described."""
-    attempts = config.thresholds.max_calls_per_node + 4
+async def _burn_arm(
+    config: EconomicsConfig, base_url: str, *, rounds: int, thresholds: PolicyThresholds, label: str
+) -> dict[str, Any]:
+    """Drive the failing provider `rounds` times under one set of thresholds."""
     budget = config.budget(principal="nav/s15/adversary", amount=config.default_budget,
-                           run_id="p8-fail-after-tokens")
+                           run_id=f"p8-burn-{label}")
     faulty = FailsAfterTokens(GatewayClient(base_url))
     metered = MeteredTransport(faulty)
-    controller = BudgetedGateway(metered, budget=budget, policy=config.policy(),
-                                 pricing=config.pricing, ladder=config.ladder)
+    controller = BudgetedGateway(
+        metered, budget=budget, policy=BudgetPolicy(config.ladder, config.pricing, thresholds),
+        pricing=config.pricing, ladder=config.ladder,
+    )
     refused, errored = 0, 0
-    for index in range(attempts):
-        # One node id, so the per-node call ceiling would bound this IF failed
-        # calls counted towards it. They do not, which is the finding.
+    for _ in range(rounds):
+        # One node id throughout, so the per-node ceilings are the ones on trial.
         with call_site("burner#node", ATTACK_ROLE, config.ladder.cheapest.name):
             try:
                 await controller.complete(ATTACK_PROMPT, ATTACK_SYSTEM)
@@ -258,21 +263,53 @@ async def attack_d_fail_after_tokens(config: EconomicsConfig, base_url: str) -> 
                 refused += 1
             except Exception:
                 errored += 1
-    unbilled = faulty.unbilled(config.pricing)
     return {
-        "attempts": attempts,
+        "rounds": rounds,
         "calls_that_reached_the_provider": len(faulty.burned),
         "transport_failures": metered.failures,
         "ledger_charges": len(budget.charges),
         "ledger_spent": budget.spent,
+        "attempts_counted": budget.attempts,
         "real_tokens_consumed": {
             "input": sum(int(r.get("input_tokens") or 0) for r in faulty.burned),
             "output": sum(int(r.get("output_tokens") or 0) for r in faulty.burned),
         },
-        "unbilled_spend": unbilled,
+        "unbilled_spend": faulty.unbilled(config.pricing),
         "refused": refused,
         "errored": errored,
-        "ledger": budget.snapshot(),
+        "refusal_reasons": [entry.get("reason") for entry in budget.refusals[:3]],
+    }
+
+
+async def attack_d_fail_after_tokens(config: EconomicsConfig, base_url: str) -> dict[str, Any]:
+    """The spend before the control, and the refusal after it — same attack, twice.
+
+    ``before`` runs with the attempt ceilings switched off, which is exactly the
+    policy as it stood when this attack was written and as every config that
+    predates it still stands. ``after`` runs with the ceilings this repository
+    now configures. Nothing else differs: same provider, same rounds, same
+    prompt, same ladder.
+    """
+    rounds = 8
+    disabled = replace(config.thresholds, max_attempts_per_run=0, max_attempts_per_node=0)
+    before = await _burn_arm(config, base_url, rounds=rounds, thresholds=disabled, label="before")
+    after = await _burn_arm(config, base_url, rounds=rounds, thresholds=config.thresholds,
+                            label="after")
+    return {
+        "before": before,
+        "after": after,
+        "thresholds": {
+            "before": {"max_attempts_per_run": 0, "max_attempts_per_node": 0},
+            "after": {"max_attempts_per_run": config.thresholds.max_attempts_per_run,
+                      "max_attempts_per_node": config.thresholds.max_attempts_per_node},
+        },
+        "unbilled_avoided": before["unbilled_spend"] - after["unbilled_spend"],
+        # What the ceiling buys in the worst case: the exposure is now bounded by
+        # the number of attempts times the dearest call the ladder can make.
+        "bounded_exposure": (
+            config.thresholds.max_attempts_per_run
+            * config.policy().project(config.ladder.most_capable)
+        ),
     }
 
 
@@ -364,30 +401,40 @@ def run(parsed: argparse.Namespace) -> Proof:
                 f"{len(c['rungs_served'])} admitted <= {c['max_calls_per_node']}, {c['refused']} refused")
 
     # --- D: the provider that fails after consuming tokens ------------------
-    proof.fact("D real spend the provider consumed", (
-        f"{d['calls_that_reached_the_provider']} calls generated "
-        f"{d['real_tokens_consumed']['input']}in/{d['real_tokens_consumed']['output']}out "
-        f"= ${d['unbilled_spend']:.8f} of real tokens"
+    before, after = d["before"], d["after"]
+    proof.fact("D BEFORE the control (attempt ceilings off)", (
+        f"{before['rounds']} rounds -> {before['calls_that_reached_the_provider']} calls reached the "
+        f"provider and burned {before['real_tokens_consumed']['input']}in/"
+        f"{before['real_tokens_consumed']['output']}out = ${before['unbilled_spend']:.8f} of real "
+        f"tokens, while the ledger recorded {before['ledger_charges']} charges and "
+        f"${before['ledger_spent']:.8f}. Nothing refused it: {before['refused']} refusals."
     ))
-    proof.fact("D what the ledger recorded", (
-        f"{d['ledger_charges']} charges, ${d['ledger_spent']:.8f} spent, "
-        f"{d['transport_failures']} transport failures, {d['refused']} refusals"
+    proof.fact("D AFTER the control (attempt ceilings on)", (
+        f"{after['rounds']} rounds -> {after['calls_that_reached_the_provider']} calls reached the "
+        f"provider (${after['unbilled_spend']:.8f} burned), then {after['refused']} refusals. "
+        f"Reason: {(after['refusal_reasons'] or ['-'])[0]}"
     ))
-    proof.fact("D THE HOLE", (
-        f"${d['unbilled_spend']:.8f} of real provider spend is invisible to the ledger, and the "
-        f"per-node ceiling of {config.thresholds.max_calls_per_node} did not bind because it counts "
-        f"CHARGES ({d['ledger_charges']}) and not ATTEMPTS ({d['attempts']})"
+    proof.fact("D what the ceiling bought", (
+        f"${d['unbilled_avoided']:.8f} of unbilled spend avoided over {before['rounds']} rounds; "
+        f"worst-case exposure now bounded at {config.thresholds.max_attempts_per_run} attempts x "
+        f"${config.policy().project(config.ladder.most_capable):.8f} = ${d['bounded_exposure']:.6f} "
+        f"instead of unbounded"
     ))
-    # This is deliberately asserted as the CURRENT behaviour, so that closing the
-    # hole makes this check fail and forces the finding to be rewritten rather
-    # than leaving a stale claim in the repository.
-    proof.check("D unbilled spend is real and currently unmetered (the finding, asserted as-is)",
-                d["unbilled_spend"] > 0 and d["ledger_spent"] == 0.0,
-                f"unbilled ${d['unbilled_spend']:.8f}, ledger ${d['ledger_spent']:.8f}")
-    proof.check("D the ledger never charges for a call it did not see a response for",
-                d["ledger_charges"] == 0,
-                f"{d['ledger_charges']} charges from {d['calls_that_reached_the_provider']} "
-                f"provider calls that all failed")
+    proof.check("D before the control, every round reached the provider unbilled",
+                before["calls_that_reached_the_provider"] == before["rounds"]
+                and before["unbilled_spend"] > 0 and before["ledger_spent"] == 0.0,
+                f"{before['calls_that_reached_the_provider']}/{before['rounds']} calls, "
+                f"${before['unbilled_spend']:.8f} unbilled, ledger ${before['ledger_spent']:.8f}")
+    proof.check("D after the control, the attempt ceiling cuts the provider off",
+                after["calls_that_reached_the_provider"] < before["calls_that_reached_the_provider"]
+                and after["refused"] > 0,
+                f"{after['calls_that_reached_the_provider']} calls then {after['refused']} refusals, "
+                f"against {before['calls_that_reached_the_provider']} unbounded")
+    proof.check("D the ledger still never charges for a call it saw no response for",
+                before["ledger_charges"] == 0 and after["ledger_charges"] == 0,
+                f"before {before['ledger_charges']}, after {after['ledger_charges']} charges")
+    proof.check("D the fix bounds the exposure it cannot bill",
+                d["unbilled_avoided"] > 0, f"${d['unbilled_avoided']:.8f} avoided")
 
     # --- the refusals have to be visible, not just counted ------------------
     journal = {
