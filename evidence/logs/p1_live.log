@@ -1,0 +1,102 @@
+
+p1: 18 tasks x 3 strategies, live mode
+  ladder   economy < standard < frontier
+  models   ['gemini-3.1-flash-lite', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b']
+  judges   ['groq/qwen/qwen3.8-27b', 'groq/qwen/qwen3.6-27b']
+  bar      overall >= 0.75, no criterion below 0.5 (normalised)
+
+  A s01_password_reset resolved     attempts=1 cost=0.00027275 tiers=frontier
+  A s02_refund_status  resolved     attempts=1 cost=0.00026250 tiers=frontier
+  A s03_cancel_subscription resolved     attempts=1 cost=0.00026650 tiers=frontier
+  A s04_invoice_copy   resolved     attempts=1 cost=0.00015025 tiers=frontier
+  A s05_shipping_delay resolved     attempts=1 cost=0.00025700 tiers=frontier
+  A s06_update_email   resolved     attempts=1 cost=0.00031600 tiers=frontier
+  A s07_feature_request resolved     attempts=1 cost=0.00024075 tiers=frontier
+  A s08_where_is_download resolved     attempts=1 cost=0.00019925 tiers=frontier
+  A s09_double_charge  resolved     attempts=1 cost=0.00034575 tiers=frontier
+  A s10_partial_delivery resolved     attempts=1 cost=0.00024100 tiers=frontier
+  A s11_downgrade_and_credit resolved     attempts=1 cost=0.00025375 tiers=frontier
+  A s12_two_issues_one_ticket resolved     attempts=1 cost=0.00032675 tiers=frontier
+  A s13_angry_escalation resolved     attempts=1 cost=0.00032075 tiers=frontier
+  A s14_ambiguous_billing_cycle resolved     attempts=1 cost=0.00029425 tiers=frontier
+  A s15_data_export_deadline resolved     attempts=1 cost=0.00038575 tiers=frontier
+  A s16_conflicting_policies resolved     attempts=1 cost=0.00027725 tiers=frontier
+  A s17_multi_order_refund_math resolved     attempts=1 cost=0.00025500 tiers=frontier
+  A s18_tiered_discount_eligibility resolved     attempts=1 cost=0.00028725 tiers=frontier
+  B s01_password_reset resolved     attempts=1 cost=0.00021200 tiers=economy
+  B s02_refund_status  resolved     attempts=1 cost=0.00013300 tiers=economy
+  B s03_cancel_subscription resolved     attempts=1 cost=0.00016620 tiers=economy
+  B s04_invoice_copy   resolved     attempts=1 cost=0.00009340 tiers=economy
+  B s05_shipping_delay resolved     attempts=1 cost=0.00020800 tiers=economy
+  B s06_update_email   resolved     attempts=1 cost=0.00021090 tiers=economy
+  B s07_feature_request resolved     attempts=1 cost=0.00018380 tiers=economy
+  B s08_where_is_download resolved     attempts=1 cost=0.00023820 tiers=economy
+  B s09_double_charge  resolved     attempts=1 cost=0.00022370 tiers=economy
+  B s10_partial_delivery resolved     attempts=1 cost=0.00018000 tiers=economy
+  B s11_downgrade_and_credit resolved     attempts=1 cost=0.00010310 tiers=economy
+  B s12_two_issues_one_ticket unresolved   attempts=3 cost=0.00082590 tiers=economy,economy,economy
+  B s13_angry_escalation resolved     attempts=1 cost=0.00016160 tiers=economy
+  B s14_ambiguous_billing_cycle resolved     attempts=1 cost=0.00014460 tiers=economy
+  B s15_data_export_deadline resolved     attempts=1 cost=0.00020150 tiers=economy
+  B s16_conflicting_policies resolved     attempts=1 cost=0.00019140 tiers=economy
+  B s17_multi_order_refund_math resolved     attempts=1 cost=0.00010530 tiers=economy
+  B s18_tiered_discount_eligibility resolved     attempts=1 cost=0.00010850 tiers=economy
+  C s01_password_reset resolved     attempts=1 cost=0.00021200 tiers=economy
+  C s02_refund_status  resolved     attempts=1 cost=0.00013300 tiers=economy
+  C s03_cancel_subscription resolved     attempts=1 cost=0.00016170 tiers=economy
+  C s04_invoice_copy   resolved     attempts=1 cost=0.00009590 tiers=economy
+  C s05_shipping_delay resolved     attempts=1 cost=0.00020800 tiers=economy
+  C s06_update_email   resolved     attempts=1 cost=0.00021040 tiers=economy
+  C s07_feature_request resolved     attempts=1 cost=0.00018380 tiers=economy
+  C s08_where_is_download resolved     attempts=1 cost=0.00026670 tiers=economy
+  C s09_double_charge  resolved     attempts=1 cost=0.00017120 tiers=economy
+  C s10_partial_delivery resolved     attempts=1 cost=0.00018000 tiers=economy
+  C s11_downgrade_and_credit resolved     attempts=1 cost=0.00010010 tiers=economy
+  C s12_two_issues_one_ticket resolved     attempts=2 cost=0.00060875 tiers=economy,standard
+  C s13_angry_escalation resolved     attempts=1 cost=0.00014760 tiers=economy
+  C s14_ambiguous_billing_cycle resolved     attempts=1 cost=0.00015310 tiers=economy
+  C s15_data_export_deadline resolved     attempts=1 cost=0.00018350 tiers=economy
+  C s16_conflicting_policies resolved     attempts=1 cost=0.00019140 tiers=economy
+  C s17_multi_order_refund_math resolved     attempts=1 cost=0.00010530 tiers=economy
+  C s18_tiered_discount_eligibility resolved     attempts=1 cost=0.00009350 tiers=economy
+
+  FINDING  signature failure mode NOT OBSERVED
+    B_vs_A: cost/call -32.9%, cost/resolved -21.1%
+      B resolved 94% of tasks; the trap begins below 85.9% (derived from the measured price spread and 3 attempts)
+    B_vs_C: cost/call +3.0%, cost/resolved +14.7%
+      B resolved 94% of tasks; the trap begins below 99.2% (derived from the measured price spread and 3 attempts)
+
+p1_cost_per_task  (live mode)
+  task      18 tasks from proofs/tasks/support_tickets.jsonl
+  budget    0.05  principal support/triage/live
+  transport {"base_url": "http://127.0.0.1:8111", "answer_path_patience": {"retries": 5, "backoff_seconds": 10.0, "pace_seconds": 4.0}}
+
+  A always_frontier                                                              spend 0.00495250 USD  calls 18  cost/call 0.00027514  resolved 18/18  cost/resolved 0.00027514  tiers frontier
+  B always_cheapest                                                              spend 0.00369110 USD  calls 20  cost/call 0.00018455  resolved 17/18  cost/resolved 0.00021712  tiers economy
+  C budget_aware                                                                 spend 0.00340595 USD  calls 19  cost/call 0.00017926  resolved 18/18  cost/resolved 0.00018922  tiers economy,standard
+  A resolved by difficulty                                                       {"hard": 4, "moderate": 6, "trivial": 8}  of {"trivial": 8, "moderate": 6, "hard": 4}
+  B resolved by difficulty                                                       {"hard": 4, "moderate": 5, "trivial": 8}  of {"trivial": 8, "moderate": 6, "hard": 4}
+  C resolved by difficulty                                                       {"hard": 4, "moderate": 6, "trivial": 8}  of {"trivial": 8, "moderate": 6, "hard": 4}
+  ladder                                                                         economy < standard < frontier
+  tasks                                                                          18 from proofs/tasks/support_tickets.jsonl  {'trivial': ['s01_password_reset', 's02_refund_status', 's03_cancel_subscription', 's04_invoice_copy', 's05_shipping_delay', 's06_update_email', 's07_feature_request', 's08_where_is_download'], 'moderate': ['s09_double_charge', 's10_partial_delivery', 's11_downgrade_and_credit', 's12_two_issues_one_ticket', 's13_angry_escalation', 's14_ambiguous_billing_cycle'], 'hard': ['s15_data_export_deadline', 's16_conflicting_policies', 's17_multi_order_refund_math', 's18_tiered_discount_eligibility']}
+  per-task ceiling                                                               0.05 USD (principal support/triage/live)
+  judge panel                                                                    groq/qwen/qwen3.8-27b, groq/qwen/qwen3.6-27b
+  judge bar                                                                      overall >= 0.75, min criterion 0.5, tie_break score
+  judge meta-cost                                                                94 calls, 0.02138715 USD, 0 unusable, 78 transport retries, 10 verdicts reused
+  signature failure mode                                                         NOT OBSERVED — {"B_vs_A": {"cost_per_call_delta_pct": -32.92296819787987, "cost_per_resolved_task_delta_pct": -21.08584493868219, "resolution_rate": {"B": 0.9444444444444444, "A": 1.0}, "cheaper_per_call": true, "dearer_per_resolved_task": false, "signature_failure_mode": false, "worse_than_dearer": false, "break_even_resolution_rate": 0.8593961271006374, "headroom_above_break_even": 0.08504831734380702, "note": ""}, "B_vs_C": {"cost_per_call_delta_pct": 2.953507831882435, "cost_per_resolved_task_delta_pct": 14.746943713553176, "resolution_rate": {"B": 0.9444444444444444, "C": 1.0}, "cheaper_per_call": false
+  wall clock                                                                     2072.1s
+  answer-path patience                                                           0 waits totalling 0.0s, 0 attempts still failed after 5 retries, 0 permanent
+  where the strategies disagreed                                                 {"A_vs_B": ["s12_two_issues_one_ticket (moderate): A resolved on frontier, B did not on economy/economy/economy"], "C_vs_B": ["s12_two_issues_one_ticket (moderate): C resolved on economy/standard, B did not on economy/economy/economy"]}
+
+  [PASS] every strategy attempted every task in the file                                3 strategies x 18 tasks
+  [PASS] every answering provider call that returned is metered                         57 transport calls, 57 ledger charges, 0 transport failures (no tokens reported, so not charged)
+  [PASS] no verdict was unparseable (an unparseable judge is a JUDGE failure)           0 tasks ended with status=judge_failed, 0 unusable judge samples
+  [PASS] an empty or errored answer never counted as resolved                           0 such rows
+  [PASS] no answer was graded by its own model                                          judges ['qwen/qwen3.6-27b', 'qwen/qwen3.8-27b'] vs ladder ['gemini-3.1-flash-lite', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b']
+  [PASS] at least one strategy resolved at least one task, so cost/resolved is defined  53 resolved rows across 3 strategies
+  [PASS] the configured ladder separates cost per call at all                           projected top 0.00407200 > bottom 0.00037600
+  [PASS] every model that answered has its own row in pricing.yaml                      all priced
+  [PASS] no semantic-cache hit served one strategy another's answer                     {'before': {'hits': 0, 'stores': 0, 'lookups': 0}, 'after': {'hits': 0, 'stores': 0, 'lookups': 0}}
+
+  ALL CHECKS PASSED -> /Users/aaryan/EAG/s15/S15Code/proofs/out/p1_cost_per_task_live.json
+

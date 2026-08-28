@@ -1,0 +1,170 @@
+{
+  "proof": "p2_budget_holds",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111",
+    "patience": {
+      "retries": 4,
+      "pace_seconds": 2.0,
+      "backoff_seconds": 8.0
+    }
+  },
+  "arguments": {
+    "task": "Summarize the tradeoffs between REST and gRPC for an internal microservice.",
+    "budget": 0.02,
+    "principal": "support/triage/live",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/aaryan/EAG/s15/S15Code/config/support_desk",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-20b",
+      "standard": "openai/gpt-oss-120b",
+      "frontier": "gemini-3.1-flash-lite"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "declared": "ceiling 0.02000000  spent 0.00081175  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "generous": "ceiling 0.06108000  spent 0.00081175  calls 1  downgrades 0  branches 0  refusals 0  tiers frontier",
+    "tight": "ceiling 0.00325937  spent 0.00009120  calls 1  downgrades 1  branches 0  refusals 0  tiers standard",
+    "impossible": "ceiling 0.00000038  spent 0.00000000  calls 0  downgrades 0  branches 0  refusals 1  tiers -",
+    "currency": "USD",
+    "ladder": "economy < standard < frontier",
+    "models charged": [
+      "gemini-3.1-flash-lite",
+      "openai/gpt-oss-120b"
+    ],
+    "transport failures": "0 (gateway errors; no tokens reported, so not charged)"
+  },
+  "checks": [
+    {
+      "claim": "no run spends past its ceiling",
+      "ok": true,
+      "observed": "0 breaches"
+    },
+    {
+      "claim": "a tight allowance downgrades the tier the node asked for",
+      "ok": true,
+      "observed": "1 downgrades, 0 branches, requested ['frontier'] -> charged ['standard']"
+    },
+    {
+      "claim": "an unaffordable ceiling refuses instead of overspending",
+      "ok": true,
+      "observed": "0 calls, 1 refusals, spent 0.0"
+    },
+    {
+      "claim": "every provider call that returned is metered",
+      "ok": true,
+      "observed": "3 calls, all charged"
+    },
+    {
+      "claim": "the declared budget produced a metered run",
+      "ok": true,
+      "observed": "1 calls, spent 0.00081175"
+    }
+  ],
+  "detail": {
+    "runs": {
+      "declared": {
+        "ceiling": 0.02,
+        "spent": 0.0008117500000000001,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 4.209,
+        "run_id": "run-70c8d827625c"
+      },
+      "generous": {
+        "ceiling": 0.06108,
+        "spent": 0.0008117500000000001,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "frontier"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "seconds": 7.152,
+        "run_id": "run-29a913ec6691"
+      },
+      "tight": {
+        "ceiling": 0.0032593749999999997,
+        "spent": 9.12e-05,
+        "calls": 1,
+        "transport_calls": 1,
+        "transport_failures": 0,
+        "downgrades": 1,
+        "branches": 0,
+        "refusals": 0,
+        "status": "completed",
+        "tiers_charged": [
+          "standard"
+        ],
+        "tiers_requested": [
+          "frontier"
+        ],
+        "models": [
+          "openai/gpt-oss-120b"
+        ],
+        "seconds": 0.822,
+        "run_id": "run-3544256ea3fe"
+      },
+      "impossible": {
+        "ceiling": 3.7600000000000003e-07,
+        "spent": 0.0,
+        "calls": 0,
+        "transport_calls": 0,
+        "transport_failures": 0,
+        "downgrades": 0,
+        "branches": 0,
+        "refusals": 1,
+        "status": "failed",
+        "tiers_charged": [],
+        "tiers_requested": [],
+        "models": [],
+        "seconds": 0.018,
+        "run_id": "run-5b63bdc0b4da"
+      }
+    }
+  }
+}

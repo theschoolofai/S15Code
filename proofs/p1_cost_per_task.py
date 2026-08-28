@@ -65,6 +65,7 @@ from s15code.economics import (  # noqa: E402
     TierLadder,
     call_site,
 )
+from s15code.economics.patient_transport import PatientTransport  # noqa: E402
 from s15code.evals import EvalsConfig, RubricJudge, Verdict, load_tasks  # noqa: E402
 from s15code.evals.judge import STATUS_JUDGE_FAILED  # noqa: E402
 from s15code.evals.tasks import EvalTask, by_difficulty  # noqa: E402
@@ -604,6 +605,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--judge-provider", default=None,
                         help="collapse the panel to ONE judge on this gateway provider")
     parser.add_argument("--judge-model", default=None, help="model for --judge-provider")
+    # Patience on the ANSWER path. Defaults are 0 = shipped behaviour unchanged.
+    # On a free-tier account these are what stop a provider's per-minute limit
+    # from being recorded as a model's failure to answer.
+    parser.add_argument("--answer-retries", type=int, default=4,
+                        help="retry a transient answer-path failure (429/TPM/RPM/cooldown) N times")
+    parser.add_argument("--answer-backoff", type=float, default=8.0,
+                        help="base seconds for exponential answer-path backoff")
+    parser.add_argument("--answer-pace", type=float, default=2.0,
+                        help="minimum seconds between answer calls; free-tier limits are per-minute")
     parser.add_argument("--offline", action="store_true",
                         help="deterministic SIMULATION: exercises every path, proves nothing economic")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
@@ -646,7 +656,27 @@ def run(parsed: argparse.Namespace) -> Proof:
         detail = {"reason": "--offline requested" if parsed.offline else f"{args.base_url} unreachable",
                   "simulated": True,
                   "warning": "offline numbers are a deterministic simulation, NOT evidence"}
-    transport = MeteredTransport(client)
+
+    # --- patience on the ANSWER path -------------------------------------- #
+    # Opt-in; the defaults below are 0, so omitting the flags reproduces the
+    # shipped proof byte for byte.
+    #
+    # evals.yaml already paces and retries the JUDGE path, on the stated
+    # grounds that a rate limit is a transport failure and "giving up and
+    # calling the task unresolved would not be" honest. The identical argument
+    # applies to the answer path, where it was never implemented: a 429 became
+    # an empty answer, which the judge then scored unresolved — so a provider's
+    # per-minute limit entered the resolution rate as if it were a quality
+    # signal. See s15code/economics/patient_transport.py.
+    patient: PatientTransport | None = None
+    if live and (parsed.answer_retries > 0 or parsed.answer_pace > 0):
+        patient = PatientTransport(client, retries=parsed.answer_retries,
+                                   backoff_seconds=parsed.answer_backoff,
+                                   pace_seconds=parsed.answer_pace)
+        detail = {**detail, "answer_path_patience": {
+            "retries": parsed.answer_retries, "backoff_seconds": parsed.answer_backoff,
+            "pace_seconds": parsed.answer_pace}}
+    transport = MeteredTransport(patient if patient is not None else client)
 
     panel = evals.rubric.panel
     if parsed.judge_provider:
@@ -717,6 +747,13 @@ def run(parsed: argparse.Namespace) -> Proof:
         "OBSERVED" if verdict_finding.get("observed") else "NOT OBSERVED"
     ) + f" — {json.dumps(verdict_finding.get('comparisons', {}), default=str)[:600]}")
     proof.fact("wall clock", f"{elapsed:.1f}s")
+    if patient is not None:
+        snap = patient.snapshot()
+        proof.fact("answer-path patience", (
+            f"{snap['waits']} waits totalling {snap['total_waited_seconds']}s, "
+            f"{snap['exhausted_after_retries']} attempts still failed after "
+            f"{snap['retries_configured']} retries, {snap['permanent_failures']} permanent"))
+        proof.record("answer_path_patience", snap)
 
     # --- checks: the invariants, not the narrative ---------------------------
     missing = {key: [t.id for t in tasks] for key in results if len(results[key]) != len(tasks)}

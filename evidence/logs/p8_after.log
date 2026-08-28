@@ -1,0 +1,30 @@
+
+p8_flaky_provider_dow  (offline (attack is a fault-injection transport, not a network mode) mode)
+  task      Draft a support reply.
+  budget    0.02  principal support/triage/adversarial
+  transport {"guard_active": true, "loop_limit": 150}
+
+  guard active                                                                                          True
+  S15Code ledger: spent                                                                                 $0.00000000
+  S15Code ledger: admitted calls                                                                        0
+  S15Code ledger: refusals                                                                              0
+  loop rounds attempted                                                                                 150
+  nodes refused (BudgetRefused, visible in journal)                                                     90
+  shadow ledger: true provider calls                                                                    60
+  shadow ledger: TRUE bill the flaky provider would send                                                $0.43428000
+  attempt guard: run attempts counted                                                                   60
+  attempt guard: refusals raised                                                                        90
+  jaeger trace id(s)                                                                                    ['6e25a0c6849c71380fb7b52cbfd4c5cb']
+  spans exported                                                                                        453
+  span kinds                                                                                            {'plan': 151, 'node': 150, 'agent_loop': 151, 'run': 1}
+  spans carrying ERROR status (refusals, visible in telemetry)                                          150
+  exported over the wire to Jaeger                                                                      True
+
+  [PASS] the run traced end to end (run -> agent_loop -> plan -> node hierarchy present)                       {'plan': 151, 'node': 150, 'agent_loop': 151, 'run': 1}
+  [PASS] refusals are visible in the exported telemetry, not just the local journal                            150 spans carry ERROR status (90 nodes refused in the journal)
+  [PASS] WITH the guard: the adversary keeps asking, but almost every ask is refused before it costs anything  150 rounds attempted, only 60 ever reached the (still flaky) provider, 90 refused pre-flight by AttemptGuardedTransport
+  [PASS] WITH the guard: refusals are visible graph failures, not silent truncation                            90 nodes failed with BudgetRefused
+  [PASS] WITH the guard: the TRUE bill is bounded by the attempt ceiling, not the loop length                  60 true provider calls, attempt ceiling 60
+
+  ALL CHECKS PASSED -> /Users/aaryan/EAG/s15/S15Code/proofs/out/p8_flaky_provider_dow.json
+

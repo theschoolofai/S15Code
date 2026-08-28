@@ -41,5 +41,16 @@ max_calls_per_node: 6
 
 # Optional per-principal allowance overrides. A principal named here gets this
 # ceiling regardless of what the caller asked for, whichever is smaller.
-principals: {}
+#
+# support/triage — MY task class for the S15 assignment (proofs/tasks/support_
+# tickets.jsonl): drafting a customer-support reply per ticket. One call per
+# task at the opening (cheapest) rung of the ladder projects to ~$0.0004-0.0015
+# depending on ticket length; the always-frontier baseline runs ~$0.013-0.03 per
+# call. This ceiling is set from the MEASURED cost per resolved task of the
+# budget-aware cascade strategy on that task set (see README "Evidence" section
+# for the live numbers this was set from), with ~50% headroom so a normal task
+# never brushes the refuse_at threshold, while a genuinely adversarial run
+# (proofs/p8_flaky_provider_dow.py) still gets capped hard.
+principals:
+  support/triage: 0.02
   # example-tenant/example-project: 0.02

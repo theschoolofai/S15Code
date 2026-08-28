@@ -1,0 +1,514 @@
+[
+  {
+    "label": "run1_declared_budget",
+    "mode": "live",
+    "prompt": "Summarize the tradeoffs between REST and gRPC for an internal microservice.",
+    "budget_ceiling": 0.02,
+    "principal": "floor/reproduce/run1",
+    "tier_and_model_chosen": [
+      {
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "cost": 0.0008117500000000001,
+        "decision": "proceed"
+      }
+    ],
+    "ordered_event_trace": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "jaeger_trace_ids": [
+      "8e5cd69dd5af651318eec8f58a17524f"
+    ],
+    "spans_exported": 10,
+    "exported_over_the_wire": true,
+    "ledger_rows": [
+      {
+        "sequence": 1,
+        "node_id": "answer",
+        "role": "answer_with_evidence",
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "input_tokens": 223,
+        "output_tokens": 504,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost": 0.0008117500000000001,
+        "projected_cost": 0.00316175,
+        "latency_ms": 4893.0,
+        "started_at": 1787918011.171371,
+        "decision": "proceed",
+        "requested_tier": "frontier"
+      }
+    ],
+    "budget_snapshot": {
+      "run_id": "run-6503de8aa304",
+      "principal": "proofs/s15/reviewer",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.0008117500000000001,
+      "remaining": 0.01918825,
+      "pressure": 0.040587500000000006,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.0008117500000000001,
+          "input_tokens": 223,
+          "output_tokens": 504
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 223,
+          "output_tokens": 504,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0008117500000000001,
+          "projected_cost": 0.00316175,
+          "latency_ms": 4893.0,
+          "started_at": 1787918011.171371,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "final_answer": "To summarize the tradeoffs between REST and gRPC for internal microservices, consider the following architectural differences:\n\n### REST (Representational State Transfer)\n*   **Protocol:** Typically uses HTTP/1.1.\n*   **Data Format:** Primarily uses JSON, which is human-readable but text-based and heavier to parse.\n*   **Communication:** Request-response model.\n*   **Browser Compatibility:** Excellent; REST is natively supported by all browsers and is the standard for public-facing APIs.\n*   **Tooling:** Highly mature ecosystem with extensive support for debugging, caching, and proxying.\n*   **Tradeoffs:** Higher latency and larger payload sizes due to text-based serialization; lacks built-in support for streaming or strict contract enforcement without additional tools (like OpenAPI).\n\n### gRPC (Google Remote Procedure Call)\n*   **Protocol:** Uses HTTP/2, which allows for multiplexing (multiple requests over a single connection) and header compression.\n*   **Data Format:** Uses Protocol Buffers (Protobuf), a binary serialization format that is significantly smaller and faster to serialize/deserialize than JSON.\n*   **Communication:** Supports unary, client-side streaming, server-side streaming, and bidirectional streaming.\n*   **Contract Enforcement:** Requires a `.proto` file to define the service interface, which enforces strict typing and generates client/server code automatically.\n*   **Tradeoffs:** Requires HTTP/2 support; less human-readable (binary format makes debugging more difficult without specialized tools); browser support is limited and typically requires a proxy (like gRPC-Web).\n\n### Summary of Tradeoffs\n| Feature | REST | gRPC |\n| :--- | :--- | :--- |\n| **Payload** | Text (JSON) | Binary (Protobuf) |\n| **Performance** | Moderate | High (due to HTTP/2 & Protobuf) |\n| **Contract** | Optional (OpenAPI) | Mandatory (Protobuf) |\n| **Streaming** | Limited | Native (Bidirectional) |\n| **Ease of Use** | High (Human-readable) | Moderate (Requires tooling) |\n\n"
+  },
+  {
+    "label": "run2_tight_downgrade",
+    "mode": "live",
+    "prompt": "Plan a short research project on bounding agent spend.",
+    "budget_ceiling": 0.0015,
+    "principal": "floor/reproduce/run2",
+    "tier_and_model_chosen": [
+      {
+        "tier": "standard",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "cost": 0.00081015,
+        "decision": "downgrade"
+      }
+    ],
+    "ordered_event_trace": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "jaeger_trace_ids": [
+      "b65bc17fa98cbbb78071dab9d826d881"
+    ],
+    "spans_exported": 10,
+    "exported_over_the_wire": true,
+    "ledger_rows": [
+      {
+        "sequence": 1,
+        "node_id": "answer",
+        "role": "answer_with_evidence",
+        "tier": "standard",
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "input_tokens": 281,
+        "output_tokens": 1024,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost": 0.00081015,
+        "projected_cost": 0.00082095,
+        "latency_ms": 2767.0,
+        "started_at": 1787918016.166632,
+        "decision": "downgrade",
+        "requested_tier": "frontier"
+      }
+    ],
+    "budget_snapshot": {
+      "run_id": "run-550b4df2fb9d",
+      "principal": "proofs/s15/reviewer",
+      "currency": "USD",
+      "total": 0.0015,
+      "spent": 0.00081015,
+      "remaining": 0.00068985,
+      "pressure": 0.5401,
+      "reserve": 0.00030000000000000003,
+      "calls": 1,
+      "downgrades": 1,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "standard": {
+          "calls": 1,
+          "cost": 0.00081015,
+          "input_tokens": 281,
+          "output_tokens": 1024
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "standard",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "input_tokens": 281,
+          "output_tokens": 1024,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00081015,
+          "projected_cost": 0.00082095,
+          "latency_ms": 2767.0,
+          "started_at": 1787918016.166632,
+          "decision": "downgrade",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "final_answer": "**Short Research Project: Bounding Agent Spend**\n\n---\n\n### 1.\u202fProject Overview\n**Goal:** Develop a quantitative framework that establishes upper\u2011bound limits on the total resources (e.g., compute, data, monetary cost) that autonomous agents can expend while pursuing their objectives.  \n**Scope:** Focus on a single class of agents (e.g., reinforcement\u2011learning bots operating in a simulated environment) and a single resource dimension (e.g., compute cycles). The methodology can later be extended to other agent types and resource dimensions.\n\n---\n\n### 2.\u202fKey Research Questions\n1. **What formal definitions of \u201cspend\u201d are appropriate for different resource types?**  \n2. **How can we express a bound on spend as a function of the agent\u2019s policy, environment dynamics, and task specifications?**  \n3. **What trade\u2011offs arise between tightness of the bound and computational tractability of the analysis?**  \n4. **How does imposing a spend bound affect agent performance and safety?**  \n\n---\n\n### 3.\u202fMethodology\n\n| Phase | Activities | Deliverables |\n|------|------------|--------------|\n| **A. Literature Survey (2\u202fweeks)** | \u2022 Review existing work on resource\u2011constrained reinforcement learning, budgeted MDPs, and safe AI alignment. <br>\u2022 Identify formal tools (e.g., constrained optimization, Lyapunov functions, martingale bounds) that can be repurposed for spend\u2011bounding. | Annotated bibliography; a short report summarizing candidate formalisms. |\n| **B. Formal Model Development (3\u202fweeks)** | \u2022 Define a **Spend Metric** \\(S(\\pi, \\mathcal{E})\\) that maps a policy \\(\\pi\\) and environment \\(\\mathcal{E}\\) to a cumulative resource cost (e.g., total FLOPs). <br>\u2022 Introduce a **Bounding Function** \\(B(\\theta)\\) parameterized by a small set of interpretable hyper\u2011parameters \\(\\theta\\) (e.g., per\u2011step budget, horizon\u2011dependent decay). <br>\u2022 Formulate the **Bounding Problem** as: find \\(\\theta\\) such that \\(\\Pr[S(\\pi,\\mathcal{E}) \\le B(\\theta)] \\ge 1-\\delta\\) for a chosen confidence level \\"
+  },
+  {
+    "label": "run3_trace_shape",
+    "mode": "live",
+    "prompt": "Explain how a semantic cache reduces LLM spend.",
+    "budget_ceiling": 0.02,
+    "principal": "floor/reproduce/run3",
+    "tier_and_model_chosen": [
+      {
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "cost": 0.0004445,
+        "decision": "proceed"
+      }
+    ],
+    "ordered_event_trace": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "jaeger_trace_ids": [
+      "de8a5f88dc6967a58b4dac1e0a3dbe3d"
+    ],
+    "spans_exported": 10,
+    "exported_over_the_wire": true,
+    "ledger_rows": [
+      {
+        "sequence": 1,
+        "node_id": "answer",
+        "role": "answer_with_evidence",
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "input_tokens": 218,
+        "output_tokens": 260,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost": 0.0004445,
+        "projected_cost": 0.0031597500000000002,
+        "latency_ms": 5358.0,
+        "started_at": 1787918019.003663,
+        "decision": "proceed",
+        "requested_tier": "frontier"
+      }
+    ],
+    "budget_snapshot": {
+      "run_id": "run-d1b20a857c8e",
+      "principal": "proofs/s15/reviewer",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.0004445,
+      "remaining": 0.0195555,
+      "pressure": 0.022225,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.0004445,
+          "input_tokens": 218,
+          "output_tokens": 260
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 218,
+          "output_tokens": 260,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0004445,
+          "projected_cost": 0.0031597500000000002,
+          "latency_ms": 5358.0,
+          "started_at": 1787918019.003663,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "final_answer": "A semantic cache reduces LLM spend by intercepting incoming prompts and serving previously generated responses from a low-cost storage layer instead of re-querying the LLM.\n\nThe process functions through the following mechanisms:\n\n*   **Semantic Matching:** Unlike traditional caches that require an exact string match, a semantic cache uses vector embeddings to determine if a new prompt is conceptually similar to one already stored. If the similarity score exceeds a defined threshold, the system retrieves the cached response.\n*   **Elimination of Redundant Inference:** By serving the cached response, the system avoids the computational cost associated with generating a new completion. This reduces the number of tokens processed by the LLM, which directly lowers API usage costs.\n*   **Latency Reduction:** Because the response is retrieved from a database (such as Redis or a vector store) rather than being generated by an LLM, the response time is significantly faster, which can also reduce the overhead costs associated with maintaining long-running request connections.\n\n**Inference regarding cost efficiency:**\nThe reduction in spend is proportional to the \"cache hit rate.\" If a high volume of user queries are semantically identical or highly similar to previous requests, the system minimizes the frequency of expensive LLM calls, thereby optimizing the total expenditure per request."
+  },
+  {
+    "label": "run4_frontier_ladder",
+    "mode": "live",
+    "prompt": "Draft an incident postmortem outline.",
+    "budget_ceiling": 0.05,
+    "principal": "floor/reproduce/run4",
+    "tier_and_model_chosen": [
+      {
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "cost": 0.00091625,
+        "decision": "proceed"
+      }
+    ],
+    "ordered_event_trace": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "jaeger_trace_ids": [
+      "ffe71bb269e270e29afbc7837ec30dee"
+    ],
+    "spans_exported": 10,
+    "exported_over_the_wire": true,
+    "ledger_rows": [
+      {
+        "sequence": 1,
+        "node_id": "answer",
+        "role": "answer_with_evidence",
+        "tier": "frontier",
+        "provider": "gemini_1",
+        "model": "gemini-3.1-flash-lite",
+        "input_tokens": 215,
+        "output_tokens": 575,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost": 0.00091625,
+        "projected_cost": 0.00315875,
+        "latency_ms": 3820.0,
+        "started_at": 1787918024.430845,
+        "decision": "proceed",
+        "requested_tier": "frontier"
+      }
+    ],
+    "budget_snapshot": {
+      "run_id": "run-744e2d5a7e4c",
+      "principal": "proofs/s15/reviewer",
+      "currency": "USD",
+      "total": 0.05,
+      "spent": 0.00091625,
+      "remaining": 0.04908375,
+      "pressure": 0.018324999999999998,
+      "reserve": 0.010000000000000002,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.00091625,
+          "input_tokens": 215,
+          "output_tokens": 575
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 215,
+          "output_tokens": 575,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00091625,
+          "projected_cost": 0.00315875,
+          "latency_ms": 3820.0,
+          "started_at": 1787918024.430845,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "final_answer": "To draft an incident postmortem, you can use the following outline structure. This framework is designed to focus on systemic improvements rather than individual blame.\n\n### 1. Executive Summary\n*   **Incident Name/ID:** A brief title and reference number.\n*   **Date/Time:** When the incident occurred (including time zone).\n*   **Duration:** Total time from detection to resolution.\n*   **Impact:** A high-level summary of the services affected and the impact on users.\n*   **Status:** Current state (e.g., Resolved, Monitoring).\n\n### 2. Incident Overview\n*   **Detection:** How was the incident discovered? (e.g., automated monitoring, customer report).\n*   **Timeline:** A chronological list of key events, including:\n    *   Time of initial trigger.\n    *   Time of acknowledgment.\n    *   Key investigative steps taken.\n    *   Time of mitigation/resolution.\n*   **Severity Level:** The classification of the incident (e.g., SEV1, SEV2).\n\n### 3. Impact Analysis\n*   **Affected Systems:** List of specific services, APIs, or infrastructure components involved.\n*   **Customer Impact:** Number of users affected, specific features unavailable, or data integrity concerns.\n*   **Business Impact:** Financial or operational consequences, if applicable.\n\n### 4. Root Cause Analysis (RCA)\n*   **The \"Five Whys\":** An iterative interrogative technique used to explore the cause-and-effect relationships underlying the incident.\n*   **Technical Root Cause:** A detailed explanation of the underlying technical failure (e.g., configuration error, resource exhaustion, code bug).\n*   **Contributing Factors:** Secondary issues that may have exacerbated the incident or delayed detection/resolution.\n\n### 5. Resolution and Recovery\n*   **Immediate Actions:** Steps taken to restore service (e.g., rollback, restart, traffic rerouting).\n*   **Verification:** How the team confirmed that the system was back to a healthy state.\n\n### 6. Lessons Learned\n*   **What went well:** Processes or tools that helped "
+  }
+]

@@ -1,0 +1,28 @@
+
+p7_cross_model_ladder  (live mode)
+  task      Summarize the tradeoffs between REST and gRPC for an internal microservice.
+  budget    0.05  principal support/triage/live
+  transport {"base_url": "http://127.0.0.1:8111", "patience": {"retries": 4, "pace_seconds": 2.0, "backoff_seconds": 8.0}}
+
+  ladder                                                                     economy < standard < frontier
+  rung economy                                                               groq / openai/gpt-oss-20b  projected 0.00025960  charged 0.00016450  100in/309out  1222 chars
+  rung standard                                                              groq / openai/gpt-oss-120b  projected 0.00077340  charged 0.00039000  100in/500out  2010 chars
+  rung frontier                                                              gemini_1 / gemini-3.1-flash-lite  projected 0.00308100  charged 0.00080225  23in/531out  2190 chars
+  asked frontier, allowance for economy                                      served economy on groq / openai/gpt-oss-20b  (downgrade, charged 0.00016450)
+  asked frontier, allowance for standard                                     served standard on groq / openai/gpt-oss-120b  (downgrade, charged 0.00037425)
+  projected spread                                                           11.9x  (0.00025960 -> 0.00308100)
+  measured spread                                                            4.88x  (0.00016450 -> 0.00080225)
+
+  [PASS] every rung answered                                                        3 rungs
+  [PASS] each rung is served by the model its config names                          {'economy': 'openai/gpt-oss-20b', 'standard': 'openai/gpt-oss-120b', 'frontier': 'gemini-3.1-flash-lite'}
+  [PASS] no two rungs are the same model                                            ['gemini-3.1-flash-lite', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b']
+  [PASS] the rungs are spread across providers, not one provider's menu             {'configured': {'economy': 'groq', 'standard': 'groq', 'frontier': 'gemini'}, 'reported': {'economy': 'groq', 'standard': 'groq', 'frontier': 'gemini_1'}}
+  [PASS] no rung returns empty text                                                 3 rungs answered
+  [PASS] a node allowance below the requested rung is served lower down the ladder  {'economy': 'economy', 'standard': 'standard'}
+  [PASS] every downgrade is recorded as one                                         {'economy': 'downgrade', 'standard': 'downgrade'}
+  [PASS] a downgrade changes the MODEL, not just the token budget                   {'requested_model': 'gemini-3.1-flash-lite', 'served_models': {'economy': 'openai/gpt-oss-20b', 'standard': 'openai/gpt-oss-120b'}}
+  [PASS] projected cost rises monotonically along the ladder                        {'economy': 0.0002596, 'standard': 0.0007734, 'frontier': 0.003081}
+  [PASS] the top rung measurably costs more than the bottom rung                    0.00080225 > 0.00016450
+
+  ALL CHECKS PASSED -> /Users/aaryan/EAG/s15/S15Code/proofs/out/p7_cross_model_ladder.json
+
