@@ -1,0 +1,646 @@
+{
+  "proof": "p8_flaky_provider_dow",
+  "ok": true,
+  "mode": "offline (attack is a fault-injection transport, not a network mode)",
+  "mode_detail": {
+    "guard_active": true,
+    "loop_limit": 150
+  },
+  "arguments": {
+    "task": "Draft a support reply.",
+    "budget": 0.02,
+    "principal": "support/triage/adversarial",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/aaryan/EAG/s15/S15Code/config/support_desk",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-20b",
+      "standard": "openai/gpt-oss-120b",
+      "frontier": "gemini-3.1-flash-lite"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "guard active": true,
+    "S15Code ledger: spent": "$0.00000000",
+    "S15Code ledger: admitted calls": 0,
+    "S15Code ledger: refusals": 0,
+    "loop rounds attempted": 150,
+    "nodes refused (BudgetRefused, visible in journal)": 90,
+    "shadow ledger: true provider calls": 60,
+    "shadow ledger: TRUE bill the flaky provider would send": "$0.43428000",
+    "attempt guard: run attempts counted": 60,
+    "attempt guard: refusals raised": 90,
+    "jaeger trace id(s)": [
+      "6e25a0c6849c71380fb7b52cbfd4c5cb"
+    ],
+    "spans exported": 453,
+    "span kinds": {
+      "plan": 151,
+      "node": 150,
+      "agent_loop": 151,
+      "run": 1
+    },
+    "spans carrying ERROR status (refusals, visible in telemetry)": 150,
+    "exported over the wire to Jaeger": true
+  },
+  "checks": [
+    {
+      "claim": "the run traced end to end (run -> agent_loop -> plan -> node hierarchy present)",
+      "ok": true,
+      "observed": {
+        "plan": 151,
+        "node": 150,
+        "agent_loop": 151,
+        "run": 1
+      }
+    },
+    {
+      "claim": "refusals are visible in the exported telemetry, not just the local journal",
+      "ok": true,
+      "observed": "150 spans carry ERROR status (90 nodes refused in the journal)"
+    },
+    {
+      "claim": "WITH the guard: the adversary keeps asking, but almost every ask is refused before it costs anything",
+      "ok": true,
+      "observed": "150 rounds attempted, only 60 ever reached the (still flaky) provider, 90 refused pre-flight by AttemptGuardedTransport"
+    },
+    {
+      "claim": "WITH the guard: refusals are visible graph failures, not silent truncation",
+      "ok": true,
+      "observed": "90 nodes failed with BudgetRefused"
+    },
+    {
+      "claim": "WITH the guard: the TRUE bill is bounded by the attempt ceiling, not the loop length",
+      "ok": true,
+      "observed": "60 true provider calls, attempt ceiling 60"
+    }
+  ],
+  "detail": {
+    "budget": {
+      "run_id": "flaky-dow",
+      "principal": "support/triage/adversarial",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.0,
+      "remaining": 0.02,
+      "pressure": 0.0,
+      "reserve": 0.004,
+      "calls": 0,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {},
+      "charges": [],
+      "refusal_log": []
+    },
+    "shadow_ledger": {
+      "true_calls": 60,
+      "true_cost": 0.43428000000000044,
+      "true_input_tokens": 1140,
+      "true_output_tokens": 54000
+    },
+    "attempt_guard": {
+      "run_attempts": 60,
+      "node_attempts": {
+        "loop_1": 1,
+        "loop_2": 1,
+        "loop_3": 1,
+        "loop_4": 1,
+        "loop_5": 1,
+        "loop_6": 1,
+        "loop_7": 1,
+        "loop_8": 1,
+        "loop_9": 1,
+        "loop_10": 1,
+        "loop_11": 1,
+        "loop_12": 1,
+        "loop_13": 1,
+        "loop_14": 1,
+        "loop_15": 1,
+        "loop_16": 1,
+        "loop_17": 1,
+        "loop_18": 1,
+        "loop_19": 1,
+        "loop_20": 1,
+        "loop_21": 1,
+        "loop_22": 1,
+        "loop_23": 1,
+        "loop_24": 1,
+        "loop_25": 1,
+        "loop_26": 1,
+        "loop_27": 1,
+        "loop_28": 1,
+        "loop_29": 1,
+        "loop_30": 1,
+        "loop_31": 1,
+        "loop_32": 1,
+        "loop_33": 1,
+        "loop_34": 1,
+        "loop_35": 1,
+        "loop_36": 1,
+        "loop_37": 1,
+        "loop_38": 1,
+        "loop_39": 1,
+        "loop_40": 1,
+        "loop_41": 1,
+        "loop_42": 1,
+        "loop_43": 1,
+        "loop_44": 1,
+        "loop_45": 1,
+        "loop_46": 1,
+        "loop_47": 1,
+        "loop_48": 1,
+        "loop_49": 1,
+        "loop_50": 1,
+        "loop_51": 1,
+        "loop_52": 1,
+        "loop_53": 1,
+        "loop_54": 1,
+        "loop_55": 1,
+        "loop_56": 1,
+        "loop_57": 1,
+        "loop_58": 1,
+        "loop_59": 1,
+        "loop_60": 1
+      },
+      "refusals": [
+        {
+          "node_id": "loop_61",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_62",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_63",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_64",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_65",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_66",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_67",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_68",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_69",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_70",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_71",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_72",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_73",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_74",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_75",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_76",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_77",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_78",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_79",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_80",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_81",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_82",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_83",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_84",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_85",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_86",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_87",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_88",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_89",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_90",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_91",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_92",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_93",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_94",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_95",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_96",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_97",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_98",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_99",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_100",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_101",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_102",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_103",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_104",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_105",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_106",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_107",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_108",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_109",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_110",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_111",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_112",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_113",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_114",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_115",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_116",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_117",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_118",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_119",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_120",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_121",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_122",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_123",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_124",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_125",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_126",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_127",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_128",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_129",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_130",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_131",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_132",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_133",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_134",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_135",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_136",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_137",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_138",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_139",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_140",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_141",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_142",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_143",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_144",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_145",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_146",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_147",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_148",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_149",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        },
+        {
+          "node_id": "loop_150",
+          "scope": "run",
+          "reason": "attempt ceiling reached (60/60 raw attempts this run, regardless of whether any returned tokens)"
+        }
+      ],
+      "max_attempts_per_run": 60,
+      "max_attempts_per_node": 6
+    },
+    "transport": {
+      "calls": 0,
+      "failures": 60
+    },
+    "journal_events": 452
+  }
+}

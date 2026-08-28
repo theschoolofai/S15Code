@@ -1,0 +1,1233 @@
+{
+  "proof": "p4_trace_export",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111",
+    "patience": {
+      "retries": 4,
+      "pace_seconds": 2.0,
+      "backoff_seconds": 8.0
+    }
+  },
+  "arguments": {
+    "task": "Summarize the tradeoffs between REST and gRPC for an internal microservice.",
+    "budget": 0.02,
+    "principal": "support/triage/live",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/aaryan/EAG/s15/S15Code/config/support_desk",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-20b",
+      "standard": "openai/gpt-oss-120b",
+      "frontier": "gemini-3.1-flash-lite"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "journal events": 8,
+    "spans": 10,
+    "span kinds": {
+      "plan": 3,
+      "node": 2,
+      "agent_loop": 3,
+      "provider_call": 1,
+      "run": 1
+    },
+    "provider calls": 1,
+    "input tokens": 223,
+    "output tokens": 504,
+    "span cost total": "0.00081175",
+    "ledger spent": "0.00081175",
+    "trace ids": [
+      "d45ee21d5dc51ce4d5e854c7797078bb"
+    ],
+    "otlp endpoint": "http://127.0.0.1:4318/v1/traces",
+    "trace query url": "http://127.0.0.1:16686",
+    "backend query": "http://127.0.0.1:16686/api/traces/d45ee21d5dc51ce4d5e854c7797078bb",
+    "backend spans": 10,
+    "backend span kinds": {
+      "plan": 3,
+      "node": 2,
+      "agent_loop": 3,
+      "provider_call": 1,
+      "run": 1
+    },
+    "backend service": [
+      "s15code"
+    ]
+  },
+  "checks": [
+    {
+      "claim": "every level of the hierarchy is present",
+      "ok": true,
+      "observed": [
+        "agent_loop",
+        "node",
+        "plan",
+        "provider_call",
+        "run"
+      ]
+    },
+    {
+      "claim": "run -> agent loop -> plan -> node -> provider call",
+      "ok": true,
+      "observed": "every parent is the expected kind"
+    },
+    {
+      "claim": "one run is one trace",
+      "ok": true,
+      "observed": [
+        "d45ee21d5dc51ce4d5e854c7797078bb"
+      ]
+    },
+    {
+      "claim": "gen_ai.* usage attributes on every provider call",
+      "ok": true,
+      "observed": "1 spans carry all of ['gen_ai.provider.name', 'gen_ai.request.model', 'gen_ai.usage.input_tokens', 'gen_ai.usage.output_tokens']"
+    },
+    {
+      "claim": "cost per provider-call span",
+      "ok": true,
+      "observed": "all 1 priced"
+    },
+    {
+      "claim": "span costs sum to the ledger",
+      "ok": true,
+      "observed": "delta 0.000e+00"
+    },
+    {
+      "claim": "span token counts match the ledger",
+      "ok": true,
+      "observed": "223 == 223"
+    },
+    {
+      "claim": "content capture is off by default",
+      "ok": true,
+      "observed": "capture_content=False, message attrs on 0 spans, task text present: False"
+    },
+    {
+      "claim": "the tape alone rebuilds the trace",
+      "ok": true,
+      "observed": "1 provider calls from events only"
+    },
+    {
+      "claim": "spans were exported over the wire",
+      "ok": true,
+      "observed": "exported_over_the_wire=True"
+    },
+    {
+      "claim": "a real trace lands in the backend, fetched back by id",
+      "ok": true,
+      "observed": "10 spans returned"
+    },
+    {
+      "claim": "the backend holds every span this process emitted",
+      "ok": true,
+      "observed": "10 in backend == 10 emitted"
+    },
+    {
+      "claim": "the hierarchy survives the wire (parents read from the backend)",
+      "ok": true,
+      "observed": [
+        "agent_loop",
+        "node",
+        "plan",
+        "provider_call",
+        "run"
+      ]
+    },
+    {
+      "claim": "gen_ai.usage.* and cost are visible on the backend's spans",
+      "ok": true,
+      "observed": [
+        {
+          "gen_ai.provider.name": "gemini_1",
+          "gen_ai.request.model": "gemini-3.1-flash-lite",
+          "gen_ai.usage.input_tokens": 223,
+          "gen_ai.usage.output_tokens": 504,
+          "s15.cost": 0.0008117500000000001
+        }
+      ]
+    },
+    {
+      "claim": "no prompt or completion text reached the backend",
+      "ok": true,
+      "observed": "none of ['input.messages', 'output.messages', 'prompt', 'completion'] appears in any backend tag"
+    }
+  ],
+  "detail": {
+    "backend_trace": {
+      "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+      "spans": [
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "59b0963d79f3154e",
+          "operationName": "plan",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "53032969349b462d"
+            }
+          ],
+          "startTime": 1787917993131949,
+          "duration": 0,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.plan.added",
+              "type": "string",
+              "value": "recall"
+            },
+            {
+              "key": "s15.plan.added_count",
+              "type": "int64",
+              "value": 1
+            },
+            {
+              "key": "s15.plan.cancelled",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "key": "s15.plan.finish",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "key": "s15.plan.reason",
+              "type": "string",
+              "value": "first frontier selected for memory"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "plan"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": [
+            "Negative duration detected, sanitizing end timestamp. Original end timestamp: 2026-08-28 11:53:13.131949056 +0000 UTC, adjusted to: 2026-08-28 11:53:13.131949057 +0000 UTC"
+          ]
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "3cc09656e789ef71",
+          "operationName": "node recall",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "53032969349b462d"
+            }
+          ],
+          "startTime": 1787917993132948,
+          "duration": 999,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.agent.name",
+              "type": "string",
+              "value": "memory_recall"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "execute_tool"
+            },
+            {
+              "key": "gen_ai.tool.name",
+              "type": "string",
+              "value": "memory_recall"
+            },
+            {
+              "key": "s15.node.id",
+              "type": "string",
+              "value": "recall"
+            },
+            {
+              "key": "s15.node.state",
+              "type": "string",
+              "value": "succeeded"
+            },
+            {
+              "key": "s15.run.id",
+              "type": "string",
+              "value": "run-4b2f57611d80"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "node"
+            },
+            {
+              "key": "s15.tier",
+              "type": "string",
+              "value": "economy"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "53032969349b462d",
+          "operationName": "agent loop 1",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "dd24c146a8eb1d7c"
+            }
+          ],
+          "startTime": 1787917993131949,
+          "duration": 1999,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.loop.round",
+              "type": "int64",
+              "value": 1
+            },
+            {
+              "key": "s15.loop.trigger_event",
+              "type": "int64",
+              "value": 1
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "agent_loop"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "81bc7d3a8892d849",
+          "operationName": "plan",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "96f7060007e77411"
+            }
+          ],
+          "startTime": 1787917993134948,
+          "duration": 0,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.plan.added",
+              "type": "string",
+              "value": "answer"
+            },
+            {
+              "key": "s15.plan.added_count",
+              "type": "int64",
+              "value": 1
+            },
+            {
+              "key": "s15.plan.cancelled",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "key": "s15.plan.finish",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "key": "s15.plan.reason",
+              "type": "string",
+              "value": "authorized retrieval completed"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "plan"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": [
+            "Negative duration detected, sanitizing end timestamp. Original end timestamp: 2026-08-28 11:53:13.134948864 +0000 UTC, adjusted to: 2026-08-28 11:53:13.134948865 +0000 UTC"
+          ]
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "e02321588ec1e78c",
+          "operationName": "chat gemini-3.1-flash-lite",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "a71d03605fbbd0dc"
+            }
+          ],
+          "startTime": 1787917993130949,
+          "duration": 3256000,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "chat"
+            },
+            {
+              "key": "gen_ai.provider.name",
+              "type": "string",
+              "value": "gemini_1"
+            },
+            {
+              "key": "gen_ai.request.model",
+              "type": "string",
+              "value": "gemini-3.1-flash-lite"
+            },
+            {
+              "key": "gen_ai.request.reasoning_effort",
+              "type": "string",
+              "value": "off"
+            },
+            {
+              "key": "gen_ai.response.model",
+              "type": "string",
+              "value": "gemini-3.1-flash-lite"
+            },
+            {
+              "key": "gen_ai.usage.input_tokens",
+              "type": "int64",
+              "value": 223
+            },
+            {
+              "key": "gen_ai.usage.output_tokens",
+              "type": "int64",
+              "value": 504
+            },
+            {
+              "key": "s15.budget.decision",
+              "type": "string",
+              "value": "proceed"
+            },
+            {
+              "key": "s15.budget.remaining",
+              "type": "float64",
+              "value": 0.01918825
+            },
+            {
+              "key": "s15.cost",
+              "type": "float64",
+              "value": 0.0008117500000000001
+            },
+            {
+              "key": "s15.cost.projected",
+              "type": "float64",
+              "value": 0.00316175
+            },
+            {
+              "key": "s15.currency",
+              "type": "string",
+              "value": "USD"
+            },
+            {
+              "key": "s15.node.id",
+              "type": "string",
+              "value": "answer"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "provider_call"
+            },
+            {
+              "key": "s15.tier",
+              "type": "string",
+              "value": "frontier"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "a71d03605fbbd0dc",
+          "operationName": "node answer",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "96f7060007e77411"
+            }
+          ],
+          "startTime": 1787917993130949,
+          "duration": 3256000,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.agent.name",
+              "type": "string",
+              "value": "answer_with_evidence"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "execute_tool"
+            },
+            {
+              "key": "gen_ai.tool.name",
+              "type": "string",
+              "value": "answer_with_evidence"
+            },
+            {
+              "key": "s15.node.id",
+              "type": "string",
+              "value": "answer"
+            },
+            {
+              "key": "s15.node.state",
+              "type": "string",
+              "value": "succeeded"
+            },
+            {
+              "key": "s15.run.id",
+              "type": "string",
+              "value": "run-4b2f57611d80"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "node"
+            },
+            {
+              "key": "s15.tier",
+              "type": "string",
+              "value": "frontier"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [
+            {
+              "timestamp": 1787917996451587,
+              "fields": [
+                {
+                  "key": "event",
+                  "type": "string",
+                  "value": "budget.decision"
+                },
+                {
+                  "key": "s15.budget.decision",
+                  "type": "string",
+                  "value": "proceed"
+                },
+                {
+                  "key": "s15.budget.projected_cost",
+                  "type": "float64",
+                  "value": 0.00316175
+                },
+                {
+                  "key": "s15.budget.reason",
+                  "type": "string",
+                  "value": "requested tier fits the node allowance"
+                },
+                {
+                  "key": "s15.tier",
+                  "type": "string",
+                  "value": "frontier"
+                },
+                {
+                  "key": "s15.tier.requested",
+                  "type": "string",
+                  "value": "frontier"
+                }
+              ]
+            }
+          ],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "96f7060007e77411",
+          "operationName": "agent loop 2",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "dd24c146a8eb1d7c"
+            }
+          ],
+          "startTime": 1787917993130949,
+          "duration": 3256000,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.loop.round",
+              "type": "int64",
+              "value": 2
+            },
+            {
+              "key": "s15.loop.trigger_event",
+              "type": "int64",
+              "value": 4
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "agent_loop"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "caa9f88798e2f4bc",
+          "operationName": "plan",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "620c0c04d04efdf9"
+            }
+          ],
+          "startTime": 1787917993137948,
+          "duration": 0,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.plan.added",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "key": "s15.plan.added_count",
+              "type": "int64",
+              "value": 0
+            },
+            {
+              "key": "s15.plan.cancelled",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "key": "s15.plan.finish",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "s15.plan.reason",
+              "type": "string",
+              "value": "grounded answer produced"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "plan"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": [
+            "Negative duration detected, sanitizing end timestamp. Original end timestamp: 2026-08-28 11:53:13.137948928 +0000 UTC, adjusted to: 2026-08-28 11:53:13.137948929 +0000 UTC"
+          ]
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "620c0c04d04efdf9",
+          "operationName": "agent loop 3",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+              "spanID": "dd24c146a8eb1d7c"
+            }
+          ],
+          "startTime": 1787917993137948,
+          "duration": 0,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.loop.round",
+              "type": "int64",
+              "value": 3
+            },
+            {
+              "key": "s15.loop.trigger_event",
+              "type": "int64",
+              "value": 7
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "agent_loop"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": [
+            "Negative duration detected, sanitizing end timestamp. Original end timestamp: 2026-08-28 11:53:13.137948928 +0000 UTC, adjusted to: 2026-08-28 11:53:13.137948929 +0000 UTC"
+          ]
+        },
+        {
+          "traceID": "d45ee21d5dc51ce4d5e854c7797078bb",
+          "spanID": "dd24c146a8eb1d7c",
+          "operationName": "run run-4b2f57611d80",
+          "references": [],
+          "startTime": 1787917993130949,
+          "duration": 3256000,
+          "tags": [
+            {
+              "key": "otel.scope.name",
+              "type": "string",
+              "value": "s15code.telemetry"
+            },
+            {
+              "key": "gen_ai.agent.name",
+              "type": "string",
+              "value": "s15code"
+            },
+            {
+              "key": "gen_ai.operation.name",
+              "type": "string",
+              "value": "invoke_agent"
+            },
+            {
+              "key": "s15.budget.downgrades",
+              "type": "int64",
+              "value": 0
+            },
+            {
+              "key": "s15.budget.refusals",
+              "type": "int64",
+              "value": 0
+            },
+            {
+              "key": "s15.budget.remaining",
+              "type": "float64",
+              "value": 0.01918825
+            },
+            {
+              "key": "s15.budget.spent",
+              "type": "float64",
+              "value": 0.0008117500000000001
+            },
+            {
+              "key": "s15.budget.total",
+              "type": "float64",
+              "value": 0.02
+            },
+            {
+              "key": "s15.cost",
+              "type": "float64",
+              "value": 0.0008117500000000001
+            },
+            {
+              "key": "s15.currency",
+              "type": "string",
+              "value": "USD"
+            },
+            {
+              "key": "s15.journal.events",
+              "type": "int64",
+              "value": 8
+            },
+            {
+              "key": "s15.loops",
+              "type": "int64",
+              "value": 3
+            },
+            {
+              "key": "s15.principal",
+              "type": "string",
+              "value": "support/triage/live"
+            },
+            {
+              "key": "s15.provider_calls",
+              "type": "int64",
+              "value": 1
+            },
+            {
+              "key": "s15.run.finished",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "s15.run.id",
+              "type": "string",
+              "value": "run-4b2f57611d80"
+            },
+            {
+              "key": "s15.span.kind",
+              "type": "string",
+              "value": "run"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "s15code",
+          "tags": [
+            {
+              "key": "service.instance.id",
+              "type": "string",
+              "value": "120a8337-9290-4139-a67a-ef4d65f9d937"
+            },
+            {
+              "key": "telemetry.sdk.language",
+              "type": "string",
+              "value": "python"
+            },
+            {
+              "key": "telemetry.sdk.name",
+              "type": "string",
+              "value": "opentelemetry"
+            },
+            {
+              "key": "telemetry.sdk.version",
+              "type": "string",
+              "value": "1.44.0"
+            }
+          ]
+        }
+      },
+      "warnings": null
+    },
+    "budget": {
+      "run_id": "run-4b2f57611d80",
+      "principal": "support/triage/live",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.0008117500000000001,
+      "remaining": 0.01918825,
+      "pressure": 0.040587500000000006,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.0008117500000000001,
+          "input_tokens": 223,
+          "output_tokens": 504
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "input_tokens": 223,
+          "output_tokens": 504,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.0008117500000000001,
+          "projected_cost": 0.00316175,
+          "latency_ms": 3256.0,
+          "started_at": 1787917993.130949,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 223,
+      "output_tokens": 504,
+      "cost": 0.0008117500000000001,
+      "trace_ids": [
+        "d45ee21d5dc51ce4d5e854c7797078bb"
+      ]
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "59b0963d79f3154e",
+        "parent_span_id": "53032969349b462d",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993131949056,
+        "end_time": 1787917993131949056,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "3cc09656e789ef71",
+        "parent_span_id": "53032969349b462d",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993132948992,
+        "end_time": 1787917993133948928,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-4b2f57611d80",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "53032969349b462d",
+        "parent_span_id": "dd24c146a8eb1d7c",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993131949056,
+        "end_time": 1787917993133948928,
+        "duration_ns": 1999872,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 1
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "81bc7d3a8892d849",
+        "parent_span_id": "96f7060007e77411",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993134948864,
+        "end_time": 1787917993134948864,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat gemini-3.1-flash-lite",
+        "kind": "provider_call",
+        "span_id": "e02321588ec1e78c",
+        "parent_span_id": "a71d03605fbbd0dc",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993130949120,
+        "end_time": 1787917996386949120,
+        "duration_ns": 3256000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "gemini_1",
+          "gen_ai.request.model": "gemini-3.1-flash-lite",
+          "gen_ai.response.model": "gemini-3.1-flash-lite",
+          "gen_ai.usage.input_tokens": 223,
+          "gen_ai.usage.output_tokens": 504,
+          "s15.cost": 0.0008117500000000001,
+          "s15.currency": "USD",
+          "s15.tier": "frontier",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "proceed",
+          "s15.budget.remaining": 0.01918825,
+          "s15.cost.projected": 0.00316175,
+          "gen_ai.request.reasoning_effort": "off"
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "a71d03605fbbd0dc",
+        "parent_span_id": "96f7060007e77411",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993130949120,
+        "end_time": 1787917996386949120,
+        "duration_ns": 3256000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-4b2f57611d80",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "proceed",
+              "s15.budget.reason": "requested tier fits the node allowance",
+              "s15.tier": "frontier",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.00316175
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "96f7060007e77411",
+        "parent_span_id": "dd24c146a8eb1d7c",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993130949120,
+        "end_time": 1787917996386949120,
+        "duration_ns": 3256000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 4
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "caa9f88798e2f4bc",
+        "parent_span_id": "620c0c04d04efdf9",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993137948928,
+        "end_time": 1787917993137948928,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "620c0c04d04efdf9",
+        "parent_span_id": "dd24c146a8eb1d7c",
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993137948928,
+        "end_time": 1787917993137948928,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 7
+        },
+        "events": []
+      },
+      {
+        "name": "run run-4b2f57611d80",
+        "kind": "run",
+        "span_id": "dd24c146a8eb1d7c",
+        "parent_span_id": null,
+        "trace_id": "d45ee21d5dc51ce4d5e854c7797078bb",
+        "start_time": 1787917993130949120,
+        "end_time": 1787917996386949120,
+        "duration_ns": 3256000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-4b2f57611d80",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.principal": "support/triage/live",
+          "s15.budget.total": 0.02,
+          "s15.budget.spent": 0.0008117500000000001,
+          "s15.budget.remaining": 0.01918825,
+          "s15.currency": "USD",
+          "s15.budget.refusals": 0,
+          "s15.budget.downgrades": 0,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.0008117500000000001
+        },
+        "events": []
+      }
+    ]
+  }
+}

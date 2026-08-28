@@ -1,0 +1,27 @@
+
+p8_flaky_provider_dow  (offline (attack is a fault-injection transport, not a network mode) mode)
+  task      Draft a support reply.
+  budget    0.02  principal support/triage/adversarial
+  transport {"guard_active": false, "loop_limit": 150}
+
+  guard active                                                                                       False
+  S15Code ledger: spent                                                                              $0.00000000
+  S15Code ledger: admitted calls                                                                     0
+  S15Code ledger: refusals                                                                           0
+  loop rounds attempted                                                                              150
+  nodes refused (BudgetRefused, visible in journal)                                                  0
+  shadow ledger: true provider calls                                                                 150
+  shadow ledger: TRUE bill the flaky provider would send                                             $1.08570000
+  jaeger trace id(s)                                                                                 ['c6044df89576340553843d5cab1c5eb8']
+  spans exported                                                                                     453
+  span kinds                                                                                         {'plan': 151, 'node': 150, 'agent_loop': 151, 'run': 1}
+  spans carrying ERROR status (refusals, visible in telemetry)                                       150
+  exported over the wire to Jaeger                                                                   True
+
+  [PASS] the run traced end to end (run -> agent_loop -> plan -> node hierarchy present)                    {'plan': 151, 'node': 150, 'agent_loop': 151, 'run': 1}
+  [PASS] WITHOUT the guard: S15Code's own ledger reports zero spend no matter how long the loop runs        spent=$0.00000000, calls=0 after 150 rounds
+  [PASS] WITHOUT the guard: the call ceiling never trips, because it counts charges, not attempts           loop ran all 150/150 rounds before the PROOF's own safety stop, not the controller, ended it
+  [PASS] WITHOUT the guard: the TRUE bill (what a real flaky provider invoices) is unbounded and invisible  true bill $1.08570000 vs S15Code's own ledger $0.00000000 — a gap the ledger cannot see
+
+  ALL CHECKS PASSED -> /Users/aaryan/EAG/s15/S15Code/proofs/out/p8_flaky_provider_dow.json
+

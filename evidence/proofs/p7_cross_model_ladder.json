@@ -1,0 +1,212 @@
+{
+  "proof": "p7_cross_model_ladder",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8111",
+    "patience": {
+      "retries": 4,
+      "pace_seconds": 2.0,
+      "backoff_seconds": 8.0
+    }
+  },
+  "arguments": {
+    "task": "Summarize the tradeoffs between REST and gRPC for an internal microservice.",
+    "budget": 0.05,
+    "principal": "support/triage/live",
+    "respond_as": "text",
+    "otel_endpoint": "http://127.0.0.1:4318/v1/traces"
+  },
+  "economics": {
+    "directory": "/Users/aaryan/EAG/s15/S15Code/config/support_desk",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "openai/gpt-oss-20b",
+      "standard": "openai/gpt-oss-120b",
+      "frontier": "gemini-3.1-flash-lite"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "ladder": "economy < standard < frontier",
+    "rung economy": "groq / openai/gpt-oss-20b  projected 0.00025960  charged 0.00016450  100in/309out  1222 chars",
+    "rung standard": "groq / openai/gpt-oss-120b  projected 0.00077340  charged 0.00039000  100in/500out  2010 chars",
+    "rung frontier": "gemini_1 / gemini-3.1-flash-lite  projected 0.00308100  charged 0.00080225  23in/531out  2190 chars",
+    "asked frontier, allowance for economy": "served economy on groq / openai/gpt-oss-20b  (downgrade, charged 0.00016450)",
+    "asked frontier, allowance for standard": "served standard on groq / openai/gpt-oss-120b  (downgrade, charged 0.00037425)",
+    "projected spread": "11.9x  (0.00025960 -> 0.00308100)",
+    "measured spread": "4.88x  (0.00016450 -> 0.00080225)"
+  },
+  "checks": [
+    {
+      "claim": "every rung answered",
+      "ok": true,
+      "observed": "3 rungs"
+    },
+    {
+      "claim": "each rung is served by the model its config names",
+      "ok": true,
+      "observed": {
+        "economy": "openai/gpt-oss-20b",
+        "standard": "openai/gpt-oss-120b",
+        "frontier": "gemini-3.1-flash-lite"
+      }
+    },
+    {
+      "claim": "no two rungs are the same model",
+      "ok": true,
+      "observed": [
+        "gemini-3.1-flash-lite",
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b"
+      ]
+    },
+    {
+      "claim": "the rungs are spread across providers, not one provider's menu",
+      "ok": true,
+      "observed": {
+        "configured": {
+          "economy": "groq",
+          "standard": "groq",
+          "frontier": "gemini"
+        },
+        "reported": {
+          "economy": "groq",
+          "standard": "groq",
+          "frontier": "gemini_1"
+        }
+      }
+    },
+    {
+      "claim": "no rung returns empty text",
+      "ok": true,
+      "observed": "3 rungs answered"
+    },
+    {
+      "claim": "a node allowance below the requested rung is served lower down the ladder",
+      "ok": true,
+      "observed": {
+        "economy": "economy",
+        "standard": "standard"
+      }
+    },
+    {
+      "claim": "every downgrade is recorded as one",
+      "ok": true,
+      "observed": {
+        "economy": "downgrade",
+        "standard": "downgrade"
+      }
+    },
+    {
+      "claim": "a downgrade changes the MODEL, not just the token budget",
+      "ok": true,
+      "observed": {
+        "requested_model": "gemini-3.1-flash-lite",
+        "served_models": {
+          "economy": "openai/gpt-oss-20b",
+          "standard": "openai/gpt-oss-120b"
+        }
+      }
+    },
+    {
+      "claim": "projected cost rises monotonically along the ladder",
+      "ok": true,
+      "observed": {
+        "economy": 0.0002596,
+        "standard": 0.0007734,
+        "frontier": 0.003081
+      }
+    },
+    {
+      "claim": "the top rung measurably costs more than the bottom rung",
+      "ok": true,
+      "observed": "0.00080225 > 0.00016450"
+    }
+  ],
+  "detail": {
+    "observed": {
+      "est_input_tokens": 36,
+      "per_rung": {
+        "economy": {
+          "requested_tier": "economy",
+          "served_tier": "economy",
+          "configured_model": "openai/gpt-oss-20b",
+          "provider": "groq",
+          "model": "openai/gpt-oss-20b",
+          "cost": 0.0001645,
+          "input_tokens": 100,
+          "output_tokens": 309,
+          "text_chars": 1222,
+          "projected": 0.00025959999999999997,
+          "decision": "proceed"
+        },
+        "standard": {
+          "requested_tier": "standard",
+          "served_tier": "standard",
+          "configured_model": "openai/gpt-oss-120b",
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "cost": 0.00039,
+          "input_tokens": 100,
+          "output_tokens": 500,
+          "text_chars": 2010,
+          "projected": 0.0007734,
+          "decision": "proceed"
+        },
+        "frontier": {
+          "requested_tier": "frontier",
+          "served_tier": "frontier",
+          "configured_model": "gemini-3.1-flash-lite",
+          "provider": "gemini_1",
+          "model": "gemini-3.1-flash-lite",
+          "cost": 0.00080225,
+          "input_tokens": 23,
+          "output_tokens": 531,
+          "text_chars": 2190,
+          "projected": 0.003081,
+          "decision": "proceed"
+        }
+      },
+      "walk": {
+        "economy": {
+          "requested_tier": "frontier",
+          "served_tier": "economy",
+          "allowance": 0.0005165,
+          "provider": "groq",
+          "model": "openai/gpt-oss-20b",
+          "cost": 0.0001645,
+          "decision": "downgrade"
+        },
+        "standard": {
+          "requested_tier": "frontier",
+          "served_tier": "standard",
+          "allowance": 0.0019272,
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "cost": 0.00037425,
+          "decision": "downgrade"
+        }
+      }
+    },
+    "tier_models": {
+      "economy": "openai/gpt-oss-20b",
+      "standard": "openai/gpt-oss-120b",
+      "frontier": "gemini-3.1-flash-lite"
+    }
+  }
+}

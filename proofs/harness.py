@@ -41,6 +41,7 @@ import httpx  # noqa: E402
 from s15code.core.memory import MemoryScope  # noqa: E402
 from s15code.core.memory.embeddings import DeterministicEmbedder  # noqa: E402
 from s15code.economics import EconomicsConfig, MeteredTransport  # noqa: E402
+from s15code.economics.patient_transport import PatientTransport  # noqa: E402
 from s15code.gateway import GatewayClient  # noqa: E402
 from s15code.runtime import AgentRuntime  # noqa: E402
 
@@ -65,6 +66,9 @@ class Args:
     config_dir: str | None
     live_embeddings: bool
     label: str
+    answer_retries: int = 4
+    answer_pace: float = 2.0
+    answer_backoff: float = 8.0
 
     @property
     def scope(self) -> MemoryScope:
@@ -90,6 +94,16 @@ def parse(description: str, argv: list[str] | None = None) -> Args:
     parser.add_argument("--config-dir", default=os.getenv("S15_CONFIG_DIR"))
     parser.add_argument("--live-embeddings", action="store_true")
     parser.add_argument("--label", default="", help="suffix for the JSON written to proofs/out/")
+    # Patience on the LIVE answer path. A free-tier 429 is a transport failure,
+    # not an answer, and recording it as one corrupts every number a proof
+    # reports. Applied only in live mode; the offline transport cannot rate-limit,
+    # so these are a no-op there and CI behaviour is unchanged.
+    parser.add_argument("--answer-retries", type=int, default=4,
+                        help="retry a transient live failure (429/TPM/RPM/cooldown) N times")
+    parser.add_argument("--answer-pace", type=float, default=2.0,
+                        help="minimum seconds between live provider calls")
+    parser.add_argument("--answer-backoff", type=float, default=8.0,
+                        help="base seconds for exponential backoff between retries")
     parsed = parser.parse_args(argv)
     config = EconomicsConfig.load(parsed.config_dir)
     return Args(
@@ -103,6 +117,9 @@ def parse(description: str, argv: list[str] | None = None) -> Args:
         config_dir=parsed.config_dir,
         live_embeddings=parsed.live_embeddings,
         label=parsed.label,
+        answer_retries=parsed.answer_retries,
+        answer_pace=parsed.answer_pace,
+        answer_backoff=parsed.answer_backoff,
     )
 
 
@@ -159,7 +176,22 @@ def transport_for(args: Args) -> tuple[MeteredTransport, str, dict[str, Any]]:
     proof compares that count against the budget ledger.
     """
     if not args.offline and gateway_reachable(args.base_url):
-        return MeteredTransport(GatewayClient(args.base_url)), "live", {"base_url": args.base_url}
+        # PatientTransport sits INSIDE the meter, so a retried call is metered
+        # exactly once: only the attempt that actually returned tokens is
+        # charged. Without it, a free-tier rate limit is recorded as a failed
+        # call and every downstream number inherits the provider's throttling
+        # as if it were a property of the model. See
+        # s15code/economics/patient_transport.py.
+        inner: Any = GatewayClient(args.base_url)
+        detail: dict[str, Any] = {"base_url": args.base_url}
+        if args.answer_retries > 0 or args.answer_pace > 0:
+            inner = PatientTransport(inner, retries=args.answer_retries,
+                                     backoff_seconds=args.answer_backoff,
+                                     pace_seconds=args.answer_pace)
+            detail["patience"] = {"retries": args.answer_retries,
+                                  "pace_seconds": args.answer_pace,
+                                  "backoff_seconds": args.answer_backoff}
+        return MeteredTransport(inner), "live", detail
     reason = "--offline requested" if args.offline else f"gateway at {args.base_url} is not reachable"
     return MeteredTransport(OfflineTransport()), "offline", {"reason": reason}
 

@@ -1,0 +1,27 @@
+
+p3_denial_of_wallet  (live mode)
+  task      Summarize the tradeoffs between REST and gRPC for an internal microservice.
+  budget    0.1  principal support/triage/live
+  transport {"base_url": "http://127.0.0.1:8111", "patience": {"retries": 4, "pace_seconds": 2.0, "backoff_seconds": 8.0}}
+
+  ceiling                                                        0.10000000 USD
+  spent                                                          0.01153125
+  admitted calls                                                 60
+  refusals                                                       140
+  loop rounds                                                    200
+  nodes created                                                  200
+  refused nodes                                                  140
+  cost per call                                                  0.00019219
+  uncontrolled bill                                              ~1.9219 over 10000 rounds (extrapolated)
+  call ceiling                                                   60
+  transport failures                                             0
+
+  [PASS] the ceiling held under an unbounded loop                       spent 0.01153125 <= 0.10000000
+  [PASS] admitted calls are bounded by the configured call ceiling      60 <= 60
+  [PASS] the loop kept asking and was refused                           200 rounds, 60 admitted, 140 refused
+  [PASS] a refusal is a visible graph failure, not a silent truncation  140 nodes failed with BudgetRefused
+  [PASS] every provider call that returned is metered                   60 transport calls == 60 charges (0 gateway errors, no tokens to charge)
+  [PASS] the controller, not the loop, is what stopped the spend        spend stopped after 60 of 200 attempts
+
+  ALL CHECKS PASSED -> /Users/aaryan/EAG/s15/S15Code/proofs/out/p3_denial_of_wallet.json
+

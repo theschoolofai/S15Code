@@ -1,0 +1,131 @@
+# The support-desk ladder, built for proofs/tasks/support_tickets.jsonl (S15
+# Part 2).
+#
+# A DELIBERATE DEVIATION from the shipped config/tiers.yaml, for reasons that
+# were all DISCOVERED BY PROBING THE LIVE APIs, not assumed:
+#
+#   1. The shipped `frontier` rung is github/openai/gpt-4.1, which needs a
+#      GitHub Models token this run does not have.
+#   2. The obvious Gemini substitutes do not exist or are not reachable on a
+#      free tier:
+#        - `gemini-3.1-pro`         -> HTTP 404, not served. The served name
+#                                      is `gemini-3.1-pro-preview`.
+#        - `gemini-3.1-pro-preview` -> HTTP 429, "You exceeded your current
+#                                      quota". Free-tier Gemini grants NO
+#                                      quota on pro-class models, so a pro
+#                                      rung is not merely expensive here, it
+#                                      is unbuyable at any budget.
+#        - `gemini-3.1-flash`       -> not served at all.
+#        - `gemini-3.5-flash`       -> served, and it answers, but it was
+#                                      RPM-limited at the moment of the
+#                                      measurement run and the preflight fell
+#                                      back to gemini-3.1-flash-lite. That
+#                                      fallback is what actually produced the
+#                                      numbers in the README, so it is what
+#                                      this file now names — the config
+#                                      matches the evidence rather than
+#                                      describing a run that did not happen.
+#
+# So the ladder below is built only from models CONFIRMED CALLABLE on these
+# accounts, and it spends its scarce resource deliberately: Gemini's free tier
+# is RPM-limited, so it is used by exactly ONE rung, while Groq (generous free
+# RPM) carries the two cheaper rungs and the whole judge panel. That keeps the
+# frontier rung's quota for answering rather than grading.
+#
+#   rung      provider  model                  $/Mtok in/out  why this rung
+#   economy   groq      openai/gpt-oss-20b      0.10 / 0.50   20B open weights
+#   standard  groq      openai/gpt-oss-120b     0.15 / 0.75   120B, same family
+#   frontier  gemini    gemini-3.1-flash-lite   0.25 / 1.50   different lab
+#
+# The capability ordering is defensible rather than asserted: economy and
+# standard are the SAME model family at 20B and 120B parameters, so "one rung
+# up" is a straight capacity increase with nothing else changing, and the top
+# rung is a different lab's model on a different provider. Price rises
+# monotonically (0.10 < 0.15 < 0.25 input), which is what makes "downgrade"
+# unambiguous.
+#
+# HONEST NOTE ON THE SPREAD. This ladder is narrower than the shipped one:
+# p7 measured 4.88x bottom-to-top against the shipped ladder's 82x. A narrower
+# spread makes the routing decision LESS consequential, not more, so every
+# saving reported in the README is a conservative one — the same policy on a
+# ladder with a real frontier model at the top would separate further.
+
+order: [economy, standard, frontier]
+default_tier: standard
+
+tiers:
+  economy:
+    request:
+      provider: groq
+      model: openai/gpt-oss-20b
+      # Not decoration: gpt-oss models think by default and will spend the
+      # whole output budget in the reasoning channel, returning "" at full
+      # price. The shipped pricing.yaml records that measurement for the 120b.
+      reasoning: "off"
+      max_tokens: 512
+      temperature: 0
+    price_model: openai/gpt-oss-20b
+    projected_input_tokens: 1200
+    projected_output_tokens: 400
+
+  standard:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 1024
+      temperature: 0
+    price_model: openai/gpt-oss-120b
+    projected_input_tokens: 2500
+    projected_output_tokens: 800
+
+  frontier:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 2048
+      temperature: 0
+    price_model: gemini-3.1-flash-lite
+    projected_input_tokens: 4000
+    projected_output_tokens: 1200
+
+# Which tier each graph ROLE asks for. Keys are the runtime's own skill/role
+# names, never task content, so a node "declares the tier it needs" by
+# declaring its role.
+#
+# The shape here matters and an earlier version of this file got it wrong.
+# Collapsing every role onto `default: standard` meant NOTHING in the graph
+# ever requested the top rung — so there was never anything to downgrade, and
+# p2's "a tight allowance downgrades the tier the node asked for" check failed
+# not because the controller was broken but because the config had quietly
+# flattened the ladder into a single rung. The terminal node that actually
+# produces the answer must ask for the best tier; everything upstream of it —
+# recall, retrieval, summarising, formatting — is cheap preparatory work that
+# should never touch the frontier rung. That gradient is what makes budget
+# pressure expressible at all.
+#
+# p1's strategies override this per strategy (cheapest / most capable /
+# budget-aware cascade) regardless of the mapping below.
+role_tiers:
+  default: standard
+  memory_recall: economy
+  remember_explicit_fact: economy
+  web_search: economy
+  fetch_url: economy
+  index_file: economy
+  list_directory: economy
+  read_file: economy
+  create_reminder: economy
+  researcher: economy
+  retriever: economy
+  summariser: economy
+  formatter: economy
+  distiller: standard
+  content: standard
+  coder_validator: standard
+  compose_surface: standard
+  # The node that drafts the customer-facing reply, and the one the whole
+  # ladder exists to serve.
+  support_reply: frontier
+  answer_with_evidence: frontier
