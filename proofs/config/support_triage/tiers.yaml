@@ -1,0 +1,59 @@
+# Support-triage routing ladder for the Session 15 extension.
+#
+# The task class is SaaS support escalation triage: turn a user ticket into a
+# priority, owner and next action. The ladder opens cheaply for routine routing,
+# climbs to an analyst model for diagnostic tickets, and reserves the expensive
+# incident-commander rung for ambiguous outages, billing risk and enterprise
+# escalations.
+
+order: [intake, analyst, incident_commander]
+default_tier: analyst
+
+tiers:
+  intake:
+    request:
+      provider: groq
+      model: openai/gpt-oss-120b
+      reasoning: "off"
+      max_tokens: 650
+      temperature: 0
+    projected_input_tokens: 900
+    projected_output_tokens: 500
+
+  analyst:
+    request:
+      provider: gemini
+      model: gemini-3.1-flash-lite
+      reasoning: "off"
+      max_tokens: 1700
+      temperature: 0
+    projected_input_tokens: 1800
+    projected_output_tokens: 900
+
+  incident_commander:
+    request:
+      provider: github
+      model: openai/gpt-4.1
+      max_tokens: 4096
+      temperature: 0
+    projected_input_tokens: 4200
+    projected_output_tokens: 1800
+
+role_tiers:
+  default: analyst
+  memory_recall: intake
+  remember_explicit_fact: intake
+  web_search: intake
+  fetch_url: intake
+  index_file: intake
+  list_directory: intake
+  read_file: intake
+  researcher: intake
+  retriever: intake
+  summariser: analyst
+  formatter: analyst
+  distiller: analyst
+  content: analyst
+  coder_validator: analyst
+  compose_surface: analyst
+  answer_with_evidence: incident_commander

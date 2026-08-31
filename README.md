@@ -156,6 +156,251 @@ Useful flags: `--offline`, `--respond-as ui`, `--principal tenant/project/user`,
 `--otel-endpoint http://127.0.0.1:4318/v1/traces`, `--config-dir`, `--label`,
 `--live-embeddings`.
 
+## Session 15 submission evidence: support triage
+
+This PR adds a support-ticket triage routing policy. The user-visible capability
+is: given SaaS support tickets, spend cheap model calls first for routine
+priority/owner/next-action triage, climb to a stronger analyst model when the
+cheap answer does not resolve, and reserve the frontier incident-commander model
+for enterprise incidents, billing risk, compliance-sensitive cases and outages.
+The policy is data, not Python: the workload is
+`proofs/tasks/support_triage.jsonl`, and the ladder, pricing, budgets and judge
+live under `proofs/config/support_triage/`.
+
+I tested this laptop with:
+
+```bash
+curl -sS http://127.0.0.1:8112/healthz
+```
+
+It returned `curl: (7) Failed to connect to 127.0.0.1 port 8112`, so the proof
+outputs below were captured with `--offline`. That means the transport is
+deterministic, but the policy, ledger, graph, refusal path and trace export are
+the real implementation. The honest limitation is that this run proves the cost
+controller arithmetic and reproducibility, not live provider quality, live cache
+quality, or Jaeger backend ingestion.
+
+### Workload and ladder
+
+Workload: 15 synthetic SaaS support tickets with expectations and balanced
+difficulty labels: 5 `routine`, 5 `diagnostic`, 5 `escalation`.
+
+Ladder:
+
+| Rung | Provider | Model | Max tokens | Intended use |
+|---|---:|---:|---:|---|
+| `intake` | `groq` | `openai/gpt-oss-120b` | 650 | cheap first-pass triage |
+| `analyst` | `gemini` | `gemini-3.1-flash-lite` | 1700 | diagnostic cases |
+| `incident_commander` | `github` | `openai/gpt-4.1` | 4096 | high-risk or ambiguous escalations |
+
+Budget policy: `demo/support-triage/analyst` is capped at `$0.06` per task;
+`demo/support-triage/adversary` is capped at `$0.003`. The hard controller
+downgrades at 70% pressure, refuses at 93% pressure, keeps 2% headroom, reserves
+15% of the run budget for terminal work, and enforces `max_calls_per_run: 18`.
+
+Judge: the p1 judge uses a generic rubric with `addresses_task`, `specific`,
+`consistent`, `complete`, and `meets_expectation`. The bar is overall `>= 0.75`
+with no criterion below `0.5`. Judge models are disjoint from the answering
+ladder: `zai-glm-4.7` and `nvidia/nemotron-3-super-120b-a12b:free`.
+
+### Commands from a fresh checkout
+
+```bash
+uv sync
+uv run pytest -q
+uv run ruff check .
+
+uv run python proofs/p1_cost_per_task.py \
+  --tasks proofs/tasks/support_triage.jsonl \
+  --config-dir proofs/config/support_triage \
+  --offline \
+  --principal demo/support-triage/analyst \
+  --budget 0.06 \
+  --label support_triage
+
+uv run python proofs/p2_budget_holds.py \
+  --task "Classify a P1 checkout outage ticket and recommend the next support owner." \
+  --budget 0.06 \
+  --offline \
+  --config-dir proofs/config/support_triage \
+  --principal demo/support-triage/analyst \
+  --label support_triage
+
+uv run python proofs/p3_denial_of_wallet.py \
+  --task "Adversary requests endless escalated incident re-analysis for a support outage." \
+  --budget 0.003 \
+  --offline \
+  --config-dir proofs/config/support_triage \
+  --principal demo/support-triage/adversary \
+  --label support_triage \
+  --loop-limit 80 \
+  --projection-rounds 1000
+
+uv run python proofs/p4_trace_export.py \
+  --task "Summarise a P1 checkout outage and assign the next support owner." \
+  --budget 0.06 \
+  --offline \
+  --config-dir proofs/config/support_triage \
+  --principal demo/support-triage/analyst \
+  --label support_triage
+
+uv run python proofs/p6_cache_savings.py \
+  --pairs proofs/pairs/paraphrases.jsonl \
+  --offline \
+  --config-dir proofs/config/support_triage \
+  --principal demo/support-triage/analyst \
+  --label support_triage
+
+uv run python proofs/p7_cross_model_ladder.py \
+  --task "Classify a support ticket and produce priority, owner, and next action." \
+  --budget 0.06 \
+  --offline \
+  --config-dir proofs/config/support_triage \
+  --principal demo/support-triage/analyst \
+  --label support_triage
+```
+
+Verification output captured on this machine:
+
+```text
+$ uv run pytest -q
+280 passed, 1 warning in 56.30s
+
+$ uv run ruff check .
+All checks passed!
+
+$ uv run python proofs/p1_cost_per_task.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p1_cost_per_task_support_triage.json
+
+$ uv run python proofs/p2_budget_holds.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p2_budget_holds_support_triage.json
+
+$ uv run python proofs/p3_denial_of_wallet.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p3_denial_of_wallet_support_triage.json
+
+$ uv run python proofs/p4_trace_export.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p4_trace_export_support_triage.json
+
+$ uv run python proofs/p6_cache_savings.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p6_cache_savings_support_triage.json
+
+$ uv run python proofs/p7_cross_model_ladder.py ... --label support_triage
+ALL CHECKS PASSED -> proofs/out/p7_cross_model_ladder_support_triage.json
+```
+
+### Measured cost
+
+Against the always-frontier baseline:
+
+| Strategy | Spend | Calls | Cost/call | Resolved | Cost/resolved task | Models |
+|---|---:|---:|---:|---:|---:|---|
+| A `always_frontier` | `$0.15966625` | 15 | `$0.01064442` | 15/15 | `$0.01064442` | `openai/gpt-4.1` |
+| B `always_cheapest` | `$0.00755592` | 45 | `$0.00016791` | 0/15 | n/a, zero resolved | `openai/gpt-oss-120b` |
+| C `budget_aware` | `$0.15103449` | 39 | `$0.00387268` | 15/15 | `$0.01006897` | all three rungs |
+
+The ladder sits slightly better than always-frontier on this deterministic run:
+strategy C resolves 15/15 at `$0.01006897` per resolved task versus A at
+`$0.01064442`, about 5.4% cheaper per resolved task. The trade-off is more
+calls: 39 calls for C versus 15 calls for A.
+
+Break-even resolution rate: for B versus C, the derived break-even rate is
+`4.8413%`. B actually resolved `0%`, so it sits `4.8413` percentage points below
+break-even. B is much cheaper per call, but because it resolves nothing on this
+workload, its cost per resolved task is effectively infinite.
+
+Where the policy chose wrongly: `triage_002` resolved under strategy A with one
+`incident_commander` call for `$0.00905875`. Strategy C started cheap, climbed
+through `intake -> analyst -> incident_commander`, and resolved for
+`$0.01130458`. The routing mistake cost `$0.00224583` extra on that ticket.
+
+### Trace and ledger evidence
+
+Trace proof for prompt:
+
+```text
+Summarise a P1 checkout outage and assign the next support owner.
+```
+
+Captured OTel/Jaeger trace id: `526a2e4147afdab5fcf35df34a895abf`.
+
+Span hierarchy:
+
+```text
+run: 1
+agent_loop: 3
+plan: 3
+node: 2
+provider_call: 1
+```
+
+Ordered event trace:
+
+```text
+1 run_started
+2 graph_patched: first frontier selected for memory
+3 task_started: recall
+4 task_succeeded: recall
+5 graph_patched: authorized retrieval completed
+6 task_started: answer
+7 task_succeeded: answer
+8 graph_patched: grounded answer produced
+```
+
+Ledger row:
+
+```text
+sequence=1 node_id=answer role=answer_with_evidence
+tier=incident_commander provider=offline_1 model=openai/gpt-4.1
+input_tokens=284 output_tokens=4000
+projected_cost=0.02090750 cost=0.02035500 decision=proceed
+```
+
+The p4 proof checked that span cost total `0.02035500` exactly matched ledger
+spent `0.02035500`, that `gen_ai.provider.name`, `gen_ai.request.model`,
+`gen_ai.usage.input_tokens`, and `gen_ai.usage.output_tokens` were present on
+the provider-call span, and that prompt/completion capture was off.
+
+### Adversarial budget attack
+
+Attack prompt:
+
+```text
+Adversary requests endless escalated incident re-analysis for a support outage.
+```
+
+Before the control, extrapolating from the measured cost/call, the same loop
+would spend about `$0.4737` over 1000 rounds. With the hard controller:
+
+```text
+ceiling:          0.00300000 USD
+spent:            0.00284210
+admitted calls:   6
+refusals:         74
+loop rounds:      80
+nodes created:    80
+refused nodes:    74
+transport calls:  6, all metered
+```
+
+The refusal is visible in telemetry and the graph: 74 nodes failed with
+`BudgetRefused`, and every provider call that returned had a matching ledger
+charge.
+
+### Reproduced floor
+
+I also reproduced the shipped floor in offline mode:
+
+```text
+pytest: 280 passed, 1 warning
+ruff: All checks passed!
+p1_cost_per_task_floor: ALL CHECKS PASSED
+p2_budget_holds_floor: ALL CHECKS PASSED
+p3_denial_of_wallet_floor: ALL CHECKS PASSED
+p4_trace_export_floor: ALL CHECKS PASSED, trace id ae28b4633dada3efc52ba9d8203c58d8
+p6_cache_savings_floor: ALL CHECKS PASSED
+p7_cross_model_ladder_floor: ALL CHECKS PASSED
+```
+
 ## Observability
 
 `s15code.telemetry.export_run` turns a journal into spans through the real OTel

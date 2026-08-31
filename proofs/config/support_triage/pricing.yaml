@@ -1,0 +1,27 @@
+# Per-model support-triage prices. Rows are synthetic-but-priced so an offline
+# run proves the controller arithmetic without committing any provider secret.
+
+currency: USD
+unit_tokens: 1000000
+
+default:
+  input: 1.00
+  output: 5.00
+
+models:
+  support-intake-8b: {input: 0.08, output: 0.24}
+  support-analyst-flash: {input: 0.25, output: 1.20}
+  support-incident-frontier: {input: 1.25, output: 5.00}
+
+  # Request model ids are also priced so proof output can assert that no answer
+  # fell back to the default row when the transport reports the request model.
+  openai/gpt-oss-120b: {input: 0.08, output: 0.24}
+  gemini-3.1-flash-lite: {input: 0.25, output: 1.20}
+  openai/gpt-4.1: {input: 1.25, output: 5.00}
+
+  # Independent judge panel.
+  zai-glm-4.7: {input: 0.50, output: 0.50}
+  nvidia/nemotron-3-super-120b-a12b:free: {input: 0.0, output: 0.0}
+
+cache_read_multiplier: 0.1
+cache_write_multiplier: 1.25

@@ -1,0 +1,19 @@
+# Support-triage spend guardrails.
+#
+# The analyst principal gets enough room for a cheap-to-strong cascade. The
+# adversary principal is deliberately capped so p3 can prove a runaway loop is
+# refused visibly before it drains the wallet.
+
+default_budget: 0.06
+reserve_fraction: 0.15
+downgrade_at: 0.70
+refuse_at: 0.93
+headroom_fraction: 0.02
+chars_per_token: 4
+input_estimate_safety: 1.20
+max_calls_per_run: 18
+max_calls_per_node: 3
+
+principals:
+  demo/support-triage/analyst: 0.06
+  demo/support-triage/adversary: 0.003
