@@ -274,6 +274,7 @@ def run(args: Args) -> Proof:
             proof.record("backend_trace", trace)
 
     proof.record("budget", budget)
+    proof.record("journal", journal)
     proof.record("totals", totals)
     proof.record("spans", spans)
     return proof
