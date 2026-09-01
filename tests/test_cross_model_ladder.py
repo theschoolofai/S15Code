@@ -68,10 +68,12 @@ def test_rates_themselves_rise_along_the_ladder(config):
         assert (lo.input, lo.output) != (hi.input, hi.output), (cheaper, dearer)
 
 
-def test_a_thinking_rung_asks_for_the_reasoning_dial_off(config):
-    """Measured: the models on this ladder that think by default return an empty
-    string at full price when their output budget goes to the reasoning channel.
-    pricing.yaml records which ones; any rung on such a model must send the dial.
+def test_every_annotated_thinking_rung_asks_for_the_reasoning_dial_off(config):
+    """Any model annotated as thinking by default must send the off dial.
+
+    A custom ladder may contain only plain instruct models, so the invariant is
+    conditional on the pricing annotation rather than requiring an unrelated
+    thinking model to remain in every deployment's price table.
     """
     raw = yaml.safe_load((config.directory / "pricing.yaml").read_text(encoding="utf-8"))
     needs_off = {
@@ -79,7 +81,6 @@ def test_a_thinking_rung_asks_for_the_reasoning_dial_off(config):
         for model, row in (raw.get("models") or {}).items()
         if isinstance(row, dict) and row.get("measured_needs_reasoning_off")
     }
-    assert needs_off, "pricing.yaml records no measured thinking models; did the annotation move?"
     for name in config.ladder.names:
         tier = config.ladder.tier(name)
         if tier.model in needs_off:

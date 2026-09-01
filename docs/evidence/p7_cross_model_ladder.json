@@ -1,0 +1,207 @@
+{
+  "proof": "p7_cross_model_ladder",
+  "ok": true,
+  "mode": "live",
+  "mode_detail": {
+    "base_url": "http://127.0.0.1:8121"
+  },
+  "arguments": {
+    "task": "A pod is in CrashLoopBackOff. Give the first three commands you would run, in order.",
+    "budget": 0.05,
+    "principal": "course/s15/tanmay",
+    "respond_as": "text",
+    "otel_endpoint": null
+  },
+  "economics": {
+    "directory": "<repo>/config",
+    "currency": "USD",
+    "tier_order": [
+      "economy",
+      "standard",
+      "frontier"
+    ],
+    "default_tier": "standard",
+    "tier_models": {
+      "economy": "llama3.2:1b",
+      "standard": "qwen2.5:3b",
+      "frontier": "qwen2.5:7b"
+    },
+    "default_budget": 0.05,
+    "thresholds": {
+      "downgrade_at": 0.5,
+      "refuse_at": 0.9,
+      "headroom_fraction": 0.02,
+      "reserve_fraction": 0.2,
+      "max_calls_per_run": 60,
+      "max_calls_per_node": 6
+    }
+  },
+  "facts": {
+    "ladder": "economy < standard < frontier",
+    "rung economy": "ollama / llama3.2:1b  projected 0.00020980  charged 0.00008350  55in/195out  868 chars",
+    "rung standard": "ollama / qwen2.5:3b  projected 0.00124380  charged 0.00004650  43in/28out  111 chars",
+    "rung frontier": "ollama_edge / qwen2.5:7b  projected 0.00824200  charged 0.00031900  43in/69out  255 chars",
+    "asked frontier, allowance for economy": "served economy on ollama / llama3.2:1b  (downgrade, charged 0.00008350)",
+    "asked frontier, allowance for standard": "served standard on ollama / qwen2.5:3b  (downgrade, charged 0.00004650)",
+    "projected spread": "39.3x  (0.00020980 -> 0.00824200)",
+    "measured spread": "3.82x  (0.00008350 -> 0.00031900)"
+  },
+  "checks": [
+    {
+      "claim": "every rung answered",
+      "ok": true,
+      "observed": "3 rungs"
+    },
+    {
+      "claim": "each rung is served by the model its config names",
+      "ok": true,
+      "observed": {
+        "economy": "llama3.2:1b",
+        "standard": "qwen2.5:3b",
+        "frontier": "qwen2.5:7b"
+      }
+    },
+    {
+      "claim": "no two rungs are the same model",
+      "ok": true,
+      "observed": [
+        "llama3.2:1b",
+        "qwen2.5:3b",
+        "qwen2.5:7b"
+      ]
+    },
+    {
+      "claim": "the rungs are spread across providers, not one provider's menu",
+      "ok": true,
+      "observed": {
+        "configured": {
+          "economy": "ollama",
+          "standard": "ollama",
+          "frontier": "ollama_edge"
+        },
+        "reported": {
+          "economy": "ollama",
+          "standard": "ollama",
+          "frontier": "ollama_edge"
+        }
+      }
+    },
+    {
+      "claim": "no rung returns empty text",
+      "ok": true,
+      "observed": "3 rungs answered"
+    },
+    {
+      "claim": "a node allowance below the requested rung is served lower down the ladder",
+      "ok": true,
+      "observed": {
+        "economy": "economy",
+        "standard": "standard"
+      }
+    },
+    {
+      "claim": "every downgrade is recorded as one",
+      "ok": true,
+      "observed": {
+        "economy": "downgrade",
+        "standard": "downgrade"
+      }
+    },
+    {
+      "claim": "a downgrade changes the MODEL, not just the token budget",
+      "ok": true,
+      "observed": {
+        "requested_model": "qwen2.5:7b",
+        "served_models": {
+          "economy": "llama3.2:1b",
+          "standard": "qwen2.5:3b"
+        }
+      }
+    },
+    {
+      "claim": "projected cost rises monotonically along the ladder",
+      "ok": true,
+      "observed": {
+        "economy": 0.0002098,
+        "standard": 0.0012438,
+        "frontier": 0.008242
+      }
+    },
+    {
+      "claim": "the top rung measurably costs more than the bottom rung",
+      "ok": true,
+      "observed": "0.00031900 > 0.00008350"
+    }
+  ],
+  "detail": {
+    "observed": {
+      "est_input_tokens": 50,
+      "per_rung": {
+        "economy": {
+          "requested_tier": "economy",
+          "served_tier": "economy",
+          "configured_model": "llama3.2:1b",
+          "provider": "ollama",
+          "model": "llama3.2:1b",
+          "cost": 8.350000000000001e-05,
+          "input_tokens": 55,
+          "output_tokens": 195,
+          "text_chars": 868,
+          "projected": 0.00020980000000000003,
+          "decision": "proceed"
+        },
+        "standard": {
+          "requested_tier": "standard",
+          "served_tier": "standard",
+          "configured_model": "qwen2.5:3b",
+          "provider": "ollama",
+          "model": "qwen2.5:3b",
+          "cost": 4.65e-05,
+          "input_tokens": 43,
+          "output_tokens": 28,
+          "text_chars": 111,
+          "projected": 0.0012438,
+          "decision": "proceed"
+        },
+        "frontier": {
+          "requested_tier": "frontier",
+          "served_tier": "frontier",
+          "configured_model": "qwen2.5:7b",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "cost": 0.000319,
+          "input_tokens": 43,
+          "output_tokens": 69,
+          "text_chars": 255,
+          "projected": 0.008242,
+          "decision": "proceed"
+        }
+      },
+      "walk": {
+        "economy": {
+          "requested_tier": "frontier",
+          "served_tier": "economy",
+          "allowance": 0.0007268,
+          "provider": "ollama",
+          "model": "llama3.2:1b",
+          "cost": 8.350000000000001e-05,
+          "decision": "downgrade"
+        },
+        "standard": {
+          "requested_tier": "frontier",
+          "served_tier": "standard",
+          "allowance": 0.0047428999999999995,
+          "provider": "ollama",
+          "model": "qwen2.5:3b",
+          "cost": 4.65e-05,
+          "decision": "downgrade"
+        }
+      }
+    },
+    "tier_models": {
+      "economy": "llama3.2:1b",
+      "standard": "qwen2.5:3b",
+      "frontier": "qwen2.5:7b"
+    }
+  }
+}

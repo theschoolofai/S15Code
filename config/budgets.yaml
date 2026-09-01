@@ -4,8 +4,18 @@
 # agent — whatever string the caller attributes spend to). The controller is
 # deterministic code, not a prompt: token elasticity means a model asked nicely
 # to stay under a ceiling will sail straight through it.
+#
+# Tuned for the platform/SRE triage workload in proofs/tasks/sre_triage.jsonl.
+# Worst-case projected cost per call on the ladder in tiers.yaml:
+#
+#   economy    900 in x 0.10 + 512 out x 0.40   = $0.00029480
+#   standard  1400 in x 0.30 + 1024 out x 1.20  = $0.00165120
+#   frontier  2200 in x 1.00 + 2048 out x 4.00  = $0.01039200
+#
+# a 35x projected spread, which is what makes "one rung down" worth doing.
 
-# Used when a caller asks for a budgeted run without naming an amount.
+# Used when a caller asks for a budgeted run without naming an amount. Four
+# frontier calls, or roughly thirty economy ones.
 default_budget: 0.05
 
 # Fraction of the run's allowance held back from frontier allocation so the
@@ -26,13 +36,20 @@ headroom_fraction: 0.02
 
 # Admission prices the WORST case, not a guess: output is bounded by the tier's
 # max_tokens and input by the prompt actually being sent. These two numbers turn
-# the prompt into a token count — roughly four characters per token, then a safety
-# factor because a provider's tokeniser is not ours.
-chars_per_token: 4
-input_estimate_safety: 1.25
+# the prompt into a token count.
+#
+# 4 chars/token is the usual English prose figure and it is WRONG for this task
+# class. These prompts carry YAML specs, kubectl invocations, JQL and stack
+# traces, all of which tokenise denser than prose — punctuation, colons, dashes
+# and CamelCase each cost a token. Estimating at 3.2 chars/token makes the
+# estimate pessimistic in the direction that matters: over-counting input makes
+# admission stricter, and a budget controller that under-counts is not one.
+chars_per_token: 3.2
+input_estimate_safety: 1.3
 
 # Hard ceiling on admitted calls per run. Denial-of-wallet defence that does not
-# depend on price estimates being right.
+# depend on price estimates being right — the one control that still holds when
+# every price on the card is wrong.
 max_calls_per_run: 60
 
 # Hard ceiling on admitted calls attributable to one graph node, so a single

@@ -1,0 +1,511 @@
+[
+  {
+    "label": "run1_crashloop",
+    "prompt": "A pod is in CrashLoopBackOff. Give the first three kubectl commands you would run, in order, using placeholders my-ns and my-pod.",
+    "budget_usd": 0.02,
+    "elapsed_s": 25.62,
+    "run_id": "run-46beaab2042e",
+    "status": "completed",
+    "answer": "To diagnose a pod that is in `CrashLoopBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n   This command will show the status of your pod and confirm if it is indeed in `CrashLoopBackOff`.\n\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n   The `describe` command provides detailed information about the pod, including events that led to its current state.\n\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n   Examining the container logs can help identify the cause of the crashes or errors that are leading to the `CrashLoopBackOff` state.\n\nThese commands will give you a good starting point for diagnosing and resolving the issue with your pod.",
+    "provider": "ollama_edge",
+    "model": "qwen2.5:7b",
+    "trace_agents": {
+      "planner": {
+        "mode": "deterministic"
+      },
+      "agents": {
+        "answer": {
+          "agent": "answer_with_evidence",
+          "skill": "answer_with_evidence",
+          "state": "succeeded",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "tier": "frontier"
+        },
+        "recall": {
+          "agent": "memory_recall",
+          "skill": "memory_recall",
+          "state": "succeeded",
+          "provider": null,
+          "model": null,
+          "tier": "economy"
+        }
+      }
+    },
+    "budget": {
+      "run_id": "run-46beaab2042e",
+      "principal": "course/s15/run1_crashloop",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.00108,
+      "remaining": 0.01892,
+      "pressure": 0.054,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.00108,
+          "input_tokens": 248,
+          "output_tokens": 208
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "input_tokens": 248,
+          "output_tokens": 208,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.00108,
+          "projected_cost": 0.008681,
+          "latency_ms": 9653.0,
+          "started_at": 1788229543.134109,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "event_kinds": [
+      {
+        "sequence": 1,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 2,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 3,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 4,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 5,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 6,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 7,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 8,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "otel_trace_id": "cc3fc87ce212ddadf43d5c0698b43937",
+    "trace_export_keys": [
+      "run_id",
+      "endpoint",
+      "service_name",
+      "capture_content",
+      "exported_over_the_wire",
+      "totals",
+      "spans"
+    ]
+  },
+  {
+    "label": "run2_imagepull",
+    "prompt": "A Pod is stuck in ImagePullBackOff. List the first three places you inspect, in order.",
+    "budget_usd": 0.02,
+    "elapsed_s": 8.883,
+    "run_id": "run-91c9c62008a4",
+    "status": "completed",
+    "answer": "To diagnose a pod that is stuck in `ImagePullBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n\nThese commands will provide insights into why the pod is in `ImagePullBackOff` and help you identify the underlying issue.",
+    "provider": "ollama_edge",
+    "model": "qwen2.5:7b",
+    "trace_agents": {
+      "planner": {
+        "mode": "deterministic"
+      },
+      "agents": {
+        "answer": {
+          "agent": "answer_with_evidence",
+          "skill": "answer_with_evidence",
+          "state": "succeeded",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "tier": "frontier"
+        },
+        "recall": {
+          "agent": "memory_recall",
+          "skill": "memory_recall",
+          "state": "succeeded",
+          "provider": null,
+          "model": null,
+          "tier": "economy"
+        }
+      }
+    },
+    "budget": {
+      "run_id": "run-91c9c62008a4",
+      "principal": "course/s15/run2_imagepull",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.001059,
+      "remaining": 0.018941,
+      "pressure": 0.052950000000000004,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.001059,
+          "input_tokens": 507,
+          "output_tokens": 138
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "input_tokens": 507,
+          "output_tokens": 138,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.001059,
+          "projected_cost": 0.009066999999999999,
+          "latency_ms": 7800.0,
+          "started_at": 1788229554.006606,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "event_kinds": [
+      {
+        "sequence": 9,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 10,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 11,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 12,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 13,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 14,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 15,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 16,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "otel_trace_id": "7654bdf03b8fbfac757cd2026a726be9",
+    "trace_export_keys": [
+      "run_id",
+      "endpoint",
+      "service_name",
+      "capture_content",
+      "exported_over_the_wire",
+      "totals",
+      "spans"
+    ]
+  },
+  {
+    "label": "run3_http402",
+    "prompt": "An LLM gateway refuses a call because the remaining spend budget cannot cover the projected cost. What HTTP status code should it return? Reply with the number only.",
+    "budget_usd": 0.02,
+    "elapsed_s": 4.41,
+    "run_id": "run-1de8e46ddb95",
+    "status": "completed",
+    "answer": "402",
+    "provider": "ollama_edge",
+    "model": "qwen2.5:7b",
+    "trace_agents": {
+      "planner": {
+        "mode": "deterministic"
+      },
+      "agents": {
+        "answer": {
+          "agent": "answer_with_evidence",
+          "skill": "answer_with_evidence",
+          "state": "succeeded",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "tier": "frontier"
+        },
+        "recall": {
+          "agent": "memory_recall",
+          "skill": "memory_recall",
+          "state": "succeeded",
+          "provider": null,
+          "model": null,
+          "tier": "economy"
+        }
+      }
+    },
+    "budget": {
+      "run_id": "run-1de8e46ddb95",
+      "principal": "course/s15/run3_http402",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.000735,
+      "remaining": 0.019265,
+      "pressure": 0.03675,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.000735,
+          "input_tokens": 719,
+          "output_tokens": 4
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "input_tokens": 719,
+          "output_tokens": 4,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.000735,
+          "projected_cost": 0.009370999999999999,
+          "latency_ms": 3341.0,
+          "started_at": 1788229562.963676,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "event_kinds": [
+      {
+        "sequence": 17,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 18,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 19,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 20,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 21,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 22,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 23,
+        "kind": "task_succeeded",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 24,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "otel_trace_id": "dceacc434b42228f416605cf4fc59048",
+    "trace_export_keys": [
+      "run_id",
+      "endpoint",
+      "service_name",
+      "capture_content",
+      "exported_over_the_wire",
+      "totals",
+      "spans"
+    ]
+  },
+  {
+    "label": "run4_tight_budget",
+    "prompt": "Compare two approaches to bounding agent spend in three sentences.",
+    "budget_usd": 3e-05,
+    "elapsed_s": 0.231,
+    "run_id": "run-81079989e6c7",
+    "status": "failed",
+    "answer": "",
+    "provider": null,
+    "model": null,
+    "trace_agents": {
+      "planner": {
+        "mode": "deterministic"
+      },
+      "agents": {
+        "answer": {
+          "agent": "answer_with_evidence",
+          "skill": "answer_with_evidence",
+          "state": "failed",
+          "provider": null,
+          "model": null,
+          "tier": "frontier"
+        },
+        "recall": {
+          "agent": "memory_recall",
+          "skill": "memory_recall",
+          "state": "succeeded",
+          "provider": null,
+          "model": null,
+          "tier": "economy"
+        }
+      }
+    },
+    "budget": {
+      "run_id": "run-81079989e6c7",
+      "principal": "course/s15/run4_tight_budget",
+      "currency": "USD",
+      "total": 3e-05,
+      "spent": 0.0,
+      "remaining": 3e-05,
+      "pressure": 0.0,
+      "reserve": 6e-06,
+      "calls": 0,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 1,
+      "reservations": {},
+      "by_tier": {},
+      "charges": [],
+      "refusal_log": [
+        {
+          "node_id": "answer",
+          "reason": "cheapest tier economy projects 0.000327, run holds 0.000030 (headroom 0.000001)",
+          "spent": 0.0,
+          "remaining": 3e-05,
+          "pressure": 0.0,
+          "action": "refuse",
+          "requested_tier": "frontier",
+          "tier": null,
+          "model": null,
+          "projected_cost": 0.00032730000000000004,
+          "allowance": 2.4e-05,
+          "ladder_steps": 0
+        }
+      ]
+    },
+    "event_kinds": [
+      {
+        "sequence": 25,
+        "kind": "run_started",
+        "node_id": null
+      },
+      {
+        "sequence": 26,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 27,
+        "kind": "task_started",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 28,
+        "kind": "task_succeeded",
+        "node_id": "recall"
+      },
+      {
+        "sequence": 29,
+        "kind": "graph_patched",
+        "node_id": null
+      },
+      {
+        "sequence": 30,
+        "kind": "task_started",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 31,
+        "kind": "task_failed",
+        "node_id": "answer"
+      },
+      {
+        "sequence": 32,
+        "kind": "graph_patched",
+        "node_id": null
+      }
+    ],
+    "otel_trace_id": "f86dcc101182b9ebc60153f048965918",
+    "trace_export_keys": [
+      "run_id",
+      "endpoint",
+      "service_name",
+      "capture_content",
+      "exported_over_the_wire",
+      "totals",
+      "spans"
+    ]
+  }
+]

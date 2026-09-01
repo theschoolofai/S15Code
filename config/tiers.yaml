@@ -1,4 +1,4 @@
-# Capability tiers.
+# Capability tiers — the platform/SRE triage ladder.
 #
 # A tier is a NAME plus the gateway request fields that name expands to. Nothing
 # in s15code knows any of these names, providers or models: add a tier, rename a
@@ -11,45 +11,41 @@
 order: [economy, standard, frontier]
 default_tier: standard
 
-# ── The ladder is CROSS-MODEL ────────────────────────────────────────────────
-# The first version of this file varied reasoning effort and the output ceiling
-# on ONE model. The arithmetic worked — output is billed 6x input, so capping
-# max_tokens does cap spend — but it made "model routing" only half-true: every
-# rung of the ladder was the same model, so a downgrade could never be a change
-# of model, only a change of how hard that one model was allowed to think.
+# ── The ladder is CROSS-MODEL, and it is LOCAL ───────────────────────────────
+# The shipped ladder was groq / gemini / github. This machine has no provider
+# credentials at all, so every rung here is an Ollama model, served by one of
+# two daemons:
 #
-# Each rung below is a DIFFERENT model on a DIFFERENT provider, and the three
-# were measured against glc_v4 on 2026-07-30 before being written down. One
-# identical 3-sentence prompt, max_tokens 512, temperature 0, reasoning off:
+#   rung      provider      model          params  declared $/Mtok in/out
+#   economy   ollama        llama3.2:1b     1.2B   0.10 / 0.40
+#   standard  ollama        qwen2.5:3b      3.1B   0.30 / 1.20
+#   frontier  ollama_edge   qwen2.5:7b      7.6B   1.00 / 4.00
 #
-#   rung      provider    model                    $/Mtok in/out  latency  answered
-#   economy   groq        openai/gpt-oss-120b      0.15 / 0.75    0.74 s   yes
-#   standard  gemini      gemini-3.1-flash-lite    0.25 / 1.50    1.24 s   yes
-#   frontier  github      openai/gpt-4.1           2.00 / 8.00    2.88 s   yes
+# Three things about that table are worth stating plainly rather than burying.
 #
-# Input rate, output rate and latency all rise monotonically along the ladder,
-# which is what makes "one rung down" unambiguous. Projected worst-case cost per
-# call (the number admission actually uses) is $0.000564 / $0.002161 / $0.044768
-# — a 79x spread across the ladder, where the same-model ladder managed 5x.
+#   The rates are DECLARED, not billed. Local inference costs electricity, and a
+#   rung priced at $0.00 cannot be exhausted by a dollar ceiling — "refuse at
+#   exhaustion" would stop being expressible in money and collapse entirely onto
+#   max_calls_per_run. Each rate is anchored to what the 2026 hosted market
+#   charges for an open-weight model of that size, so the ladder's ~10x shape
+#   matches a real one. Token counts, latencies, stop reasons and refusals are
+#   all measured; only the per-token rate is synthetic.
 #
-# Two facts worth keeping, both learned the hard way:
+#   `ollama` and `ollama_edge` are two daemons on one machine, not two vendors.
+#   `ollama` is the stock server on 11434; `ollama_edge` is a second
+#   `ollama serve` on 11435, registered as its own gateway slot with its own
+#   queue, rate state and circuit breaker. Failover and benching between them
+#   are real. Vendor diversity is not: one `pkill ollama` takes out both, which
+#   a groq/gemini/github ladder would survive.
 #
-#   `reasoning: "off"` is not decoration on the cheap rung. gpt-oss-120b thinks
-#   by default: at max_tokens 128 with the dial left alone it spent all 128
-#   output tokens in its reasoning channel and returned content "" — a fully
-#   billed non-answer. The same call with the dial off returned a 570-character
-#   answer in 117 tokens. glc_v4's providers.py now translates "off" into the
-#   dialect each server understands; the tier only has to ask.
+#   No rung sends `reasoning`. Every model here is a plain instruct model with
+#   no separate thinking channel, so the dial the session's §2 is about has
+#   nothing to switch off. Sending it anyway would be decoration.
 #
-#   The cheapest rung is deliberately NOT free. This gateway can also reach
-#   ollama/gemma4:31b and openrouter's nvidia/nemotron-3-super-120b-a12b:free at
-#   $0.00/Mtok, and either would be a legitimate rung — but a rung that costs
-#   nothing cannot be exhausted by a dollar ceiling, so "refuse at exhaustion"
-#   stops being expressible in dollars and falls entirely to max_calls_per_run.
-#   A free rung wants a call-count budget, not a money budget. Local weights are
-#   also slow: gemma4:31b took 39.6 s (and 86.4 s under load) for the same
-#   prompt the frontier rung answered in 2.9 s, so the cheapest rung on a price
-#   ladder is not the cheapest rung on a latency ladder.
+# Capability rises with parameter count across the rungs, which is the ordering
+# assumption the ladder encodes. §11 of the session warns that this is an
+# assumption and not a truth ranking, and the PART 2 evidence in the README
+# reports where it turned out to be wrong on this task class.
 
 tiers:
   economy:
@@ -57,47 +53,49 @@ tiers:
     # body. That is the whole tier -> provider mapping: no Python edit needed to
     # change a provider, a model, a reasoning effort or a token ceiling.
     request:
-      provider: groq
-      model: openai/gpt-oss-120b
-      reasoning: "off"
+      provider: ollama
+      model: llama3.2:1b
       max_tokens: 512
       temperature: 0
     # Which row of pricing.yaml this tier is billed against. Defaults to the
     # request model when omitted.
-    price_model: openai/gpt-oss-120b
+    price_model: llama3.2:1b
     # What the estimator assumes before the call returns, in tokens. Real usage
     # replaces this the moment the response lands.
-    projected_input_tokens: 1200
-    projected_output_tokens: 400
+    projected_input_tokens: 900
+    projected_output_tokens: 300
 
   standard:
     request:
-      provider: gemini
-      model: gemini-3.1-flash-lite
-      reasoning: "off"
+      provider: ollama
+      model: qwen2.5:3b
       max_tokens: 1024
       temperature: 0
-    price_model: gemini-3.1-flash-lite
-    projected_input_tokens: 2500
-    projected_output_tokens: 800
+    price_model: qwen2.5:3b
+    projected_input_tokens: 1400
+    projected_output_tokens: 600
 
   frontier:
     request:
-      provider: github
-      model: openai/gpt-4.1
-      # gpt-4.1 has no thinking channel to switch off, so the dial is left
-      # alone here rather than sent and ignored.
-      max_tokens: 4096
+      provider: ollama_edge
+      model: qwen2.5:7b
+      max_tokens: 2048
       temperature: 0
-    price_model: openai/gpt-4.1
-    projected_input_tokens: 6000
-    projected_output_tokens: 2000
+    price_model: qwen2.5:7b
+    projected_input_tokens: 2200
+    projected_output_tokens: 1200
 
 # Which tier a graph ROLE asks for. Keys are the runtime's own skill/role names
 # (never task content), so a node "declares the tier it needs" by declaring its
 # role. `default` covers every role not listed.
+#
+# The shape of this map is the policy: retrieval and reformatting are bulk work
+# that a 1B model does acceptably, diagnosis is where a wrong answer costs an
+# on-call engineer an hour, and the node that actually writes the answer to the
+# operator is the one worth paying for.
 role_tiers:
   default: standard
+  # Bulk work: fetch it, list it, restate it. Cheapest rung, no escalation.
   memory_recall: economy
   remember_explicit_fact: economy
   web_search: economy
@@ -110,8 +108,11 @@ role_tiers:
   retriever: economy
   summariser: economy
   formatter: economy
+  # Middle rung: work that must be right but is recoverable if it is not.
   distiller: standard
   content: standard
   coder_validator: standard
   compose_surface: standard
+  # The node that answers the operator. A wrong runbook step here is the
+  # expensive mistake this ladder exists to avoid.
   answer_with_evidence: frontier

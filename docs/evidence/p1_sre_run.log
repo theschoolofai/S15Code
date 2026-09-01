@@ -1,0 +1,101 @@
+
+p1: 18 tasks x 3 strategies, live mode
+  ladder   economy < standard < frontier
+  models   ['llama3.2:1b', 'qwen2.5:3b', 'qwen2.5:7b']
+  judges   ['ollama/phi4-mini']
+  bar      overall >= 0.75, no criterion below 0.5 (normalised)
+
+  A s01_api_version_pod resolved     attempts=1 cost=0.00011500 tiers=frontier
+  A s02_api_version_deploy unresolved   attempts=1 cost=0.00011600 tiers=frontier
+  A s03_http_402       unresolved   attempts=1 cost=0.00013300 tiers=frontier
+  A s04_kubectl_events unresolved   attempts=1 cost=0.00011900 tiers=frontier
+  A s05_imagepull_first unresolved   attempts=1 cost=0.00018300 tiers=frontier
+  A s06_crashloop_first unresolved   attempts=1 cost=0.00025300 tiers=frontier
+  A s07_pending_first  unresolved   attempts=1 cost=0.00025400 tiers=frontier
+  A s08_circuit_cooldown resolved     attempts=1 cost=0.00035400 tiers=frontier
+  A s09_jql_open_hcat  resolved     attempts=1 cost=0.00014700 tiers=frontier
+  A s10_idp_nesting    resolved     attempts=1 cost=0.00044000 tiers=frontier
+  A s11_eks_api_table  resolved     attempts=1 cost=0.00029000 tiers=frontier
+  A s12_jenkins_fail   unresolved   attempts=1 cost=0.00018800 tiers=frontier
+  A s13_budget_projection resolved     attempts=1 cost=0.00144100 tiers=frontier
+  A s14_break_even     unresolved   attempts=1 cost=0.00220300 tiers=frontier
+  A s15_gemini_pool    resolved     attempts=1 cost=0.00052400 tiers=frontier
+  A s16_empty_bill     resolved     attempts=1 cost=0.00060400 tiers=frontier
+  A s17_semantic_vs_prompt unresolved   attempts=1 cost=0.00111000 tiers=frontier
+  A s18_yaml_nesting_fix resolved     attempts=1 cost=0.00034900 tiers=frontier
+  B s01_api_version_pod resolved     attempts=1 cost=0.00001270 tiers=economy
+  B s02_api_version_deploy unresolved   attempts=3 cost=0.00003840 tiers=economy,economy,economy
+  B s03_http_402       unresolved   attempts=3 cost=0.00004110 tiers=economy,economy,economy
+  B s04_kubectl_events unresolved   attempts=3 cost=0.00003810 tiers=economy,economy,economy
+  B s05_imagepull_first unresolved   attempts=3 cost=0.00005490 tiers=economy,economy,economy
+  B s06_crashloop_first unresolved   attempts=3 cost=0.00011070 tiers=economy,economy,economy
+  B s07_pending_first  unresolved   attempts=3 cost=0.00010380 tiers=economy,economy,economy
+  B s08_circuit_cooldown resolved     attempts=1 cost=0.00004260 tiers=economy
+  B s09_jql_open_hcat  resolved     attempts=1 cost=0.00002350 tiers=economy
+  B s10_idp_nesting    resolved     attempts=1 cost=0.00004920 tiers=economy
+  B s11_eks_api_table  unresolved   attempts=3 cost=0.00010260 tiers=economy,economy,economy
+  B s12_jenkins_fail   unresolved   attempts=3 cost=0.00024120 tiers=economy,economy,economy
+  B s13_budget_projection unresolved   attempts=3 cost=0.00041640 tiers=economy,economy,economy
+  B s14_break_even     unresolved   attempts=3 cost=0.00067050 tiers=economy,economy,economy
+  B s15_gemini_pool    unresolved   attempts=3 cost=0.00020400 tiers=economy,economy,economy
+  B s16_empty_bill     resolved     attempts=1 cost=0.00007460 tiers=economy
+  B s17_semantic_vs_prompt unresolved   attempts=3 cost=0.00062700 tiers=economy,economy,economy
+  B s18_yaml_nesting_fix resolved     attempts=1 cost=0.00005090 tiers=economy
+  C s01_api_version_pod resolved     attempts=1 cost=0.00001270 tiers=economy
+  C s02_api_version_deploy resolved     attempts=2 cost=0.00004880 tiers=economy,standard
+  C s03_http_402       unresolved   attempts=3 cost=0.00005360 tiers=economy,standard
+  C s04_kubectl_events resolved     attempts=2 cost=0.00004960 tiers=economy,standard
+  C s05_imagepull_first unresolved   attempts=3 cost=0.00007440 tiers=economy,standard
+  C s06_crashloop_first unresolved   attempts=3 cost=0.00011520 tiers=economy,standard
+  C s07_pending_first  resolved     attempts=2 cost=0.00012040 tiers=economy,standard
+  C s08_circuit_cooldown resolved     attempts=1 cost=0.00004260 tiers=economy
+  C s09_jql_open_hcat  resolved     attempts=1 cost=0.00002350 tiers=economy
+  C s10_idp_nesting    resolved     attempts=1 cost=0.00004920 tiers=economy
+  C s11_eks_api_table  unresolved   attempts=3 cost=0.00013320 tiers=economy,standard
+  C s12_jenkins_fail   unresolved   attempts=3 cost=0.00014160 tiers=economy,standard
+  C s13_budget_projection unresolved   attempts=3 cost=0.00055670 tiers=economy,standard
+  C s14_break_even     unresolved   attempts=3 cost=0.00109920 tiers=economy,standard
+  C s15_gemini_pool    resolved     attempts=2 cost=0.00023360 tiers=economy,standard
+  C s16_empty_bill     resolved     attempts=1 cost=0.00007460 tiers=economy
+  C s17_semantic_vs_prompt unresolved   attempts=3 cost=0.00061280 tiers=economy,standard
+  C s18_yaml_nesting_fix resolved     attempts=1 cost=0.00005090 tiers=economy
+
+  FINDING  signature failure mode OBSERVED
+    B_vs_A: cost/call -85.9%, cost/resolved -50.7%
+      B resolved 33% of tasks; the trap begins below 18.5% (derived from the measured price spread and 3 attempts)
+    B_vs_C: cost/call -40.6%, cost/resolved +38.5%
+      B resolved 33% of tasks; the trap begins below 42.5% (derived from the measured price spread and 3 attempts)
+
+p1_cost_per_task  (live mode)
+  task      18 tasks from proofs/tasks/sre_triage.jsonl
+  budget    0.05  principal course/s15/sre
+  transport {"base_url": "http://127.0.0.1:8121"}
+
+  A always_frontier                                                              spend 0.00882300 USD  calls 18  cost/call 0.00049017  resolved 9/18  cost/resolved 0.00098033  tiers frontier
+  B always_cheapest                                                              spend 0.00290220 USD  calls 42  cost/call 0.00006910  resolved 6/18  cost/resolved 0.00048370  tiers economy
+  C budget_aware                                                                 spend 0.00349260 USD  calls 30  cost/call 0.00011642  resolved 10/18  cost/resolved 0.00034926  tiers economy,standard
+  A resolved by difficulty                                                       {"hard": 5, "moderate": 3, "trivial": 1}  of {"trivial": 4, "moderate": 6, "hard": 8}
+  B resolved by difficulty                                                       {"hard": 2, "moderate": 3, "trivial": 1}  of {"trivial": 4, "moderate": 6, "hard": 8}
+  C resolved by difficulty                                                       {"hard": 3, "moderate": 4, "trivial": 3}  of {"trivial": 4, "moderate": 6, "hard": 8}
+  ladder                                                                         economy < standard < frontier
+  tasks                                                                          18 from proofs/tasks/sre_triage.jsonl  {'trivial': ['s01_api_version_pod', 's02_api_version_deploy', 's03_http_402', 's04_kubectl_events'], 'moderate': ['s05_imagepull_first', 's06_crashloop_first', 's07_pending_first', 's08_circuit_cooldown', 's09_jql_open_hcat', 's10_idp_nesting'], 'hard': ['s11_eks_api_table', 's12_jenkins_fail', 's13_budget_projection', 's14_break_even', 's15_gemini_pool', 's16_empty_bill', 's17_semantic_vs_prompt', 's18_yaml_nesting_fix']}
+  per-task ceiling                                                               0.05 USD (principal course/s15/sre)
+  judge panel                                                                    ollama/phi4-mini
+  judge bar                                                                      overall >= 0.75, min criterion 0.5, tie_break score
+  judge meta-cost                                                                46 calls, 0.01648380 USD, 0 unusable, 0 transport retries, 44 verdicts reused
+  signature failure mode                                                         OBSERVED — {"B_vs_A": {"cost_per_call_delta_pct": -85.90275416524992, "cost_per_resolved_task_delta_pct": -50.659639578374694, "resolution_rate": {"B": 0.3333333333333333, "A": 0.5}, "cheaper_per_call": true, "dearer_per_resolved_task": false, "signature_failure_mode": false, "worse_than_dearer": false, "break_even_resolution_rate": 0.18533198235784956, "headroom_above_break_even": 0.14800135097548375, "note": ""}, "B_vs_C": {"cost_per_call_delta_pct": -40.645937124205474, "cost_per_resolved_task_delta_pct": 38.49281337685394, "resolution_rate": {"B": 0.3333333333333333, "C": 0.5555555555555556}, "cheape
+  wall clock                                                                     1019.2s
+  where the strategies disagreed                                                 {"A_vs_B": ["s11_eks_api_table (hard): A resolved on frontier, B did not on economy/economy/economy", "s13_budget_projection (hard): A resolved on frontier, B did not on economy/economy/economy", "s15_gemini_pool (hard): A resolved on frontier, B did not on economy/economy/economy"], "C_vs_B": ["s02_api_version_deploy (trivial): C resolved on economy/standard, B did not on economy/economy/economy", "s04_kubectl_events (trivial): C resolved on economy/standard, B did not on economy/economy/economy", "s07_pending_first (moderate): C resolved on economy/standard, B did not on economy/economy/economy", "s15_gemini_pool (hard): C resolved on economy/standard, B did not on economy/economy/economy"], "A_vs_C": ["s02_api_version_deploy (trivial): C resolved on economy/standard, A did not on frontier", "s04_kubectl_events (trivial): C resolved on economy/standard, A did not on frontier", "s07_pending_first (moderate): C resolved on economy/standard, A did not on frontier", "s11_eks_api_table (hard): A resolved on frontier, C did not on economy/standard", "s13_budget_projection (hard): A resolved on frontier, C did not on economy/standard"]}
+
+  [PASS] every strategy attempted every task in the file                                3 strategies x 18 tasks
+  [PASS] every answering provider call that returned is metered                         90 transport calls, 90 ledger charges, 8 transport failures (no tokens reported, so not charged)
+  [PASS] no verdict was unparseable (an unparseable judge is a JUDGE failure)           0 tasks ended with status=judge_failed, 0 unusable judge samples
+  [PASS] an empty or errored answer never counted as resolved                           0 such rows
+  [PASS] no answer was graded by its own model                                          judges ['phi4-mini'] vs ladder ['llama3.2:1b', 'qwen2.5:3b', 'qwen2.5:7b']
+  [PASS] at least one strategy resolved at least one task, so cost/resolved is defined  25 resolved rows across 3 strategies
+  [PASS] the configured ladder separates cost per call at all                           projected top 0.01039200 > bottom 0.00029480
+  [PASS] every model that answered has its own row in pricing.yaml                      all priced
+  [PASS] no semantic-cache hit served one strategy another's answer                     {'before': {'hits': 0, 'stores': 0, 'lookups': 0}, 'after': {'hits': 0, 'stores': 0, 'lookups': 0}}
+
+  ALL CHECKS PASSED -> <repo>/proofs/out/p1_cost_per_task_sre.json
+

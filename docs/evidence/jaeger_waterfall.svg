@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="415" viewBox="0 0 1100 415">
+<rect width="100%" height="100%" fill="#0d1117"/>
+<style>text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;fill:#e6edf3}.title{font-size:18px;font-weight:700}.small{font-size:12px;fill:#8b949e}.label{font-size:13px}.bar{fill:#2f81f7}.call{fill:#3fb950}.fail{fill:#f85149}</style>
+<text x="20" y="28" class="title">Jaeger trace cc3fc87ce212ddadf43d5c0698b43937</text>
+<text x="20" y="49" class="small">10 spans · run → agent loop → plan/node → provider call · reconstructed from Jaeger query API JSON</text>
+<text x="20" y="84" class="label">chat qwen2.5:7b</text>
+<rect x="280.0" y="68" width="780.0" height="22" rx="3" class="call"/>
+<text x="1010.0" y="84" class="small">9653.0 ms</text>
+<text x="20" y="118" class="label">node answer</text>
+<rect x="280.0" y="102" width="780.0" height="22" rx="3" class="bar"/>
+<text x="1010.0" y="118" class="small">9653.0 ms</text>
+<text x="20" y="152" class="label">agent loop 2</text>
+<rect x="280.0" y="136" width="780.0" height="22" rx="3" class="bar"/>
+<text x="1010.0" y="152" class="small">9653.0 ms</text>
+<text x="20" y="186" class="label">run run-46beaab2042e</text>
+<rect x="280.0" y="170" width="780.0" height="22" rx="3" class="bar"/>
+<text x="1010.0" y="186" class="small">9653.0 ms</text>
+<text x="20" y="220" class="label">agent loop 1</text>
+<rect x="280.1" y="204" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.1" y="220" class="small">2.0 ms</text>
+<text x="20" y="254" class="label">plan</text>
+<rect x="280.1" y="238" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.1" y="254" class="small">0.0 ms</text>
+<text x="20" y="288" class="label">node recall</text>
+<rect x="280.2" y="272" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.2" y="288" class="small">1.0 ms</text>
+<text x="20" y="322" class="label">plan</text>
+<rect x="280.3" y="306" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.3" y="322" class="small">0.0 ms</text>
+<text x="20" y="356" class="label">plan</text>
+<rect x="280.6" y="340" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.6" y="356" class="small">0.0 ms</text>
+<text x="20" y="390" class="label">agent loop 3</text>
+<rect x="280.6" y="374" width="3.0" height="22" rx="3" class="bar"/>
+<text x="289.6" y="390" class="small">0.0 ms</text>
+</svg>

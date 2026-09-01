@@ -101,32 +101,51 @@ judge:
   # it and flags self_judged when a judge graded its own model's output. The flag
   # is disclosure, not enforcement: sometimes there is no independent judge to be
   # had, and then the reader deserves to know.
-  # These two are chosen to be disjoint from every rung of tiers.yaml, which today
-  # answers on groq / gemini / github. Repoint a rung onto one of these and the
-  # self_judged flag will start firing and p1's independence check will fail —
-  # which is the intended behaviour, not a bug: it means the panel needs moving.
+  # The panel must be disjoint from every rung of tiers.yaml, which here answers
+  # on llama3.2:1b / qwen2.5:3b / qwen2.5:7b. Repoint a rung onto the judge and
+  # the self_judged flag starts firing and p1's independence check fails — which
+  # is the intended behaviour, not a bug: it means the panel needs moving.
+  #
+  # ── This panel has ONE member, and that is a limitation, not a design ──────
+  #
+  # The shipped panel has two so that disagreement is measurable. This machine
+  # has no cloud credentials, so every judge must be a local model, and a local
+  # model must be a fourth distinct model on a volume with 2 GB free after the
+  # three ladder rungs are installed. phi4-mini fits; a second one did not.
+  #
+  # What is lost: inter-judge agreement, which the shipped p1 reports and this
+  # run cannot. A single judge's idiosyncrasies are invisible — there is nothing
+  # to disagree with them. The README states this next to every resolution count
+  # rather than presenting the verdicts as though a panel had confirmed them.
+  #
+  # phi4-mini rather than a bigger local model on purpose: it is a 3.8B instruct
+  # model that reliably emits the strict JSON object this rubric requires, and a
+  # judge that cannot be parsed is a judge failure, which p1 refuses to score as
+  # either resolved or unresolved.
+  #
+  # It is also, at 3.8B, plainly weaker than the 7.6B frontier rung it grades.
+  # The session's own evals.yaml warns about exactly this; here it is unavoidable
+  # and disclosed rather than hidden.
   panel:
     - name: judge_a
       request:
-        provider: cerebras
-        model: zai-glm-4.7
-        reasoning: "off"
+        provider: ollama
+        model: phi4-mini
         max_tokens: 500
         temperature: 0
-    - name: judge_b
-      request:
-        provider: openrouter
-        model: nvidia/nemotron-3-super-120b-a12b:free
-        reasoning: "off"
-        max_tokens: 700
-        temperature: 0
 
-  # Free-tier quotas are small and a rate limit is a TRANSPORT failure, not a
-  # verdict: retry it rather than let it become an unresolved task. Pacing keeps a
-  # per-minute token allowance from being spent in the first five seconds.
-  retries: 5
-  retry_backoff_seconds: 15
-  pace_seconds: 5
+  # A rate limit is a TRANSPORT failure, not a verdict: retry it rather than let
+  # it become an unresolved task.
+  #
+  # The shipped values (5 retries, 15 s backoff, 5 s pacing) exist for free cloud
+  # tiers with small per-minute quotas. A local daemon has no quota to pace
+  # against, and 5 s between every judge call would add roughly four minutes of
+  # pure sleeping to a run of this size while protecting nothing. Retries are
+  # kept — a local daemon can still be busy loading another model — but the
+  # waiting is cut to what a local failure actually needs.
+  retries: 3
+  retry_backoff_seconds: 2
+  pace_seconds: 0
 
 # What the compared strategies may do after an unresolved verdict. These numbers
 # are what make the always-cheapest baseline a genuine trap rather than a straw
