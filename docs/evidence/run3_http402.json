@@ -1,0 +1,964 @@
+{
+  "result": {
+    "run_id": "run-1de8e46ddb95",
+    "status": "completed",
+    "answer": "402",
+    "provider": "ollama_edge",
+    "model": "qwen2.5:7b",
+    "graph": {
+      "finished": true,
+      "nodes": {
+        "answer": {
+          "id": "answer",
+          "skill": "answer_with_evidence",
+          "input": {
+            "query": "An LLM gateway refuses a call because the remaining spend budget cannot cover the projected cost. What HTTP status code should it return? Reply with the number only."
+          },
+          "metadata": {
+            "tier": "frontier"
+          },
+          "state": "succeeded",
+          "result": {
+            "answer": "402",
+            "provider": "ollama_edge",
+            "model": "qwen2.5:7b",
+            "evidence_count": 4,
+            "metered_calls": [
+              {
+                "sequence": 1,
+                "node_id": "answer",
+                "role": "answer_with_evidence",
+                "tier": "frontier",
+                "provider": "ollama_edge",
+                "model": "qwen2.5:7b",
+                "input_tokens": 719,
+                "output_tokens": 4,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "cost": 0.000735,
+                "projected_cost": 0.009370999999999999,
+                "latency_ms": 3341.0,
+                "started_at": 1788229562.963676,
+                "decision": "proceed",
+                "requested_tier": "frontier",
+                "requested_model": "qwen2.5:7b",
+                "reasoning": null,
+                "budget_remaining": 0.019265,
+                "budget_pressure": 0.03675
+              }
+            ],
+            "budget_decisions": [
+              {
+                "action": "proceed",
+                "node_id": "answer",
+                "requested_tier": "frontier",
+                "tier": "frontier",
+                "model": "qwen2.5:7b",
+                "projected_cost": 0.009370999999999999,
+                "allowance": 0.016,
+                "remaining": 0.02,
+                "pressure": 0.0,
+                "ladder_steps": 0,
+                "reason": "requested tier fits the node allowance"
+              }
+            ]
+          }
+        },
+        "recall": {
+          "id": "recall",
+          "skill": "memory_recall",
+          "input": {
+            "query": "An LLM gateway refuses a call because the remaining spend budget cannot cover the projected cost. What HTTP status code should it return? Reply with the number only."
+          },
+          "metadata": {
+            "tier": "economy"
+          },
+          "state": "succeeded",
+          "result": {
+            "hits": [
+              {
+                "id": "mem_13f1640011e449a5b0dfa5c83d6f2f5b",
+                "kind": "episode",
+                "text": "To diagnose a pod that is stuck in `ImagePullBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n\nThese commands will provide insights into why the pod is in `ImagePullBackOff` and help you identify the underlying issue.",
+                "sources": [
+                  "run://run-91c9c62008a4/answer"
+                ]
+              },
+              {
+                "id": "mem_366d8893447f472e9f9e3892e94558a8",
+                "kind": "episode",
+                "text": "To diagnose a pod that is in `CrashLoopBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n   This command will show the status of your pod and confirm if it is indeed in `CrashLoopBackOff`.\n\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n   The `describe` command provides detailed information about the pod, including events that led to its current state.\n\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n   Examining the container logs can help identify the cause of the crashes or errors that are leading to the `CrashLoopBackOff` state.\n\nThese commands will give you a good starting point for diagnosing and resolving the issue with your pod.",
+                "sources": [
+                  "run://run-46beaab2042e/answer"
+                ]
+              },
+              {
+                "id": "mem_47da781afa084c36b27da49a0f105123",
+                "kind": "episode",
+                "text": "A pod is in CrashLoopBackOff. Give the first three kubectl commands you would run, in order, using placeholders my-ns and my-pod.",
+                "sources": [
+                  "api://agent/runs"
+                ]
+              },
+              {
+                "id": "mem_0a7b6c708086492f85b11ae8e52a86f8",
+                "kind": "episode",
+                "text": "A Pod is stuck in ImagePullBackOff. List the first three places you inspect, in order.",
+                "sources": [
+                  "api://agent/runs"
+                ]
+              }
+            ],
+            "metered_calls": [],
+            "budget_decisions": []
+          }
+        }
+      },
+      "edges": [
+        [
+          "recall",
+          "answer"
+        ]
+      ]
+    },
+    "trace": {
+      "planner": {
+        "mode": "deterministic"
+      },
+      "agents": {
+        "answer": {
+          "agent": "answer_with_evidence",
+          "skill": "answer_with_evidence",
+          "state": "succeeded",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "tier": "frontier"
+        },
+        "recall": {
+          "agent": "memory_recall",
+          "skill": "memory_recall",
+          "state": "succeeded",
+          "provider": null,
+          "model": null,
+          "tier": "economy"
+        }
+      }
+    },
+    "events": [
+      {
+        "sequence": 17,
+        "kind": "run_started",
+        "node_id": null,
+        "payload": {}
+      },
+      {
+        "sequence": 18,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 17,
+          "reason": "first frontier selected for memory",
+          "add": [
+            "recall"
+          ],
+          "connect": [],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": false
+        }
+      },
+      {
+        "sequence": 19,
+        "kind": "task_started",
+        "node_id": "recall",
+        "payload": {
+          "skill": "memory_recall",
+          "agent": "memory_recall"
+        }
+      },
+      {
+        "sequence": 20,
+        "kind": "task_succeeded",
+        "node_id": "recall",
+        "payload": {
+          "hits": [
+            {
+              "id": "mem_13f1640011e449a5b0dfa5c83d6f2f5b",
+              "kind": "episode",
+              "text": "To diagnose a pod that is stuck in `ImagePullBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n\nThese commands will provide insights into why the pod is in `ImagePullBackOff` and help you identify the underlying issue.",
+              "sources": [
+                "run://run-91c9c62008a4/answer"
+              ]
+            },
+            {
+              "id": "mem_366d8893447f472e9f9e3892e94558a8",
+              "kind": "episode",
+              "text": "To diagnose a pod that is in `CrashLoopBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n   This command will show the status of your pod and confirm if it is indeed in `CrashLoopBackOff`.\n\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n   The `describe` command provides detailed information about the pod, including events that led to its current state.\n\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n   Examining the container logs can help identify the cause of the crashes or errors that are leading to the `CrashLoopBackOff` state.\n\nThese commands will give you a good starting point for diagnosing and resolving the issue with your pod.",
+              "sources": [
+                "run://run-46beaab2042e/answer"
+              ]
+            },
+            {
+              "id": "mem_47da781afa084c36b27da49a0f105123",
+              "kind": "episode",
+              "text": "A pod is in CrashLoopBackOff. Give the first three kubectl commands you would run, in order, using placeholders my-ns and my-pod.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            },
+            {
+              "id": "mem_0a7b6c708086492f85b11ae8e52a86f8",
+              "kind": "episode",
+              "text": "A Pod is stuck in ImagePullBackOff. List the first three places you inspect, in order.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            }
+          ],
+          "metered_calls": [],
+          "budget_decisions": []
+        }
+      },
+      {
+        "sequence": 21,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 20,
+          "reason": "authorized retrieval completed",
+          "add": [
+            "answer"
+          ],
+          "connect": [
+            [
+              "recall",
+              "answer"
+            ]
+          ],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": false
+        }
+      },
+      {
+        "sequence": 22,
+        "kind": "task_started",
+        "node_id": "answer",
+        "payload": {
+          "skill": "answer_with_evidence",
+          "agent": "answer_with_evidence"
+        }
+      },
+      {
+        "sequence": 23,
+        "kind": "task_succeeded",
+        "node_id": "answer",
+        "payload": {
+          "answer": "402",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "evidence_count": 4,
+          "metered_calls": [
+            {
+              "sequence": 1,
+              "node_id": "answer",
+              "role": "answer_with_evidence",
+              "tier": "frontier",
+              "provider": "ollama_edge",
+              "model": "qwen2.5:7b",
+              "input_tokens": 719,
+              "output_tokens": 4,
+              "cache_read_tokens": 0,
+              "cache_write_tokens": 0,
+              "cost": 0.000735,
+              "projected_cost": 0.009370999999999999,
+              "latency_ms": 3341.0,
+              "started_at": 1788229562.963676,
+              "decision": "proceed",
+              "requested_tier": "frontier",
+              "requested_model": "qwen2.5:7b",
+              "reasoning": null,
+              "budget_remaining": 0.019265,
+              "budget_pressure": 0.03675
+            }
+          ],
+          "budget_decisions": [
+            {
+              "action": "proceed",
+              "node_id": "answer",
+              "requested_tier": "frontier",
+              "tier": "frontier",
+              "model": "qwen2.5:7b",
+              "projected_cost": 0.009370999999999999,
+              "allowance": 0.016,
+              "remaining": 0.02,
+              "pressure": 0.0,
+              "ladder_steps": 0,
+              "reason": "requested tier fits the node allowance"
+            }
+          ]
+        }
+      },
+      {
+        "sequence": 24,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 23,
+          "reason": "grounded answer produced",
+          "add": [],
+          "connect": [],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": true
+        }
+      }
+    ],
+    "principal": "course/s15/run3_http402",
+    "budget": {
+      "run_id": "run-1de8e46ddb95",
+      "principal": "course/s15/run3_http402",
+      "currency": "USD",
+      "total": 0.02,
+      "spent": 0.000735,
+      "remaining": 0.019265,
+      "pressure": 0.03675,
+      "reserve": 0.004,
+      "calls": 1,
+      "downgrades": 0,
+      "branches": 0,
+      "refusals": 0,
+      "reservations": {},
+      "by_tier": {
+        "frontier": {
+          "calls": 1,
+          "cost": 0.000735,
+          "input_tokens": 719,
+          "output_tokens": 4
+        }
+      },
+      "charges": [
+        {
+          "sequence": 1,
+          "node_id": "answer",
+          "role": "answer_with_evidence",
+          "tier": "frontier",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "input_tokens": 719,
+          "output_tokens": 4,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost": 0.000735,
+          "projected_cost": 0.009370999999999999,
+          "latency_ms": 3341.0,
+          "started_at": 1788229562.963676,
+          "decision": "proceed",
+          "requested_tier": "frontier"
+        }
+      ],
+      "refusal_log": []
+    },
+    "economics": {
+      "directory": "<repo>/config",
+      "currency": "USD",
+      "tier_order": [
+        "economy",
+        "standard",
+        "frontier"
+      ],
+      "default_tier": "standard",
+      "tier_models": {
+        "economy": "llama3.2:1b",
+        "standard": "qwen2.5:3b",
+        "frontier": "qwen2.5:7b"
+      },
+      "default_budget": 0.05,
+      "thresholds": {
+        "downgrade_at": 0.5,
+        "refuse_at": 0.9,
+        "headroom_fraction": 0.02,
+        "reserve_fraction": 0.2,
+        "max_calls_per_run": 60,
+        "max_calls_per_node": 6
+      }
+    },
+    "allocations": [
+      {
+        "trigger_event": 17,
+        "frontier": [
+          "recall"
+        ],
+        "per_node": {
+          "recall": 0.016
+        },
+        "remaining": 0.02,
+        "tiers": {
+          "recall": "economy"
+        }
+      },
+      {
+        "trigger_event": 20,
+        "frontier": [
+          "answer"
+        ],
+        "per_node": {
+          "answer": 0.016
+        },
+        "remaining": 0.02,
+        "tiers": {
+          "answer": "frontier"
+        }
+      },
+      {
+        "trigger_event": 23,
+        "frontier": [],
+        "per_node": {},
+        "remaining": 0.019265,
+        "tiers": {}
+      }
+    ]
+  },
+  "journal": {
+    "run_id": "run-1de8e46ddb95",
+    "finished": true,
+    "nodes": {
+      "answer": {
+        "id": "answer",
+        "skill": "answer_with_evidence",
+        "input": {
+          "query": "An LLM gateway refuses a call because the remaining spend budget cannot cover the projected cost. What HTTP status code should it return? Reply with the number only."
+        },
+        "metadata": {
+          "tier": "frontier"
+        },
+        "state": "succeeded",
+        "result": {
+          "answer": "402",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "evidence_count": 4,
+          "metered_calls": [
+            {
+              "sequence": 1,
+              "node_id": "answer",
+              "role": "answer_with_evidence",
+              "tier": "frontier",
+              "provider": "ollama_edge",
+              "model": "qwen2.5:7b",
+              "input_tokens": 719,
+              "output_tokens": 4,
+              "cache_read_tokens": 0,
+              "cache_write_tokens": 0,
+              "cost": 0.000735,
+              "projected_cost": 0.009370999999999999,
+              "latency_ms": 3341.0,
+              "started_at": 1788229562.963676,
+              "decision": "proceed",
+              "requested_tier": "frontier",
+              "requested_model": "qwen2.5:7b",
+              "reasoning": null,
+              "budget_remaining": 0.019265,
+              "budget_pressure": 0.03675
+            }
+          ],
+          "budget_decisions": [
+            {
+              "action": "proceed",
+              "node_id": "answer",
+              "requested_tier": "frontier",
+              "tier": "frontier",
+              "model": "qwen2.5:7b",
+              "projected_cost": 0.009370999999999999,
+              "allowance": 0.016,
+              "remaining": 0.02,
+              "pressure": 0.0,
+              "ladder_steps": 0,
+              "reason": "requested tier fits the node allowance"
+            }
+          ]
+        }
+      },
+      "recall": {
+        "id": "recall",
+        "skill": "memory_recall",
+        "input": {
+          "query": "An LLM gateway refuses a call because the remaining spend budget cannot cover the projected cost. What HTTP status code should it return? Reply with the number only."
+        },
+        "metadata": {
+          "tier": "economy"
+        },
+        "state": "succeeded",
+        "result": {
+          "hits": [
+            {
+              "id": "mem_13f1640011e449a5b0dfa5c83d6f2f5b",
+              "kind": "episode",
+              "text": "To diagnose a pod that is stuck in `ImagePullBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n\nThese commands will provide insights into why the pod is in `ImagePullBackOff` and help you identify the underlying issue.",
+              "sources": [
+                "run://run-91c9c62008a4/answer"
+              ]
+            },
+            {
+              "id": "mem_366d8893447f472e9f9e3892e94558a8",
+              "kind": "episode",
+              "text": "To diagnose a pod that is in `CrashLoopBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n   This command will show the status of your pod and confirm if it is indeed in `CrashLoopBackOff`.\n\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n   The `describe` command provides detailed information about the pod, including events that led to its current state.\n\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n   Examining the container logs can help identify the cause of the crashes or errors that are leading to the `CrashLoopBackOff` state.\n\nThese commands will give you a good starting point for diagnosing and resolving the issue with your pod.",
+              "sources": [
+                "run://run-46beaab2042e/answer"
+              ]
+            },
+            {
+              "id": "mem_47da781afa084c36b27da49a0f105123",
+              "kind": "episode",
+              "text": "A pod is in CrashLoopBackOff. Give the first three kubectl commands you would run, in order, using placeholders my-ns and my-pod.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            },
+            {
+              "id": "mem_0a7b6c708086492f85b11ae8e52a86f8",
+              "kind": "episode",
+              "text": "A Pod is stuck in ImagePullBackOff. List the first three places you inspect, in order.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            }
+          ],
+          "metered_calls": [],
+          "budget_decisions": []
+        }
+      }
+    },
+    "edges": [
+      [
+        "recall",
+        "answer"
+      ]
+    ],
+    "events": [
+      {
+        "sequence": 17,
+        "kind": "run_started",
+        "node_id": null,
+        "payload": {}
+      },
+      {
+        "sequence": 18,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 17,
+          "reason": "first frontier selected for memory",
+          "add": [
+            "recall"
+          ],
+          "connect": [],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": false
+        }
+      },
+      {
+        "sequence": 19,
+        "kind": "task_started",
+        "node_id": "recall",
+        "payload": {
+          "skill": "memory_recall",
+          "agent": "memory_recall"
+        }
+      },
+      {
+        "sequence": 20,
+        "kind": "task_succeeded",
+        "node_id": "recall",
+        "payload": {
+          "hits": [
+            {
+              "id": "mem_13f1640011e449a5b0dfa5c83d6f2f5b",
+              "kind": "episode",
+              "text": "To diagnose a pod that is stuck in `ImagePullBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n\nThese commands will provide insights into why the pod is in `ImagePullBackOff` and help you identify the underlying issue.",
+              "sources": [
+                "run://run-91c9c62008a4/answer"
+              ]
+            },
+            {
+              "id": "mem_366d8893447f472e9f9e3892e94558a8",
+              "kind": "episode",
+              "text": "To diagnose a pod that is in `CrashLoopBackOff`, you can start by running the following `kubectl` commands:\n\n1. **Check Pod Status:**\n   ```sh\n   kubectl get pods -n my-ns | grep my-pod\n   ```\n   This command will show the status of your pod and confirm if it is indeed in `CrashLoopBackOff`.\n\n2. **Describe the Pod:**\n   ```sh\n   kubectl describe pod my-pod -n my-ns\n   ```\n   The `describe` command provides detailed information about the pod, including events that led to its current state.\n\n3. **Check Container Logs:**\n   ```sh\n   kubectl logs my-pod -n my-ns\n   ```\n   Examining the container logs can help identify the cause of the crashes or errors that are leading to the `CrashLoopBackOff` state.\n\nThese commands will give you a good starting point for diagnosing and resolving the issue with your pod.",
+              "sources": [
+                "run://run-46beaab2042e/answer"
+              ]
+            },
+            {
+              "id": "mem_47da781afa084c36b27da49a0f105123",
+              "kind": "episode",
+              "text": "A pod is in CrashLoopBackOff. Give the first three kubectl commands you would run, in order, using placeholders my-ns and my-pod.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            },
+            {
+              "id": "mem_0a7b6c708086492f85b11ae8e52a86f8",
+              "kind": "episode",
+              "text": "A Pod is stuck in ImagePullBackOff. List the first three places you inspect, in order.",
+              "sources": [
+                "api://agent/runs"
+              ]
+            }
+          ],
+          "metered_calls": [],
+          "budget_decisions": []
+        }
+      },
+      {
+        "sequence": 21,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 20,
+          "reason": "authorized retrieval completed",
+          "add": [
+            "answer"
+          ],
+          "connect": [
+            [
+              "recall",
+              "answer"
+            ]
+          ],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": false
+        }
+      },
+      {
+        "sequence": 22,
+        "kind": "task_started",
+        "node_id": "answer",
+        "payload": {
+          "skill": "answer_with_evidence",
+          "agent": "answer_with_evidence"
+        }
+      },
+      {
+        "sequence": 23,
+        "kind": "task_succeeded",
+        "node_id": "answer",
+        "payload": {
+          "answer": "402",
+          "provider": "ollama_edge",
+          "model": "qwen2.5:7b",
+          "evidence_count": 4,
+          "metered_calls": [
+            {
+              "sequence": 1,
+              "node_id": "answer",
+              "role": "answer_with_evidence",
+              "tier": "frontier",
+              "provider": "ollama_edge",
+              "model": "qwen2.5:7b",
+              "input_tokens": 719,
+              "output_tokens": 4,
+              "cache_read_tokens": 0,
+              "cache_write_tokens": 0,
+              "cost": 0.000735,
+              "projected_cost": 0.009370999999999999,
+              "latency_ms": 3341.0,
+              "started_at": 1788229562.963676,
+              "decision": "proceed",
+              "requested_tier": "frontier",
+              "requested_model": "qwen2.5:7b",
+              "reasoning": null,
+              "budget_remaining": 0.019265,
+              "budget_pressure": 0.03675
+            }
+          ],
+          "budget_decisions": [
+            {
+              "action": "proceed",
+              "node_id": "answer",
+              "requested_tier": "frontier",
+              "tier": "frontier",
+              "model": "qwen2.5:7b",
+              "projected_cost": 0.009370999999999999,
+              "allowance": 0.016,
+              "remaining": 0.02,
+              "pressure": 0.0,
+              "ladder_steps": 0,
+              "reason": "requested tier fits the node allowance"
+            }
+          ]
+        }
+      },
+      {
+        "sequence": 24,
+        "kind": "graph_patched",
+        "node_id": null,
+        "payload": {
+          "trigger_event": 23,
+          "reason": "grounded answer produced",
+          "add": [],
+          "connect": [],
+          "cancel": [],
+          "wait": [],
+          "resume": [],
+          "finish": true
+        }
+      }
+    ]
+  },
+  "trace": {
+    "run_id": "run-1de8e46ddb95",
+    "endpoint": "http://127.0.0.1:4318/v1/traces",
+    "service_name": "s15code-agent",
+    "capture_content": false,
+    "exported_over_the_wire": true,
+    "totals": {
+      "spans": 10,
+      "by_kind": {
+        "plan": 3,
+        "node": 2,
+        "agent_loop": 3,
+        "provider_call": 1,
+        "run": 1
+      },
+      "provider_calls": 1,
+      "input_tokens": 719,
+      "output_tokens": 4,
+      "cost": 0.000735,
+      "trace_ids": [
+        "dceacc434b42228f416605cf4fc59048"
+      ]
+    },
+    "spans": [
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "ff830aa1b2958f54",
+        "parent_span_id": "68bacec13f8724c4",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562964675840,
+        "end_time": 1788229562964675840,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "first frontier selected for memory",
+          "s15.plan.added": "recall",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "node recall",
+        "kind": "node",
+        "span_id": "1114d24271213dbc",
+        "parent_span_id": "68bacec13f8724c4",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562965676032,
+        "end_time": 1788229562966675968,
+        "duration_ns": 999936,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "memory_recall",
+          "gen_ai.agent.name": "memory_recall",
+          "s15.node.id": "recall",
+          "s15.run.id": "run-1de8e46ddb95",
+          "s15.tier": "economy",
+          "s15.node.state": "succeeded"
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 1",
+        "kind": "agent_loop",
+        "span_id": "68bacec13f8724c4",
+        "parent_span_id": "de7d27c1f8fbd09d",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562964675840,
+        "end_time": 1788229562966675968,
+        "duration_ns": 2000128,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 1,
+          "s15.loop.trigger_event": 17
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "f5dff048be2f4da2",
+        "parent_span_id": "e635faca125e1e0c",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562967675904,
+        "end_time": 1788229562967675904,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "authorized retrieval completed",
+          "s15.plan.added": "answer",
+          "s15.plan.added_count": 1,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": false
+        },
+        "events": []
+      },
+      {
+        "name": "chat qwen2.5:7b",
+        "kind": "provider_call",
+        "span_id": "acfa3a84d5a7f94d",
+        "parent_span_id": "51744af797b06564",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562963675904,
+        "end_time": 1788229566304675904,
+        "duration_ns": 3341000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "provider_call",
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "ollama_edge",
+          "gen_ai.request.model": "qwen2.5:7b",
+          "gen_ai.response.model": "qwen2.5:7b",
+          "gen_ai.usage.input_tokens": 719,
+          "gen_ai.usage.output_tokens": 4,
+          "s15.cost": 0.000735,
+          "s15.currency": "USD",
+          "s15.tier": "frontier",
+          "s15.node.id": "answer",
+          "s15.budget.decision": "proceed",
+          "s15.budget.remaining": 0.019265,
+          "s15.cost.projected": 0.009370999999999999
+        },
+        "events": []
+      },
+      {
+        "name": "node answer",
+        "kind": "node",
+        "span_id": "51744af797b06564",
+        "parent_span_id": "e635faca125e1e0c",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562963675904,
+        "end_time": 1788229566304675904,
+        "duration_ns": 3341000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "node",
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "answer_with_evidence",
+          "gen_ai.agent.name": "answer_with_evidence",
+          "s15.node.id": "answer",
+          "s15.run.id": "run-1de8e46ddb95",
+          "s15.tier": "frontier",
+          "s15.node.state": "succeeded"
+        },
+        "events": [
+          {
+            "name": "budget.decision",
+            "attributes": {
+              "s15.budget.decision": "proceed",
+              "s15.budget.reason": "requested tier fits the node allowance",
+              "s15.tier": "frontier",
+              "s15.tier.requested": "frontier",
+              "s15.budget.projected_cost": 0.009370999999999999
+            }
+          }
+        ]
+      },
+      {
+        "name": "agent loop 2",
+        "kind": "agent_loop",
+        "span_id": "e635faca125e1e0c",
+        "parent_span_id": "de7d27c1f8fbd09d",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562963675904,
+        "end_time": 1788229566304675904,
+        "duration_ns": 3341000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 2,
+          "s15.loop.trigger_event": 20
+        },
+        "events": []
+      },
+      {
+        "name": "plan",
+        "kind": "plan",
+        "span_id": "a5eb14a85089bc3b",
+        "parent_span_id": "13ce184b0aaa7152",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562970675968,
+        "end_time": 1788229562970675968,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "plan",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.plan.reason": "grounded answer produced",
+          "s15.plan.added": "",
+          "s15.plan.added_count": 0,
+          "s15.plan.cancelled": "",
+          "s15.plan.finish": true
+        },
+        "events": []
+      },
+      {
+        "name": "agent loop 3",
+        "kind": "agent_loop",
+        "span_id": "13ce184b0aaa7152",
+        "parent_span_id": "de7d27c1f8fbd09d",
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562970675968,
+        "end_time": 1788229562970675968,
+        "duration_ns": 0,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "agent_loop",
+          "gen_ai.operation.name": "invoke_agent",
+          "s15.loop.round": 3,
+          "s15.loop.trigger_event": 23
+        },
+        "events": []
+      },
+      {
+        "name": "run run-1de8e46ddb95",
+        "kind": "run",
+        "span_id": "de7d27c1f8fbd09d",
+        "parent_span_id": null,
+        "trace_id": "dceacc434b42228f416605cf4fc59048",
+        "start_time": 1788229562963675904,
+        "end_time": 1788229566304675904,
+        "duration_ns": 3341000000,
+        "status": "UNSET",
+        "attributes": {
+          "s15.span.kind": "run",
+          "s15.run.id": "run-1de8e46ddb95",
+          "gen_ai.operation.name": "invoke_agent",
+          "gen_ai.agent.name": "s15code",
+          "s15.run.finished": true,
+          "s15.journal.events": 8,
+          "s15.provider_calls": 1,
+          "s15.loops": 3,
+          "s15.cost": 0.000735
+        },
+        "events": []
+      }
+    ]
+  }
+}
