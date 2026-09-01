@@ -261,27 +261,78 @@ The common ordered event shape was:
 
 `run_started → graph_patched → task_started(recall) → task_succeeded(recall) → graph_patched → task_started(answer) → task_succeeded|task_failed(answer) → graph_patched`
 
-1. **CrashLoopBackOff** — requested frontier and served
-   `ollama_edge/qwen2.5:7b`; 248 input / 208 output tokens; $0.001080;
-   trace `cc3fc87ce212ddadf43d5c0698b43937`. The final answer gave three
-   diagnostic commands. [Run, journal, spans](docs/evidence/run1_crashloop.json)
-   · [Jaeger response](docs/evidence/jaeger_cc3fc87ce212ddadf43d5c0698b43937.json)
-2. **ImagePullBackOff** — requested frontier and served
-   `ollama_edge/qwen2.5:7b`; $0.001059; trace
-   `7654bdf03b8fbfac757cd2026a726be9`.
-   [Run, journal, spans](docs/evidence/run2_imagepull.json)
-   · [Jaeger response](docs/evidence/jaeger_7654bdf03b8fbfac757cd2026a726be9.json)
-3. **HTTP budget status** — requested frontier and served
-   `ollama_edge/qwen2.5:7b`; answer `402`; $0.000735; trace
-   `dceacc434b42228f416605cf4fc59048`.
-   [Run, journal, spans](docs/evidence/run3_http402.json)
-   · [Jaeger response](docs/evidence/jaeger_dceacc434b42228f416605cf4fc59048.json)
-4. **Unaffordable call** — requested frontier under a $0.00003 ceiling.
-   No model was served, spend stayed $0, and one refusal was recorded. The
-   answer node failed with `BudgetRefused`; trace
-   `f86dcc101182b9ebc60153f048965918`.
-   [Run, journal, spans](docs/evidence/run4_tight_budget.json)
-   · [Jaeger response](docs/evidence/jaeger_f86dcc101182b9ebc60153f048965918.json)
+Every run patches in a `recall` node at economy before the `answer` node it was
+asked for, so the tier the graph requests and the tier the ledger charges are
+both recorded below.
+
+**Run 1 — CrashLoopBackOff.** Trace `cc3fc87ce212ddadf43d5c0698b43937`.
+
+> A pod is in CrashLoopBackOff. Give the first three kubectl commands you would
+> run, in order, using placeholders my-ns and my-pod.
+
+| seq | node | requested tier | served | in | out | projected | charged |
+|---:|---|---|---|---:|---:|---:|---:|
+| 1 | `answer` | frontier | `ollama_edge/qwen2.5:7b` | 248 | 208 | $0.008681 | **$0.001080** |
+
+Run spend $0.001080 over 1 call, 0 refusals. `recall` ran at economy and billed
+nothing. The final answer returned `kubectl get pods`, `kubectl describe pod`
+and `kubectl logs`, in that order.
+[Run, journal, spans](docs/evidence/run1_crashloop.json)
+· [Jaeger response](docs/evidence/jaeger_cc3fc87ce212ddadf43d5c0698b43937.json)
+
+**Run 2 — ImagePullBackOff.** Trace `7654bdf03b8fbfac757cd2026a726be9`.
+
+> A Pod is stuck in ImagePullBackOff. List the first three places you inspect,
+> in order.
+
+| seq | node | requested tier | served | in | out | projected | charged |
+|---:|---|---|---|---:|---:|---:|---:|
+| 1 | `answer` | frontier | `ollama_edge/qwen2.5:7b` | 507 | 138 | $0.009067 | **$0.001059** |
+
+Run spend $0.001059 over 1 call, 0 refusals. The answer named the same three
+`kubectl` steps rather than the registry, image tag and pull-secret the question
+was reaching for — a correct-shaped answer to a slightly different question.
+[Run, journal, spans](docs/evidence/run2_imagepull.json)
+· [Jaeger response](docs/evidence/jaeger_7654bdf03b8fbfac757cd2026a726be9.json)
+
+**Run 3 — HTTP status for a budget refusal.** Trace
+`dceacc434b42228f416605cf4fc59048`.
+
+> An LLM gateway refuses a call because the remaining spend budget cannot cover
+> the projected cost. What HTTP status code should it return? Reply with the
+> number only.
+
+| seq | node | requested tier | served | in | out | projected | charged |
+|---:|---|---|---|---:|---:|---:|---:|
+| 1 | `answer` | frontier | `ollama_edge/qwen2.5:7b` | 719 | 4 | $0.009371 | **$0.000735** |
+
+Run spend $0.000735 over 1 call, 0 refusals. Final answer: `402`. Note the
+projection was 12.7x the charge here — the estimator sizes the output envelope
+it must reserve, and a four-token reply leaves most of that reservation unspent.
+[Run, journal, spans](docs/evidence/run3_http402.json)
+· [Jaeger response](docs/evidence/jaeger_dceacc434b42228f416605cf4fc59048.json)
+
+**Run 4 — unaffordable call under a $0.00003 ceiling.** Trace
+`f86dcc101182b9ebc60153f048965918`.
+
+> Compare two approaches to bounding agent spend in three sentences.
+
+No ledger rows: the run made zero provider calls and spent $0.00. The `answer`
+node failed with `BudgetRefused` and the refusal record reads:
+
+```json
+{"node_id": "answer", "action": "refuse", "requested_tier": "frontier",
+ "tier": null, "model": null, "projected_cost": 0.0003273,
+ "spent": 0.0, "remaining": 0.00003, "allowance": 0.000024, "ladder_steps": 0,
+ "reason": "cheapest tier economy projects 0.000327, run holds 0.000030 (headroom 0.000001)"}
+```
+
+`ladder_steps: 0` is the load-bearing detail: the controller did not try
+frontier, fail, and walk down. It priced the *cheapest* rung first, found even
+that unaffordable, and refused before any transport. The final answer is the
+empty string, because no model was ever asked.
+[Run, journal, spans](docs/evidence/run4_tight_budget.json)
+· [Jaeger response](docs/evidence/jaeger_f86dcc101182b9ebc60153f048965918.json)
 
 The complete compact capture is
 [`four_runs_summary.json`](docs/evidence/four_runs_summary.json), and the
