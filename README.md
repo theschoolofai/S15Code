@@ -288,7 +288,12 @@ The complete compact capture is
 gateway ledger extract is
 [`gateway_ledger_recent.json`](docs/evidence/gateway_ledger_recent.json).
 
-![Jaeger span waterfall](docs/evidence/jaeger_waterfall.svg)
+![Jaeger span waterfall](docs/evidence/jaeger_trace.png)
+
+The screenshot is the actual Jaeger UI opened by trace ID; the compact
+[`SVG waterfall`](docs/evidence/jaeger_waterfall.svg) and raw
+[`query response`](docs/evidence/jaeger_cc3fc87ce212ddadf43d5c0698b43937.json)
+are committed so the image can be checked against backend data.
 
 ### Honest limitation exposed by the traces
 
